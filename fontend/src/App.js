@@ -5,6 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import Login from "./Components/Login/Login";
 import Register from "./Components/Register/Register";
 import NavBar from "./Components/NavBar/NavBar";
+import Footer from "./Components/Footer/Footer";
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path="/register" element={<Register />} />
         </Routes>
       </div>
+      <Footer/>
     </Router>
   );
 }
