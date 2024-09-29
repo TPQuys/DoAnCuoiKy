@@ -1,57 +1,121 @@
-.home-container{
+.home-container {
     display: flex;
-    background-color: rgb(236, 235, 235);
-    height:600px;
-    width:60%;
+    width: 100%;
     text-align: center;
-    align-items: center;
+    align-items: flex-start; 
     flex-direction: column;
-    margin-top: 3rem;
 }
-.home-title{
+
+.home-title {
     margin-top: 1rem;
     font-size: 1.5rem;
     font-weight: 700;
 }
-.home-userlist{
+
+.home-header {
+    height: 30vw;
+    background-image: url('https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/homeheader.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21laGVhZGVyLmpwZyIsImlhdCI6MTcyNzYxODE4OSwiZXhwIjoxNzU5MTU0MTg5fQ.QU5J1wJV043dbnA6WzcnrIvAVUFGtf3Xc7QCsdIPvR8&t=2024-09-29T13%3A56%3A29.431Z');
+    width: 100%;
+    background-size: cover;
+    background-position: center; 
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
     align-items: center;
-}
-.home-user{
-    margin: 1.5rem;
-    background-color: rgb(194, 194, 194);
-    padding:0.5rem;
-    border-radius: 12px;
-}
-.home-role{
-    margin-top: 1rem;
-    font-size: 1.25rem;
+    justify-content: center;
+    color: white;
+    font-size: 3vw;
 }
 
-.user-container{
-    display: flex;
-    width: 200px;
-    flex-direction: column;
+.home-body {
+    margin: 30px 0;
+    width: 100%;
+}
+
+.content-box {
+    width: 100%;
+    margin: 30px 0;
+    background-color: #fafaeb;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+
+.content-box:nth-child(1) {
+    background-color: #fafaeb;
+}
+
+.content-box:nth-child(2) {
+    background-color: white;
+}
+
+.content-box:nth-child(3) {
+    background-color: #f5f5f5;
+}
+
+.content-center {
+    height: fit-content;
     align-items: center;
+    display: flex;
     justify-content: center;
+    max-width: 1400px;
+    margin: 80px auto;
+    flex-direction: row;
 }
-.delete-user{
-    cursor: pointer;
-    font-size: 1rem;
-    background-color: rgb(240, 34, 96);
-    padding:0.35rem;
-    border-radius: 12px;
-    color:white;
+
+.content-box:nth-child(even) .content-center {
+    flex-direction: row-reverse;
 }
-.delete-user:hover{
-    background-color:rgb(207, 18, 75) ;
+
+.text-box {
+    flex: 1;
+    align-items: center;
+    margin: 0 30px;
 }
-.navbar {
-   display: flex;
+.content-title {
+    text-decoration: none;
+    font-size: 40px;
+    color: #e5cc5f !important;
+    font-weight: 600;
 }
-.errorMsg{
-    margin-top: 3rem;
-    font-size: 1.5rem;
+.content-title:hover {
+    color: #edde97;
+}
+
+.content-img {
+    width: 50%;
+    height: auto;
+    flex: 1;
+    display: flex;
+    bottom: 30px;
+    position: relative;
+}
+
+.content-text {
+    font-size: smaller;
+    color: #81695e;
+    text-align: justify;
+
+}
+
+@media (max-width: 768px) {
+
+    .content-box, .home-body {
+        margin: 30px 0;
+    }
+
+    .content-center {
+        flex-direction: column;
+        margin: 0;
+        gap: 30px;
+        padding: 20px;
+    }
+
+    .content-box:nth-child(even) .content-center {
+        flex-direction: column;
+    }
+
+    .content-img {
+        width: 100%;
+        height: auto;
+        top: 0px;
+    }
 }

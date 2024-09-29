@@ -1,7 +1,7 @@
 .wrap-login-container {
 width: 100%;
 height: 100vh;
-background-image: url("../../image/backgroud_login.jpg");
+background-image: url("https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/backgroud_login.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9iYWNrZ3JvdWRfbG9naW4uanBnIiwiaWF0IjoxNzI3NTU4NDEzLCJleHAiOjE3NTkwOTQ0MTN9.cGawVuVP13EJHCzH_FpxGD4M-k_Z-IpGvCv-US9oFWQ&t=2024-09-28T21%3A20%3A12.685Z");
 background-size: cover; 
 display: flex;
 }

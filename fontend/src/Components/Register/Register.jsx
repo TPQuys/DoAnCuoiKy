@@ -141,7 +141,7 @@ const Register = () => {
                                     </FormControl>
                                 </div>
 
-                                <Button variant="contained" type="submit" fullWidth>
+                                <Button variant="contained" type="submit" fullWidth sx={{background:"#81695e"}}>
                                     Create account
                                 </Button>
                             </Form>

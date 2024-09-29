@@ -1,0 +1,68 @@
+.footer-container {
+    display: flex;
+    width: 100%;
+    text-align: center;
+    align-items: flex-start; 
+    flex-direction: column;
+    background-image: url('https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/backgroud_login.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9iYWNrZ3JvdWRfbG9naW4uanBnIiwiaWF0IjoxNzI3NTU4NDEzLCJleHAiOjE3NTkwOTQ0MTN9.cGawVuVP13EJHCzH_FpxGD4M-k_Z-IpGvCv-US9oFWQ&t=2024-09-28T21:20:12.685Z');
+    background-size: cover;
+}
+
+.footer-container > * {
+    color: white;
+    display: flex;
+    padding: 60px 14vw ;
+}
+
+.footer-content {
+    display: inline-flex;
+    width: 100%;
+}
+
+.footer-logo {
+    margin: 30px ;
+}
+
+.footer-info-box {
+    background-color: #64463c;
+    flex:0.3;
+    border-radius: 5px;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px;
+}
+
+.icon-box {
+    display: inline-flex;
+    gap: 10px;
+    padding: 10px 30px;
+    border-top: 0.2px solid white;
+    border-bottom: 0.2px solid white;
+    margin: auto;
+    width: 100%;
+}
+.icon-box > * {
+    margin: auto;
+}
+
+.orther-info {
+    flex: 0.7;
+    justify-content: center;
+    align-content: center;
+    border-radius: 50%;
+}
+a {
+    color: white !important;
+}
+@media (max-width: 768px) {
+    .footer-container {
+        padding: 0;
+    }
+    .footer-content {
+        flex-direction: column;
+    }
+    .footer-info-box {
+    }
+}

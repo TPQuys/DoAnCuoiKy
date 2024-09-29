@@ -1,36 +1,57 @@
-.navbar-container{
+.navbar-container {
     display: flex;
-    padding: 1rem 1.5rem;
+    padding: 1rem 30%;
     justify-content: space-between;
     width: 100%;
-    /* background-color: rgb(228, 228, 228); */
-    position: absolute;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
     align-items: center;
+    transition: background-color 1s, color 1s;
 }
-.navbar-container > *{
+
+.navbar-scrolled {
+    background-color: white; 
+    border-bottom: 0.5px solid lightgrey;
+
+}
+
+.navbar-scrolled > * {
     margin: 0 1.25rem;
     text-decoration: none;
     font-weight: 600;
-    color:rgb(0, 99, 230);
+    color: black;
 }
-.navbar-home{
-    /* color:rgb(163, 162, 162); */
+
+.navbar-container > * {
+    margin: 0 1.25rem;
+    text-decoration: none;
+    font-weight: 600;
     color: white;
 }
-.navbar-login {
-    color: white;
-    /* color:rgb(163, 162, 162); */
-}
-.navbar-register{
-    color:rgb(255, 255, 255);
-    /* background-color: rgb(150, 150, 150); */
-    padding:0.35rem;
-    border-radius: 6px;
-}
-.navbar-user{
+
+.navbar-user {
     color: rgb(0, 154, 165);
 }
+
 .navbar-logout {
-    color:rgb(156, 156, 156);
-    padding:0.35rem;
+    color: rgb(156, 156, 156);
+    padding: 0.35rem;
+}
+
+
+.navbar-user,
+.navbar-logout,
+.navbar-login,
+.navbar-register,
+.navbar-home {
+    transition: color 1s;
+}
+.navbar-scrolled .navbar-home,
+.navbar-scrolled .navbar-user,
+.navbar-scrolled .navbar-logout,
+.navbar-scrolled .navbar-login,
+.navbar-scrolled .navbar-register {
+    color: rgb(0, 0, 0) !important;
 }
