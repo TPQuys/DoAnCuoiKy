@@ -6,25 +6,6 @@
     flex-direction: column;
 }
 
-.home-title {
-    margin-top: 1rem;
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
-.home-header {
-    height: 30vw;
-    background-image: url('https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/homeheader.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21laGVhZGVyLmpwZyIsImlhdCI6MTcyNzYxODE4OSwiZXhwIjoxNzU5MTU0MTg5fQ.QU5J1wJV043dbnA6WzcnrIvAVUFGtf3Xc7QCsdIPvR8&t=2024-09-29T13%3A56%3A29.431Z');
-    width: 100%;
-    background-size: cover;
-    background-position: center; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 3vw;
-}
-
 .home-body {
     margin: 30px 0;
     width: 100%;
@@ -33,23 +14,18 @@
 .content-box {
     width: 100%;
     margin: 30px 0;
-    background-color: #fafaeb;
     flex-wrap: wrap;
     justify-content: space-between;
+    background: linear-gradient(135deg, #f5f5f5 ,#ffe0b2);
+
 }
 
 
-.content-box:nth-child(1) {
-    background-color: #fafaeb;
+.content-box:nth-child(even) {
+    background: linear-gradient(135deg,#ffe0b2, #f5f5f5 );
+
 }
 
-.content-box:nth-child(2) {
-    background-color: white;
-}
-
-.content-box:nth-child(3) {
-    background-color: #f5f5f5;
-}
 
 .content-center {
     height: fit-content;
