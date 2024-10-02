@@ -1,7 +1,7 @@
 .navbar-container {
     display: flex;
-    padding: 1rem 30%;
-    justify-content: space-between;
+    padding: 1rem ;
+    justify-content: space-around;
     width: 100%;
     position: fixed;
     top: 0;
@@ -21,7 +21,7 @@
     margin: 0 1.25rem;
     text-decoration: none;
     font-weight: 600;
-    color: black;
+    color: white;
 }
 
 .navbar-container > * {
@@ -30,6 +30,7 @@
     font-weight: 600;
     color: white;
 }
+
 
 .navbar-user {
     color: rgb(0, 154, 165);
@@ -55,3 +56,43 @@
 .navbar-scrolled .navbar-register {
     color: rgb(0, 0, 0) !important;
 }
+
+.navbar-dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white !important; /* Nền màu đen cho menu con */
+    border: 1px solid lightgrey;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    z-index: 100;
+    width: 150px;
+    border-radius: 8px;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: black !important;
+    text-decoration: none;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f39c12; /* Màu cam sáng khi rê chuột vào mục con */
+    color: black;
+}
+
+.navbar-dropdown:hover .dropdown-menu {
+    display: block !important;
+}
+.navbar-dropdown > .navbar-home {
+    text-decoration: none; /* Remove underline */
+}
+
+.navbar-home:hover {
+    color: #f39c12; }
