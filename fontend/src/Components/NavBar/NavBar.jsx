@@ -25,7 +25,7 @@ const NavBar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollThreshold = window.innerWidth * 0.3; // 30% của chiều rộng trang
+      const scrollThreshold = window.innerWidth * 0.25;
       if (window.scrollY > scrollThreshold) {
         setIsScrolled(true);
       } else {

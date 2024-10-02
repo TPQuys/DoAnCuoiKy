@@ -6,6 +6,7 @@
     flex-direction: column;
     background-image: url('https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/backgroud_login.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9iYWNrZ3JvdWRfbG9naW4uanBnIiwiaWF0IjoxNzI3NTU4NDEzLCJleHAiOjE3NTkwOTQ0MTN9.cGawVuVP13EJHCzH_FpxGD4M-k_Z-IpGvCv-US9oFWQ&t=2024-09-28T21:20:12.685Z');
     background-size: cover;
+    background-position: 0% 30%;
 }
 
 .footer-container > * {
@@ -56,12 +57,20 @@
 a {
     color: white !important;
 }
+.iuh_logo {
+    width: 30vw;
+    height: auto;
+}
 @media (max-width: 768px) {
     .footer-container {
         padding: 0;
     }
     .footer-content {
         flex-direction: column;
+    }
+    .iuh_logo {
+        width: 100%;
+        height: auto;
     }
     .footer-info-box {
     }
