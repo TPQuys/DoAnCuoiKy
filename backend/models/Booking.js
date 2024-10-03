@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../supabase/connection");
+const User = require("./User"); 
 
 const Booking = sequelize.define('Booking', {
     BookingID: {

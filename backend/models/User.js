@@ -15,6 +15,20 @@ User.init(
             allowNull: false,
             unique: true,
         },
+        password: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        admin: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
+        isVerified: {  
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,  
+        },
         gender: {
             type: DataTypes.STRING, 
             allowNull: true,

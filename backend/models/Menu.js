@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../supabase/connection");
+const Event = require("./Event"); 
 
 const Menu = sequelize.define('Menu', {
     MenuID: {
@@ -16,4 +17,4 @@ const Menu = sequelize.define('Menu', {
 Event.hasOne(Menu, { foreignKey: 'MenuID' });
 Menu.belongsTo(Event, { foreignKey: 'MenuID' });
 
-module.exports = User;
+module.exports = Menu;
