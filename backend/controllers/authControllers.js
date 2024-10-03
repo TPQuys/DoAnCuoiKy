@@ -1,6 +1,7 @@
 const supabase = require('../supabase/supabaseClient');
 const jwt = require("jsonwebtoken");
 const User = require('../models/User'); // Import model User
+const bcrypt = require("bcrypt");
 
 let refreshTokens = [];
 
@@ -9,6 +10,14 @@ const authController = {
 
     registerUser: async (req, res) => {
         try {
+            const existingUser = await User.findOne({ where: { email: req.body.email } });
+            if (existingUser) {
+                return res.status(400).json({ message: "Email đã được đăng ký." });
+            }
+    
+            const salt = await bcrypt.genSalt(10);
+            const hashed = await bcrypt.hash(req.body.password, salt);
+    
             const { user, error } = await supabase.auth.signUp({
                 email: req.body.email,
                 password: req.body.password,
@@ -20,48 +29,64 @@ const authController = {
     
             const newUser = await User.create({
                 email: req.body.email,
+                password: hashed,
+                isVerified: false // Mặc định người dùng chưa xác thực
             });
     
-            res.status(200).json({ 
+            res.status(200).json({
                 message: 'Người dùng đã được đăng ký! Vui lòng kiểm tra email để xác thực.',
-                user: newUser 
+                user: newUser
             });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
     },
+    
     // Login
     loginUser: async (req, res) => {
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: req.body.email,
-                password: req.body.password,
-            });
-    
-            if (error) {
-                console.log('Supabase Error:', error);
-                return res.status(400).json(error.message);
+            const user = await User.findOne({ where: { email: req.body.email } }); // Cần sử dụng `where` để tìm kiếm
+            if (!user) {
+                return res.status(404).json("Wrong username");
             }
-            
-            const user = data.user;
-            console.log(user);
     
-            if (user) {
-                const accessToken = authController.generateAccessToken(user);
-                const refreshToken = authController.generateRefreshToken(user);
-                refreshTokens.push(refreshToken);
+            const validPassword = await bcrypt.compare(req.body.password, user.password);
+            if (!validPassword) {
+                return res.status(404).json("Wrong password");
+            }
     
-                res.cookie("refreshToken", refreshToken, {
-                    httpOnly: true,
-                    secure: false,
-                    path: "/",
-                    sameSite: "strict",
+            if (!user.isVerified) {
+                // Nếu người dùng chưa được xác thực, thực hiện xác thực với Supabase
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: req.body.email,
+                    password: req.body.password,
                 });
     
-                res.status(200).json({ user, accessToken });
-            } else {
-                return res.status(404).json("User not found");
+                if (error) {
+                    console.log('Supabase Error:', error);
+                    return res.status(400).json(error.message);
+                } else {
+                    // Cập nhật trường isVerified thành true
+                    user.isVerified = true; // Đặt giá trị mới
+                    await user.save(); // Lưu lại vào cơ sở dữ liệu
+                }
             }
+    
+            // Tạo token sau khi xác thực thành công
+            const accessToken = authController.generateAccessToken(user);
+            const refreshToken = authController.generateRefreshToken(user);
+            refreshTokens.push(refreshToken);
+            
+            // Cấu hình cookie cho refresh token
+            res.cookie("refreshToken", refreshToken, {
+                httpOnly: true,
+                secure: false,
+                path: "/",
+                sameSite: "strict",
+            });
+    
+            const { password, ...other } = user; // Giả sử bạn không cần trả về password
+            res.status(200).json({ user: other, accessToken });
         } catch (error) {
             console.error('Login Error:', error);
             res.status(500).json("Internal Server Error");
@@ -119,13 +144,23 @@ const authController = {
 
     // Logout
     userLogout: async (req, res) => {
-        res.clearCookie("refreshToken");
-        refreshTokens = refreshTokens.filter(token => token !== req.cookies.refreshToken);
-        const { error } = await supabase.auth.signOut();
-        if (error) return res.status(400).json(error.message);
-
-        res.status(200).json("Logout Successful");
+        try {
+            const refreshToken = req.cookies.refreshToken;
+            if (!refreshToken) return res.status(401).json("Bạn chưa đăng nhập.");
+    
+            refreshTokens = refreshTokens.filter(token => token !== refreshToken); // Xóa token khỏi danh sách
+            res.clearCookie("refreshToken"); // Xóa cookie refresh token
+    
+            const { error } = await supabase.auth.signOut();
+            if (error) return res.status(400).json(error.message);
+    
+            res.status(200).json("Đăng xuất thành công.");
+        } catch (error) {
+            console.error('Logout Error:', error);
+            res.status(500).json("Lỗi hệ thống.");
+        }
     },
+    
 
 };
 

@@ -6,4 +6,6 @@ const sequelize = new Sequelize(process.env.PGDATABASE, process.env.PGUSER, proc
   port: process.env.PGPORT,
 });
 
+sequelize.sync()
+
 module.exports = sequelize;
