@@ -1,4 +1,11 @@
 const User = require("../models/User");
+const Booking = require("../models/Booking")
+const RoomEvent = require("../models/RoomEvent")
+const Decore = require("../models/Decore")
+const Event = require("../models/Event")
+const Menu = require("../models/Menu")
+const Payment = require("../models/Payment")
+
 
 const userController = {
     // Lấy tất cả user

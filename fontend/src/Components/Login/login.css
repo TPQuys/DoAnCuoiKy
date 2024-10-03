@@ -54,7 +54,7 @@ form {
   text-decoration: none;
   cursor: pointer;
   margin-top: 1rem;
-  color: rgb(105, 105, 105);
+  color: rgb(189, 0, 189) !important;
   font-weight: 700;
 }
 .text-danger {

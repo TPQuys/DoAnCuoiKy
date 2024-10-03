@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../supabase/connection");
+const RoomEvent = require("./RoomEvent"); 
 
 
 const Event = sequelize.define('Event', {

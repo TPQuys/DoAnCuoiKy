@@ -106,7 +106,7 @@ const Login = () => {
                     )}
                 </Formik>
                 <div className="text-center mt-3">Don't have an account yet?</div>
-                <Link className="link" to="/register">Register one for free</Link>
+                <Link className="login-register-link" to="/register">Register one for free</Link>
             </div>
             </div>
         </section>
