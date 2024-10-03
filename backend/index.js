@@ -1,7 +1,6 @@
-require('dotenv').config(); // Nạp biến môi trường từ file .env
+require('dotenv').config(); 
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const sequelize = require("./supabase/connection"); 
 const authRoute = require("./routes/auth");
@@ -13,7 +12,6 @@ const app = express();
 async function connectDB() {
     try {
         await sequelize.authenticate();
-        await sequelize.sync(); 
         console.log("Connected to PostgreSQL database");
     } catch (error) {
         console.error("Error connecting to database:", error);
