@@ -11,6 +11,7 @@ const authController = {
     registerUser: async (req, res) => {
         try {
             const existingUser = await User.findOne({ where: { email: req.body.email } });
+            console.log(existingUser)
             if (existingUser) {
                 return res.status(400).json({ message: "Email đã được đăng ký." });
             }
@@ -32,10 +33,12 @@ const authController = {
                 password: hashed,
                 isVerified: false // Mặc định người dùng chưa xác thực
             });
-    
+
+            console.log(newUser)
+
             res.status(200).json({
                 message: 'Người dùng đã được đăng ký! Vui lòng kiểm tra email để xác thực.',
-                user: newUser
+                user: newUser.dataValues
             });
         } catch (error) {
             res.status(500).json({ message: error.message });
@@ -45,7 +48,8 @@ const authController = {
     // Login
     loginUser: async (req, res) => {
         try {
-            const user = await User.findOne({ where: { email: req.body.email } }); // Cần sử dụng `where` để tìm kiếm
+            const response = await User.findOne({ where: { email: req.body.email } }); // Cần sử dụng `where` để tìm kiếm
+            const user = response.dataValues
             if (!user) {
                 return res.status(404).json("Wrong username");
             }
@@ -67,8 +71,7 @@ const authController = {
                     return res.status(400).json(error.message);
                 } else {
                     // Cập nhật trường isVerified thành true
-                    user.isVerified = true; // Đặt giá trị mới
-                    await user.save(); // Lưu lại vào cơ sở dữ liệu
+                    await User.update({ isVerified: true }, { where: { email: req.body.email } });
                 }
             }
     
@@ -84,8 +87,8 @@ const authController = {
                 path: "/",
                 sameSite: "strict",
             });
-    
-            const { password, ...other } = user; // Giả sử bạn không cần trả về password
+            console.log(user)
+            const { password, ...other } = user;
             res.status(200).json({ user: other, accessToken });
         } catch (error) {
             console.error('Login Error:', error);
