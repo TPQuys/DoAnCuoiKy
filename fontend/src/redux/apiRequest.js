@@ -8,6 +8,9 @@ export const loginUser = async (user, dispatch, navigate) => {
         const res = await axios.post("/v1/auth/login", user);
         dispatch(loginSuccess(res.data));
         toast.success("Đăng nhập thành công!"); // Thông báo thành công
+
+        sessionStorage.setItem('user', JSON.stringify(res.data));
+
         navigate("/");
     } catch (error) {
         console.error("Login failed:", error.response.data);
@@ -15,6 +18,7 @@ export const loginUser = async (user, dispatch, navigate) => {
         dispatch(loginFailed());
     }
 };
+
 
 export const registerUser = async (user, dispatch, navigate) => {
     dispatch(registerStart());
@@ -37,11 +41,14 @@ export const logOut = async (dispatch, id, navigate, accessToken, axiosJWT) => {
             headers: { token: `Bearer ${accessToken}` },
         });
         dispatch(logOutSuccess());
-        toast.success("Đăng xuất thành công!"); // Thông báo thành công
+        toast.success("Đăng xuất thành công!"); 
+
+        sessionStorage.removeItem('user');
+
         navigate("/login");
     } catch (error) {
         console.error("Logout failed:", error);
-        toast.error("Đăng xuất thất bại!"); // Thông báo lỗi
+        toast.error("Đăng xuất thất bại!"); 
         dispatch(logOutFailed());
     }
 };
