@@ -1,6 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../supabase/connection");
-const User = require("./User"); 
+const User = require("./User");
+const Event = require("./Event");  
 
 const Booking = sequelize.define('Booking', {
     BookingID: {
@@ -22,5 +23,7 @@ const Booking = sequelize.define('Booking', {
 User.hasMany(Booking, { foreignKey: 'UserID' });
 Booking.belongsTo(User, { foreignKey: 'UserID' });
 
+Event.hasMany(Booking, { foreignKey: 'EventID' });
+Booking.belongsTo(Event, { foreignKey: 'EventID' });
 
 module.exports = Booking;

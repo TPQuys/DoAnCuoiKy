@@ -1,20 +1,29 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../supabase/connection");
-const Event = require("./Event"); 
 
 const Menu = sequelize.define('Menu', {
     MenuID: {
         type: DataTypes.STRING,
         primaryKey: true
     },
-    Drinks: {
+    Name: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    Price: {
+        type: DataTypes.DOUBLE,
+        allowNull: false
+    },
+    Foods: {
+        type: DataTypes.ARRAY(DataTypes.STRING), 
+        allowNull: true
+    },
+    Drinks: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: true
     }
 });
 
-// Quan hệ giữa Event và Menu: Một Event có một Menu
-Event.hasOne(Menu, { foreignKey: 'MenuID' });
-Menu.belongsTo(Event, { foreignKey: 'MenuID' });
+// Không cần sửa lại phần quan hệ ở đây vì đã được định nghĩa trong model `Event`.
 
 module.exports = Menu;

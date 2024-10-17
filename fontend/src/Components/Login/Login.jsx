@@ -1,7 +1,7 @@
 import "./login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { loginUser } from "../../redux/apiRequest";
+import { loginUser } from "../../redux/actions/apiRequest";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import TextField from '@mui/material/TextField';

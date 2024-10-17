@@ -5,10 +5,6 @@ import Header from '../Header/Header'
 const HomePage = () => {
   return (
     <main className="home-container">
-      {/* <div className="home-header">
-      <div>Home</div>
-      <h1>EventsIuh</h1>
-      </div> */}
       <Header background="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/homeheader.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21laGVhZGVyLmpwZyIsImlhdCI6MTcyNzYxODE4OSwiZXhwIjoxNzU5MTU0MTg5fQ.QU5J1wJV043dbnA6WzcnrIvAVUFGtf3Xc7QCsdIPvR8&t=2024-09-29T13%3A56%3A29.431Z" title="home" />
       <div className="home-body">
         <div className="content-box">

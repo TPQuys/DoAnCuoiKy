@@ -29,8 +29,5 @@ const RoomEvent = sequelize.define('RoomEvent', {
     }
 });
 
-// Quan hệ giữa RoomEvent và Booking: Một RoomEvent có nhiều Booking
-RoomEvent.hasMany(Booking, { foreignKey: 'RoomEventID' });
-Booking.belongsTo(RoomEvent, { foreignKey: 'RoomEventID' });
 
 module.exports = RoomEvent;
