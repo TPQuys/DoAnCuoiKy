@@ -2,13 +2,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import "./navbar.css";
-import { logOut } from "../../redux/apiRequest";
+import { logOut } from "../../redux/actions/apiRequest";
 import { createAxios } from "../../createInstance";
-import { logOutSuccess } from "../../redux/authSlice";
+import { logOutSuccess } from "../../redux/reducers/authSlice";
 import { FaHome, FaUtensils, FaTag, FaNewspaper, FaCalendarAlt ,FaUserCircle, FaUser } from 'react-icons/fa';
 import { CiLogin } from "react-icons/ci";
 import { IoCloseCircle } from "react-icons/io5";
 import { GiFlowers } from "react-icons/gi";
+import { getAllRooms } from "../../redux/actions/roomRequest";
 
 const NavBar = () => {
   const user = useSelector((state) => state.auth.login.currentUser);
@@ -22,10 +23,13 @@ const NavBar = () => {
   const handleLogOut = () => {
     logOut(dispatch, id, navigate, accessToken, axiosJWT);
   };
+  useEffect(() => {
+    getAllRooms(dispatch);
+}, []);
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollThreshold = window.innerWidth * 0.25;
+      const scrollThreshold = window.innerWidth * 0.1;
       if (window.scrollY > scrollThreshold) {
         setIsScrolled(true);
       } else {

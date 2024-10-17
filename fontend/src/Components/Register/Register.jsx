@@ -1,6 +1,6 @@
 import "./register.css";
 import { useDispatch } from "react-redux";
-import { registerUser } from "../../redux/apiRequest";
+import { registerUser } from "../../redux/actions/apiRequest";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";

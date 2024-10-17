@@ -8,6 +8,14 @@ const Payment = sequelize.define('Payment', {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
     },
+        BookingID: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: Booking, 
+            key: 'BookingID'
+        }
+    },
     Amount: {
         type: DataTypes.DOUBLE,
         allowNull: false
