@@ -1,6 +1,5 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../supabase/connection");
-const Event = require("./Event"); 
 
 const Decore = sequelize.define('Decore', {
     DecoreID: {
@@ -21,8 +20,6 @@ const Decore = sequelize.define('Decore', {
     }
 });
 
-// Quan hệ giữa Event và Decore: Một Event có một Decore
-Event.hasOne(Decore, { foreignKey: 'DecoreID' });
-Decore.belongsTo(Event, { foreignKey: 'DecoreID' });
+// Không cần sửa lại phần quan hệ ở đây vì đã được định nghĩa trong model `Event`.
 
 module.exports = Decore;
