@@ -3,20 +3,18 @@ import axios from "axios";
 
 import { jwtDecode } from "jwt-decode";
 
-
-
 const refreshToken = async () =>{
     try {
+        console.log("reflesh")
         const res = await axios.post("/v1/auth/refresh",{
             withCredentials: true,
         });
         return res.data;
     } catch (error) {
+        sessionStorage.removeItem("user")
         console.log(error);
     }
 }
-
-
 
 export const createAxios = (user, dispatch, stateSuccess) =>{
     const newInstance = axios.create();
@@ -31,7 +29,7 @@ export const createAxios = (user, dispatch, stateSuccess) =>{
                     accessToken: data.accessToken,
                 };
                 dispatch(stateSuccess(refreshUser));
-                config.headers["token"] = "Bearer" + data.accessToken;
+                config.headers["token"] = "Bearer " + data.accessToken;
             }
             return config;
         },

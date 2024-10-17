@@ -1,7 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../supabase/connection");
-const RoomEvent = require("./RoomEvent"); 
-
+const RoomEvent = require("./RoomEvent");
+const Menu = require("./Menu");
+const Decore = require("./Decore");
 
 const Event = sequelize.define('Event', {
     EventID: {
@@ -30,8 +31,13 @@ const Event = sequelize.define('Event', {
     }
 });
 
-// Quan hệ giữa Event và RoomEvent: Một RoomEvent có nhiều Event
 RoomEvent.hasMany(Event, { foreignKey: 'RoomEventID' });
 Event.belongsTo(RoomEvent, { foreignKey: 'RoomEventID' });
+
+Menu.hasMany(Event, { foreignKey: 'MenuID' });
+Event.belongsTo(Menu, { foreignKey: 'MenuID' });
+
+Decore.hasMany(Event, { foreignKey: 'DecoreID' });
+Event.belongsTo(Decore, { foreignKey: 'DecoreID' });
 
 module.exports = Event;

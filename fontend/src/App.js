@@ -7,6 +7,8 @@ import Register from "./Components/Register/Register";
 import NavBar from "./Components/NavBar/NavBar";
 import Footer from "./Components/Footer/Footer";
 import Room from "./Components/Rooms/Room";
+import BookingPage from "./Components/BookingPage/BookingPage";
+
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -22,6 +24,7 @@ function Layout() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/room" element={<Room />} />
+          <Route path="/booking" element={<BookingPage />} />
         </Routes>
       </div>
       {/* Footer sẽ chỉ hiển thị khi không phải ở trang login hoặc register */}
