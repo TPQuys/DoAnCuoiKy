@@ -34,16 +34,17 @@
 }
 
 .room-text-box {
-    flex: 1;
+    flex: 0.7;
     align-items: center;
     margin: 0 30px;
-    padding: 80px;
+    padding: 60px;
 }
 .room-content-title {
     text-decoration: none;
     font-size: 40px;
     color: #81695e !important;
     font-weight: 600;
+    margin: auto;
 }
 .room-content-title:hover {
     color: #edde97;
@@ -52,16 +53,31 @@
 .room-content-img {
     width: 50%;
     height: auto;
-    flex: 1;
+    flex: 1.3;
     display: flex;
     position: relative;
 }
 
+.room-content-table {
+    display: table; /* Sử dụng chế độ bảng cho container */
+    width: 100%; /* Chiếm toàn bộ chiều rộng của container cha */
+}
+
+.room-content-row {
+    display: table-row; 
+    width: 100%;
+    margin-bottom: 10px; 
+}
+
 .room-content-text {
+    display: table-cell;
     font-size: smaller;
     color: #81695e;
-    text-align: justify;
+    text-align: left;
+    padding: 8px;
 }
+
+
 
 @media (max-width: 768px) {
 

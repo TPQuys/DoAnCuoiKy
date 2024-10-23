@@ -9,7 +9,6 @@ import { FaHome, FaUtensils, FaTag, FaNewspaper, FaCalendarAlt ,FaUserCircle, Fa
 import { CiLogin } from "react-icons/ci";
 import { IoCloseCircle } from "react-icons/io5";
 import { GiFlowers } from "react-icons/gi";
-import { getAllRooms } from "../../redux/actions/roomRequest";
 
 const NavBar = () => {
   const user = useSelector((state) => state.auth.login.currentUser);
@@ -23,9 +22,7 @@ const NavBar = () => {
   const handleLogOut = () => {
     logOut(dispatch, id, navigate, accessToken, axiosJWT);
   };
-  useEffect(() => {
-    getAllRooms(dispatch);
-}, []);
+
 
   useEffect(() => {
     const handleScroll = () => {

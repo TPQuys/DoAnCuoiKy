@@ -17,16 +17,23 @@ const RoomPage = () => {
                     <div className="room-content-box" key={item.RoomEventID}>
                         <div className="room-content-center">
                             <div className="room-text-box">
-                                <Link className="room-content-title">{item.NumberRoom} </Link>
-                                <p className="room-content-text">Chiều dài: {item.HeightRoom}</p>
-                                <p className="room-content-text">Chiều rộng: {item.WidthRoom}</p>
-                                <p className="room-content-text">Số người: {item.NumberRoom}</p>
-                                <p className="room-content-text">Số bàn tối đa: {item.Capacity}</p>
+                                <Link className="room-content-title">{item.RoomName} </Link>
+                                <div className="room-content-table">
+                                    <div className="room-content-row">
+                                        <span className="room-content-text">Chiều dài: {item.HeightRoom}</span>
+                                        <span className="room-content-text">Chiều rộng: {item.WidthRoom}</span>
+                                    </div>
+                                    <div className="room-content-row">
+                                        <span className="room-content-text">Số người: {item.Capacity}</span>
+                                        <span className="room-content-text">Số bàn tối đa: {item.MaxTable}</span>
+                                    </div>
+                                </div>
+                                <p className="room-content-text">{item.Description}</p>
                                 <Button
-                                    component={Link} // Sử dụng Link như một component
-                                    to="/booking"
+                                    component={Link}
+                                    to={`/booking/${item.RoomEventID}`} 
                                     variant="contained"
-                                    sx={{ backgroundColor: '#64463c', color: '#fff' }}
+                                    sx={{ backgroundColor: '#64463c', color: '#fff', margin:"auto" }}
                                 >
                                     Đặt ngay
                                 </Button>
