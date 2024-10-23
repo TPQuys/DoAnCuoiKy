@@ -31,7 +31,7 @@ const RoomPage = () => {
                                 <p className="room-content-text">{item.Description}</p>
                                 <Button
                                     component={Link}
-                                    to="/booking"
+                                    to={`/booking/${item.RoomEventID}`} 
                                     variant="contained"
                                     sx={{ backgroundColor: '#64463c', color: '#fff', margin:"auto" }}
                                 >

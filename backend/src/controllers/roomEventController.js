@@ -57,6 +57,15 @@ const roomEventController = {
         } catch (error) {
             res.status(500).json(error);
         }
+    },
+
+    getRoomEventById: async (req, res) => {
+        try {
+            const room = await roomEventService.getRoomEventsById(req.params.id);
+            res.status(200).json(room);
+        } catch (error) {
+            res.status(500).json(error);
+        }
     }
 };
 

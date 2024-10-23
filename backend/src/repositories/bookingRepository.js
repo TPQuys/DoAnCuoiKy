@@ -1,5 +1,9 @@
 const Booking = require('../models/Booking'); // Import model Booking
-
+const Event = require('../models/Event'); // Đường dẫn tới model Event
+const Menu = require('../models/Menu'); // Đường dẫn tới model Menu
+const Food = require('../models/Food'); // Đường dẫn tới model Food
+const Drink = require('../models/Drink'); // Đường dẫn tới model Drink
+const RoomEvent = require('../models/RoomEvent');
 class BookingRepository {
     // Tạo một booking mới
     async createBooking(bookingData) {
@@ -29,7 +33,32 @@ class BookingRepository {
     async getBookingById(bookingId) {
         try {
             const booking = await Booking.findByPk(bookingId, {
-                include: ['User', 'Event'] // Bao gồm liên kết với User và Event nếu cần
+                attributes:[],
+                include: [
+                    {
+                        model:Event,
+                        attributes:["Time","TotalTable"],
+                        include: [
+                            {
+                                model: Menu,
+                                include: [
+                                    {
+                                        model: Food,
+                                        through: { attributes: ["Quantity"] }, 
+                                    },
+                                    {
+                                        model: Drink,
+                                        through: { attributes: ["Quantity"] }, 
+                                    }
+                                ]
+                            },
+                            {
+                                model:RoomEvent,
+                                attributes: ["Price"]
+                            }
+                        ]
+                    }
+                ]
             });
             if (!booking) {
                 throw new Error("Booking not found");

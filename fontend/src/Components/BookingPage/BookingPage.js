@@ -1,51 +1,68 @@
 import "./bookingPage.css";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Button from '@mui/material/Button';
 import Header from "../Header/Header";
 import Form from "./BookingForm"
 import React, { useRef, useState } from "react";
 import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
-import { useDispatch } from "react-redux"; // Import useDispatch
+import { useDispatch, useSelector } from "react-redux"; // Import useDispatch
 import { addEvent } from "../../redux/actions/eventRequest"; // Import hàm thêm sự kiện từ API
-
+import { getAllMenus } from "../../redux/actions/menuRequest";
 const HomePage = () => {
     const [selected, setSelected] = useState(null);
     const formikRef = useRef(null);
-    const dispatch = useDispatch(); 
-
+    const dispatch = useDispatch();
+    const menus = useSelector((state) => state.menus?.menus);
+    const { roomId } = useParams();
+    const rooms = useSelector((state) => state.rooms?.rooms)
+    const room = rooms.find(item => item.RoomEventID == roomId)
+    console.log(room)
     const handleSubmit = (values) => {
         console.log(values);
     }
-
     const handleSubmitHomePage = async () => {
         if (formikRef.current) {
             const formik = formikRef.current;
-    
+
             // Kiểm tra form có hợp lệ không
             const isValid = await formik.validateForm();
             formik.setTouched({
                 EventType: true,
                 TotalTable: true,
-                StartEventTime: true,
-                EndEventTime: true,
-                EventOrder: true,
-                RoomEventID: true,
+                EventDate: true, // Cập nhật trường này nếu cần
+                Time: true, // Cập nhật trường này nếu cần
             });
-    
+
             // Nếu form hợp lệ, tiếp tục
             if (isValid && Object.keys(isValid).length === 0) {
                 const formValues = formik.values; // Lấy giá trị từ formik
-    
-                const selectedMenu = menus.find(menu => menu.Name === selected);
+
+                // Lấy thông tin menu đã chọn
+                const selectedMenu = menus.find(menu => menu.MenuID === selected);
+                const foodTotalPrice = selectedMenu?.Food.reduce((total, food) => {
+                    return total + (food.UnitPrice * food.MenuFoods.Quantity);
+                }, 0);
+
+                const drinksTotalPrice = selectedMenu?.Drinks.reduce((total, drink) => {
+                    return total + (drink.UnitPrice * drink.MenuDrinks.Quantity);
+                }, 0);
+
+                const totalMenuPrice = foodTotalPrice + drinksTotalPrice;
+
+                // Tạo eventData với thông tin từ form và menu đã chọn
                 const eventData = {
-                    EventType: "Wedding", // Hoặc loại sự kiện khác
-                    TotalTable: 10, // Thay đổi số bàn theo yêu cầu
-                    EventDate: new Date(), // Thay đổi theo thời gian thực tế
-                    RoomEventID:"RE001",
+                    RoomEventID:roomId,
+                    MenuID: selected,
+                    EventType: formValues.EventType,
+                    TotalTable: formValues.TotalTable,
+                    EventDate: formValues.EventDate,
+                    Time: formValues.Time,
+                    TotalPrice: totalMenuPrice, // Thêm thông tin giá tổng
+                    // Thêm các trường khác nếu cần
                 };
-    
+
                 try {
-                    addEvent(dispatch,eventData);
+                    await addEvent(dispatch, eventData); // Chờ cho đến khi sự kiện được thêm
                 } catch (error) {
                     console.log(error.message);
                 }
@@ -54,35 +71,12 @@ const HomePage = () => {
             }
         }
     };
-    
+
+
 
     const handleSelect = (value) => {
         setSelected(value);
     };
-
-    const menus = [
-        {
-            MenuID: "menu_001",
-            Name: "Standard Wedding Menu",
-            Price: 500.00,
-            Foods: ["Grilled Chicken", "Salad", "Soup", "Steak", "Dessert"],
-            Drinks: ["Wine", "Beer", "Soft Drinks"]
-        },
-        {
-            MenuID: "menu_002",
-            Name: "Luxury Wedding Menu",
-            Price: 800.00,
-            Foods: ["Lobster", "Truffle Soup", "Caviar", "Filet Mignon", "Chocolate Lava Cake"],
-            Drinks: ["Champagne", "Cocktails", "Premium Wine"]
-        },
-        {
-            MenuID: "menu_003",
-            Name: "Conference Menu",
-            Price: 300.00,
-            Foods: ["Sandwiches", "Fruit Salad", "Cheese Platter", "Cookies", "Muffins"],
-            Drinks: ["Coffee", "Tea", "Juices"]
-        }
-    ];
 
     return (
         <main className="room-container">
@@ -91,57 +85,69 @@ const HomePage = () => {
                 <div>
                 </div>
                 <div>
-                    <div className="booking-room-name">Room name</div>
+                    <div className="booking-room-name">{room?.RoomName}</div>
                     <div className="booking-img" src="">
                         <div className="booking-room-info">
                             <div className="booking-room-info-content">
-                                <h3>content </h3>
-                                <p>content</p>
+                                <p>Chiều dài</p>
+                                <h3>{room?.HeightRoom}</h3>
                             </div>
                             <div className="booking-room-info-content">
-                                <h3>content </h3>
-                                <p>content</p>
+                                <p>Chiều rộng</p>
+                                <h3>{room?.WidthRoom}</h3>
                             </div>
                             <div className="booking-room-info-content">
-                                <h3>content </h3>
-                                <p>content</p>
+                                <p>Số bàn</p>
+                                <h3>{room?.MaxTable}</h3>
                             </div>
                             <div className="booking-room-info-content">
-                                <h3>content </h3>
-                                <p>content</p>
-                            </div>
-                            <div className="booking-room-info-content">
-                                <h3>content </h3>
-                                <p>content</p>
+                                <p>Giá</p>
+                                <h3>{room?.Price}</h3>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div>
+                    <Form ref={formikRef} handleSubmit={handleSubmit} />
+
                     <div>
                         <div className="menu-container">
-                            {menus.map((menu, index) => (
-                                <div
-                                    key={index}
-                                    className={`radio-div ${selected === menu.Name ? 'selected' : ''}`}
-                                    onClick={() => handleSelect(menu.Name)}
-                                >
-                                    <h1>{menu.Name}</h1>
-                                    <h3>{`Price: $${menu.Price}`}</h3>
-                                    <div>
-                                        <p><strong>Foods:</strong></p>
-                                        {menu.Foods.map((food, idx) => (
-                                            <p key={idx}>{food}</p>
-                                        ))}
+                            {menus.map((menu, index) => {
+                                // Tính toán giá của menu
+                                const foodTotalPrice = menu.Food.reduce((total, food) => {
+                                    return total + (food.UnitPrice * food.MenuFoods.Quantity);
+                                }, 0);
+
+                                const drinksTotalPrice = menu.Drinks.reduce((total, drink) => {
+                                    return total + (drink.UnitPrice * drink.MenuDrinks.Quantity);
+                                }, 0);
+
+                                const totalMenuPrice = foodTotalPrice + drinksTotalPrice;
+
+                                return (
+                                    <div
+                                        key={index}
+                                        className={`radio-div ${selected === menu?.MenuID ? 'selected' : ''}`}
+                                        onClick={() => handleSelect(menu?.MenuID)}
+                                    >
+                                        <h1>{menu.Name}</h1>
+                                        <h3>{`Price: $${totalMenuPrice.toFixed(0)}`}</h3> {/* Hiển thị giá của menu */}
+                                        <div>
+                                            <p><strong>Foods:</strong></p>
+                                            {menu.Food.map((food, idx) => (
+                                                <p key={idx}>{food.Name}</p>
+                                            ))}
+                                        </div>
+                                        <div>
+                                            <p><strong>Drinks:</strong></p>
+                                            {menu.Drinks.map((drink, idx) => (
+                                                <p key={idx}>{drink.Name}</p>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p><strong>Drinks:</strong></p>
-                                        {menu.Drinks.map((drink, idx) => (
-                                            <p key={idx}>{drink}</p>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
+
                         </div>
                     </div>
 
@@ -155,7 +161,6 @@ const HomePage = () => {
                     </FormGroup>
                 </div>
                 <div>
-                    <Form ref={formikRef} handleSubmit={handleSubmit} />
                     <Button
                         variant="contained"
                         sx={{ backgroundColor: '#64463c', color: '#fff' }}

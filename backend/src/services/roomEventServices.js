@@ -5,6 +5,10 @@ const roomEventService = {
         return await roomEventRepository.findAll();
     },
 
+    getRoomEventsById: async (id) => {
+        return await roomEventRepository.findById(id);
+    },
+
     createRoomEvent: async (data) => {
         const newRoomEvent = await roomEventRepository.create({
             ...data,

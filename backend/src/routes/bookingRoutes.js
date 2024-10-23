@@ -9,18 +9,18 @@ const {
 } = require('../controllers/bookingController'); // Import các hàm từ bookingController
 
 // Route thêm mới booking
-router.post('/bookings', createBooking);
+router.post('/', createBooking);
 
 // Route lấy toàn bộ booking
-router.get('/bookings', getAllBookings);
+router.get('/', getAllBookings);
 
 // Route lấy một booking theo ID
-router.get('/bookings/:id', getBookingById);
+router.get('/:id', getBookingById);
 
 // Route cập nhật booking
-router.put('/bookings/:id', updateBooking);
+router.put('/:id', updateBooking);
 
 // Route xóa booking
-router.delete('/bookings/:id', deleteBooking);
+router.delete('/:id', deleteBooking);
 
 module.exports = router;
