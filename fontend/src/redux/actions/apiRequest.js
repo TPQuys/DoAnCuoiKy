@@ -2,16 +2,16 @@ import axios from "axios";
 import { loginFailed, loginStart, loginSuccess, logOutFailed, logOutStart, logOutSuccess, registerFailed, registerStart, registerSuccess } from "../reducers/authSlice";
 import { toast } from 'react-toastify';
 
-export const loginUser = async (user, dispatch, navigate) => {
+export const loginUser = async (user, dispatch, navigate,location) => {
     dispatch(loginStart());
+    const from = sessionStorage.getItem("previousPath") || "/";
     try {
         const res = await axios.post("/v1/auth/login", user);
         dispatch(loginSuccess(res.data));
         toast.success("Đăng nhập thành công!"); // Thông báo thành công
-
         sessionStorage.setItem('user', JSON.stringify(res.data));
-
-        navigate("/");
+        navigate(from);
+        sessionStorage.removeItem("previousPath")
     } catch (error) {
         console.error("Login failed:", error.response.data);
         toast.error(error.response.data);
