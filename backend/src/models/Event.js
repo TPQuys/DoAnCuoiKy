@@ -4,7 +4,7 @@ const sequelize = require("../utils/supabase/connection");
 const RoomEvent = require("./RoomEvent");
 const Menu = require("./Menu");
 const Decore = require("./Decore");
-const EventType = require("./EventType");
+// const EventType = require("./EventType");
 
 const Event = sequelize.define('Event', {
     EventID: {
@@ -20,6 +20,10 @@ const Event = sequelize.define('Event', {
         type: DataTypes.DATE,
         allowNull: false
     },
+    EventType: {
+        type: DataTypes.ENUM('WEDDING','CONFERENCE','BIRTHDAY',"ORDER"),
+        allowNull: false
+    },
     Time:{
         type: DataTypes.ENUM('MORNING','AFTERNOON','ALLDAY'),
         allowNull: false
@@ -27,22 +31,13 @@ const Event = sequelize.define('Event', {
     Note: {
         type: DataTypes.TEXT,
         allowNull: true
-    },
-    RoomEventID: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: {
-            model: RoomEvent, 
-            key: 'RoomEventID' 
-        }
     }
+}, {
+    timestamps: false
 });
 
 RoomEvent.hasMany(Event, { foreignKey: 'RoomEventID' });
 Event.belongsTo(RoomEvent, { foreignKey: 'RoomEventID' });
-
-EventType.hasMany(Event, { foreignKey: 'EventTypeID' });
-Event.belongsTo(EventType, { foreignKey: 'EventTypeID' });
 
 Menu.hasOne(Event, { foreignKey: 'MenuID' });
 Event.belongsTo(Menu, { foreignKey: 'MenuID' });

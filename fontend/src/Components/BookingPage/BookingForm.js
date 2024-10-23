@@ -15,14 +15,13 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 // Định nghĩa schema cho validation
 const validationSchema = Yup.object().shape({
-    // EventType: Yup.string().required('Vui lòng chọn loại sự kiện'),
-    // TotalTable: Yup.number()
-    //     .required('Vui lòng nhập tổng số bàn')
-    //     .positive('Số bàn phải là số dương')
-    //     .integer('Số bàn phải là số nguyên'),
-    // EventDate: Yup.date().required('Vui lòng nhập thời gian '),
-    // EventOrder: Yup.string().required('Vui lòng nhập thứ tự sự kiện'),
-    // RoomEventID: Yup.string().required('Vui lòng nhập ID phòng sự kiện'),
+    EventType: Yup.string().required('Vui lòng chọn loại sự kiện'),
+    TotalTable: Yup.number()
+        .required('Vui lòng nhập tổng số bàn')
+        .positive('Số bàn phải là số dương')
+        .integer('Số bàn phải là số nguyên'),
+    EventDate: Yup.date().required('Vui lòng nhập thời gian bắt đầu'),
+    Time: Yup.string().required('Vui lòng chọn thời gian'),
 });
 
 const EventForm = forwardRef(({ handleSubmit }, ref) => {
@@ -30,8 +29,7 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
         EventType: '',
         TotalTable: '',
         EventDate: null,
-        EventOrder: '',
-        RoomEventID: '',
+        Time: '',
     };
 
     return (
@@ -48,7 +46,7 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
                 {({ errors, touched, setFieldValue }) => (
                     <Form>
                         <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                            <Grid item xs={12} sm={6}>
                                 <Field
                                     as={TextField}
                                     name="EventType"
@@ -58,13 +56,13 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
                                     error={touched.EventType && Boolean(errors.EventType)}
                                     helperText={touched.EventType && errors.EventType}
                                 >
-                                    <MenuItem value="Wedding">Đám Cưới</MenuItem>
-                                    <MenuItem value="Conference">Hội Nghị</MenuItem>
-                                    <MenuItem value="Other">Khác</MenuItem>
+                                    <MenuItem value="WEDDING">Đám Cưới</MenuItem>
+                                    <MenuItem value="CONFERENCE">Hội Nghị</MenuItem>
+                                    <MenuItem value="BIRTHDAY">Sinh nhật</MenuItem>
+                                    <MenuItem value="OTHER">Khác</MenuItem>
                                 </Field>
                             </Grid>
-
-                            <Grid item xs={12}>
+                            <Grid item xs={12} sm={6}>
                                 <Field
                                     as={TextField}
                                     name="TotalTable"
@@ -75,8 +73,7 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
                                     helperText={touched.TotalTable && errors.TotalTable}
                                 />
                             </Grid>
-
-                            <Grid item xs={12}>
+                            <Grid item xs={12} sm={6}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <Field
                                         component={({ field, form }) => (
@@ -100,28 +97,20 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
                                     />
                                 </LocalizationProvider>
                             </Grid>
-
-                          
-                            <Grid item xs={12}>
+                            <Grid item xs={12} sm={6}>
                                 <Field
                                     as={TextField}
-                                    name="EventOrder"
-                                    label="Thứ Tự Sự Kiện"
+                                    name="Time"
+                                    select
+                                    label="Thời gian"
                                     fullWidth
-                                    error={touched.EventOrder && Boolean(errors.EventOrder)}
-                                    helperText={touched.EventOrder && errors.EventOrder}
-                                />
-                            </Grid>
-
-                            <Grid item xs={12}>
-                                <Field
-                                    as={TextField}
-                                    name="RoomEventID"
-                                    label="ID Phòng Sự Kiện"
-                                    fullWidth
-                                    error={touched.RoomEventID && Boolean(errors.RoomEventID)}
-                                    helperText={touched.RoomEventID && errors.RoomEventID}
-                                />
+                                    error={touched.Time && Boolean(errors.Time)}
+                                    helperText={touched.Time && errors.Time}
+                                >
+                                    <MenuItem value="MORNING">Buổi sáng</MenuItem>
+                                    <MenuItem value="AFTERNOON">Buổi chiều</MenuItem>
+                                    <MenuItem value="ALLDAY">Cả ngày</MenuItem>
+                                </Field>
                             </Grid>
                         </Grid>
                     </Form>

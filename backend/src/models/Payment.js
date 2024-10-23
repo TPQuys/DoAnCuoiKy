@@ -16,15 +16,17 @@ const Payment = sequelize.define('Payment', {
 
     PaymentDate: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: true
     },
     
     PaymentMethod: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM('CREDITCARD', 'DEBITCARD', 'PAYPAL', 'BANKTRANSFER'),
         allowNull: false
     }
 });
 
+Booking.hasOne(Payment, { foreignKey: 'BookingID' });
+Payment.belongsTo(Booking, { foreignKey: 'BookingID' });
 
 
 module.exports = Payment;
