@@ -50,10 +50,36 @@ const deletePayment = async (req, res) => {
     }
 };
 
+const postZaloApi = async (req, res) => {
+    try {
+        const booking = req.body
+        console.log(booking)
+
+        const result = await PaymentService.postZaloApi(booking);
+        res.status(200).json(result);
+    } catch (error) {
+        console.log(error)
+        res.status(403).json({ message: error.message });
+    }
+};
+
+const callback = async (req, res) => {
+    try {
+        const result = await PaymentService.callback(req);
+        console.log(result)
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(403).json({ message: error.message });
+    }
+};
+
+
 module.exports = {
     createPayment,
     getAllPayments,
     getPaymentById,
     updatePayment,
-    deletePayment
+    deletePayment,
+    postZaloApi,
+    callback
 };

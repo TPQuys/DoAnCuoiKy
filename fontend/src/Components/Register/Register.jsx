@@ -23,13 +23,13 @@ const Register = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const validationSchema = Yup.object().shape({
-        email: Yup.string().email("Invalid email").required("Required"),
+        email: Yup.string().email("Email không hợp lệ").required("Hãy nhập email"),
         password: Yup.string()
-            .required("Required")
-            .min(6, "Password must be at least 6 characters"),
+            .required("Hãy nhập mật khẩu")
+            .min(6, "Mật khẩu phải ít nhất 6 kí tự"),
         confirmPassword: Yup.string()
-            .oneOf([Yup.ref('password'), null], "Passwords must match")
-            .required("Required"),
+            .oneOf([Yup.ref('password'), null], "Mật khẩu không khớp")
+            .required("Hãy nhập xác nhận mật khẩu"),
     });
 
     const handleRegister = (values) => {
@@ -55,7 +55,7 @@ const Register = () => {
     return (
         <section className="wrap-register-container">
             <div className="register-container">
-                <div className="register-title text-center mb-4">Sign up</div>
+                <div className="register-title text-center mb-4">Đăng kí</div>
                 <div className="container">
                     <Formik
                         initialValues={{ email: "", password: "", confirmPassword: "" }}
@@ -85,7 +85,7 @@ const Register = () => {
                                         fullWidth
                                         error={touched.password && Boolean(errors.password)}
                                     >
-                                        <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                                        <InputLabel htmlFor="outlined-adornment-password">Mật khẩu</InputLabel>
                                         <OutlinedInput
                                             id="outlined-adornment-password"
                                             type={showPassword ? 'text' : 'password'}
@@ -116,7 +116,7 @@ const Register = () => {
                                         fullWidth
                                         error={touched.confirmPassword && Boolean(errors.confirmPassword)}
                                     >
-                                        <InputLabel htmlFor="outlined-adornment-confirm-password">Confirm Password</InputLabel>
+                                        <InputLabel htmlFor="outlined-adornment-confirm-password">Xác nhận mật khẩu</InputLabel>
                                         <OutlinedInput
                                             id="outlined-adornment-confirm-password"
                                             type={showConfirmPassword ? 'text' : 'password'}
@@ -142,7 +142,7 @@ const Register = () => {
                                 </div>
 
                                 <Button variant="contained" type="submit" fullWidth sx={{background:"#81695e"}}>
-                                    Create account
+                                    Tạo tài khoản
                                 </Button>
                             </Form>
                         )}
