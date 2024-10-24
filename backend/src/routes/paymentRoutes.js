@@ -5,11 +5,17 @@ const {
     getAllPayments,
     getPaymentById,
     updatePayment,
-    deletePayment
+    deletePayment,
+    postZaloApi,
 } = require('../controllers/paymentController'); // Import các hàm từ paymentController
+const { callback } = require('../services/paymentService');
 
 // Route thêm mới payment
 router.post('/', createPayment);
+
+router.post('/zalopay', postZaloApi);
+
+router.post('/callback', callback);
 
 // Route lấy toàn bộ payment
 router.get('/', getAllPayments);

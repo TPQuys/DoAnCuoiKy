@@ -2,7 +2,10 @@ import axios from "axios";
 import {
     addPaymentStart, addPaymentSuccess, addPaymentFailed,
     updatePaymentStart, updatePaymentSuccess, updatePaymentFailed,
-    deletePaymentStart, deletePaymentSuccess, deletePaymentFailed
+    deletePaymentStart, deletePaymentSuccess, deletePaymentFailed,
+    getPaymentsStart,
+    getPaymentsSuccess,
+    getPaymentsFailed
 } from "../reducers/paymentSlice";
 import { toast } from "react-toastify";
 import { createAxios } from '../../createInstance'; // Import hàm createAxios
@@ -15,12 +18,12 @@ export const addPayment = async (dispatch, paymentData) => {
     try {
         // const res = await axiosJWT.post("/v1/payment", paymentData);
         const res = await axios.post("/v1/payment", paymentData);
+        console.log(res.data)
         dispatch(addPaymentSuccess(res.data));
-        toast.success("Thêm thanh toán thành công!");
         return res.data
     } catch (error) {
         console.error("Thêm thanh toán thất bại:", error);
-        toast.error("Không thể thêm thanh toán!");
+        toast.error("Không thể đặt phòng!");
         dispatch(addPaymentFailed());
     }
 };
@@ -54,5 +57,22 @@ export const deletePayment = async (dispatch, paymentId) => {
         console.error("Xóa thanh toán thất bại:", error);
         toast.error("Không thể xóa thanh toán!");
         dispatch(deletePaymentFailed());
+    }
+};
+
+// Hàm xóa payment
+export const PostZaloApi = async (dispatch, booking) => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    dispatch(addPaymentStart());
+    let axiosJWT = createAxios(user, dispatch, addPaymentSuccess);
+    try {
+        // await axiosJWT.delete(`/v1/payment/${paymentId}`);
+        const res = await axios.post("/v1/payment/zalopay",booking)
+        dispatch(addPaymentSuccess());
+        return res;
+    } catch (error) {
+        console.error("Xóa thanh toán thất bại:", error);
+        toast.error("Không thể xóa thanh toán!");
+        dispatch(addPaymentFailed());
     }
 };

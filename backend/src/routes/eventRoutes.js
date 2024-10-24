@@ -4,7 +4,7 @@ const middlewareController = require("../middlewares/middlewareController");
 const router = express.Router();
 
 // Route để tạo sự kiện mới
-router.post('/', middlewareController.verifyToken, eventController.createEvent);
+router.post('/', eventController.createEvent);
 
 // Route để cập nhật sự kiện
 router.put('/:id', middlewareController.verifyToken, eventController.updateEvent);
