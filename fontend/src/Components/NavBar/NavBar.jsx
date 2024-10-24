@@ -12,7 +12,7 @@ import { GiFlowers } from "react-icons/gi";
 
 const NavBar = () => {
   const user = useSelector((state) => state.auth.login.currentUser);
-  const accessToken = user?.accessToken;
+  const [accessToken,setAccessToken] = useState(user?.accessToken);
   const id = user?._id;
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -23,6 +23,11 @@ const NavBar = () => {
     logOut(dispatch, id, navigate, accessToken, axiosJWT);
   };
 
+  useEffect(()=>{
+    if(sessionStorage.getItem("user")?.accessToken)
+    setAccessToken("")
+    console.log("invail user")
+  },[sessionStorage])
 
   useEffect(() => {
     const handleScroll = () => {

@@ -11,7 +11,7 @@ const RoomPage = () => {
 
     return (
         <main className="room-container">
-            <Header background="https://www.forumhotelcharlottesville.com/images/1700-960/washington-5-e923ac60.jpg" title="Room" />
+            <Header background="https://www.forumhotelcharlottesville.com/images/1700-960/washington-5-e923ac60.jpg" title="NHÀ HÀNG" />
             <div className="room-body">
                 {rooms.map((item) => (
                     <div className="room-content-box" key={item.RoomEventID}>
@@ -38,7 +38,7 @@ const RoomPage = () => {
                                     Đặt ngay
                                 </Button>
                             </div>
-                            <img src="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/home_lobby.jpeg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21lX2xvYmJ5LmpwZWciLCJpYXQiOjE3Mjc4OTE0NTYsImV4cCI6MTc1OTQyNzQ1Nn0.k-RnOmYq9JeJSMToDeYN-ztbswvpWrf__GYNe35hDA0&t=2024-10-02T17%3A50%3A55.704Z" className="room-content-img" alt="img1" />
+                            <img src={item.RoomImage} className="room-content-img" alt="img1" />
                         </div>
                     </div>
                 ))}

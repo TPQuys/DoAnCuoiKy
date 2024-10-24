@@ -36,6 +36,10 @@ const RoomEvent = sequelize.define('RoomEvent', {
         type: DataTypes.TEXT,
         allowNull: true,
     },
+    RoomImage: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    }
 },{
     timestamps: false 
 });

@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../utils/supabase/connection");
 const Booking = require("./Booking"); 
 
@@ -17,6 +17,15 @@ const Payment = sequelize.define('Payment', {
     PaymentDate: {
         type: DataTypes.DATE,
         allowNull: true
+    },
+
+   BookingID: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: Booking, 
+            key: 'BookingID'
+        }
     },
     
     PaymentMethod: {

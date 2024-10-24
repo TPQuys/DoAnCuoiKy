@@ -18,21 +18,22 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [isDisable,setIsDisable] = useState(false)
     const [showPassword, setShowPassword] = useState(false);
-
-
     const validationSchema = Yup.object().shape({
-        email: Yup.string().email("Invalid email").required("Required"),
-        password: Yup.string().required("Required"),
+        email: Yup.string().email("Invalid email").required("Hãy nhập email"),
+        password: Yup.string().required("Hãy nhập mật khẩu"),
     });
 
     const handleLogin = (values) => {
-        const newUser = {
-            email: values.email,
-            password: values.password,
+        setIsDisable(true)
+            const newUser = {
+                email: values.email,
+                password: values.password,
+            };
+            loginUser(newUser, dispatch, navigate);
+        setIsDisable(false)
         };
-        loginUser(newUser, dispatch, navigate);
-    };
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -45,7 +46,7 @@ const Login = () => {
     return (
         <section className="wrap-login-container">
             <div className="login-container">
-            <div className="login-title text-center mb-4">Log in</div>
+            <div className="login-title text-center mb-4">Đăng nhập</div>
             <div className="container">
                 <Formik
                     initialValues={{ email: "", password: "" }}
@@ -75,7 +76,7 @@ const Login = () => {
                                     fullWidth
                                     error={touched.password && Boolean(errors.password)}
                                 >
-                                    <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                                    <InputLabel htmlFor="outlined-adornment-password">Mật Khẩu</InputLabel>
                                     <OutlinedInput
                                         id="outlined-adornment-password"
                                         type={showPassword ? 'text' : 'password'}
@@ -92,7 +93,7 @@ const Login = () => {
                                                 </IconButton>
                                             </InputAdornment>
                                         }
-                                        label="Password"
+                                        label="Mật khẩu"
                                     />
                                     {touched.password && errors.password && (
                                         <div className="text-danger">{errors.password}</div>
@@ -100,14 +101,20 @@ const Login = () => {
                                 </FormControl>
                             </div>
 
-                            <Button variant="contained" type="submit" sx={{background:"#81695e"}} fullWidth>
-                                Continue
+                            <Button 
+                            variant="contained" 
+                            type="submit" 
+                            sx={{background:"#81695e"}} 
+                            fullWidth
+                            disabled={isDisable}
+                            >
+                                Đăng nhập
                             </Button>
                         </Form>
                     )}
                 </Formik>
-                <div className="text-center mt-3">Don't have an account yet?</div>
-                <Link className="login-register-link" to="/register">Register one for free</Link>
+                <div className="text-center mt-3">Chưa có tài khoản?</div>
+                <Link className="login-register-link" to="/register">Đăng kí miễn phí ngay</Link>
             </div>
             </div>
         </section>
