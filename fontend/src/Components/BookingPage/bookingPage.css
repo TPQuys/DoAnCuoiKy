@@ -6,6 +6,7 @@
     align-content: center;
     color: #64463c;
 }
+
 .booking-room-info {
     background-color: white;
     border: 1px solid grey;
@@ -17,17 +18,20 @@
     justify-content: space-around;
     align-content: center;
 }
+
 .booking-room-info-content {
     border-right: 2px solid lightgrey;
-    flex:1;
+    flex: 1;
 }
+
 .booking-img {
     width: 100%;
     height: 30vw;
     background-size: cover;
     background-position: center;
-    background-image: url("https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/home_lobby.jpeg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21lX2xvYmJ5LmpwZWciLCJpYXQiOjE3Mjc4OTE0NTYsImV4cCI6MTc1OTQyNzQ1Nn0.k-RnOmYq9JeJSMToDeYN-ztbswvpWrf__GYNe35hDA0&t=2024-10-02T17%3A50%3A55.704Z");
+    /* background-image: url("https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/home_lobby.jpeg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21lX2xvYmJ5LmpwZWciLCJpYXQiOjE3Mjc4OTE0NTYsImV4cCI6MTc1OTQyNzQ1Nn0.k-RnOmYq9JeJSMToDeYN-ztbswvpWrf__GYNe35hDA0&t=2024-10-02T17%3A50%3A55.704Z"); */
 }
+
 .menu-container {
     display: flex;
     /* flex-direction: column; */
@@ -54,4 +58,9 @@
 
 .booking-decore-container {
     display: inline-flex;
+}
+
+.booking-link {
+    color: rgb(195, 0, 255) !important;
+    background-color: #fafaeb;
 }

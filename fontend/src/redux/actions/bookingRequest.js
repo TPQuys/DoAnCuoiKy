@@ -2,27 +2,45 @@ import axios from "axios";
 import {
     addBookingStart, addBookingSuccess, addBookingFailed,
     updateBookingStart, updateBookingSuccess, updateBookingFailed,
-    deleteBookingStart, deleteBookingSuccess, deleteBookingFailed
+    deleteBookingStart, deleteBookingSuccess, deleteBookingFailed,
+    getBookingsSuccess,
+    getBookingsStart,
+    getBookingsFailed
 } from "../reducers/bookingSlice";
 import { toast } from "react-toastify";
 import { createAxios } from '../../createInstance'; // Import hàm createAxios
 
+
+// Hàm lấy booking theo id
+export const getBookingById = async (dispatch, bookingId) => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    dispatch(getBookingsStart());
+    let axiosJWT = createAxios(user, dispatch, getBookingsSuccess);
+    try {
+        const res = await axios.get(`/v1/booking/${bookingId}`);
+        // const res = await axiosJWT.get(`/v1/booking/${bookingId}`);
+        if (res) {
+            dispatch(getBookingsSuccess(bookingId));
+            return res
+        }
+    } catch (error) {
+        console.error("Xóa booking thất bại:", error);
+        toast.error("Không thể xóa booking!");
+        dispatch(getBookingsFailed());
+    }
+};
+
+
 // Hàm thêm booking
 export const addBooking = async (dispatch, bookingData) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
-    dispatch(addBookingStart());
     let axiosJWT = createAxios(user, dispatch, addBookingSuccess);
     try {
-        // const res = await axiosJWT.post("/v1/booking", bookingData);
         const res = await axios.post("/v1/booking", bookingData);
-        
-        dispatch(addBookingSuccess(res.data));
-        toast.success("Thêm booking thành công!");
         return res.data
     } catch (error) {
         console.error("Thêm booking thất bại:", error);
-        toast.error("Không thể thêm booking!");
-        dispatch(addBookingFailed());
+        toast.error("Không đặt phòng!");
     }
 };
 

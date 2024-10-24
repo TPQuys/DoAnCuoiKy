@@ -22,6 +22,7 @@ const validationSchema = Yup.object().shape({
         .integer('Số bàn phải là số nguyên'),
     EventDate: Yup.date().required('Vui lòng nhập thời gian bắt đầu'),
     Time: Yup.string().required('Vui lòng chọn thời gian'),
+    Note: Yup.string() 
 });
 
 const EventForm = forwardRef(({ handleSubmit }, ref) => {
@@ -30,6 +31,7 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
         TotalTable: '',
         EventDate: null,
         Time: '',
+        Note: '',
     };
 
     return (
@@ -59,7 +61,7 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
                                     <MenuItem value="WEDDING">Đám Cưới</MenuItem>
                                     <MenuItem value="CONFERENCE">Hội Nghị</MenuItem>
                                     <MenuItem value="BIRTHDAY">Sinh nhật</MenuItem>
-                                    <MenuItem value="OTHER">Khác</MenuItem>
+                                    <MenuItem value="ORTHER">Khác</MenuItem>
                                 </Field>
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -75,26 +77,22 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <Field
-                                        component={({ field, form }) => (
+                                    <Field name="EventDate">
+                                        {({ field }) => (
                                             <DatePicker
+                                                sx={{ width: "100%" }}
                                                 label="Thời Gian Bắt Đầu"
                                                 value={field.value}
-                                                onChange={(value) => {
-                                                    setFieldValue(field.name, value);
+                                                slotProps={{
+                                                    textField: {
+                                                        error: touched.EventDate && Boolean(errors.EventDate),
+                                                        helperText: touched.EventDate && errors.EventDate
+                                                    },
                                                 }}
-                                                renderInput={(params) => (
-                                                    <TextField
-                                                        {...params}
-                                                        error={touched.EventDate && Boolean(errors.EventDate)}
-                                                        helperText={touched.EventDate && errors.EventDate}
-                                                        fullWidth
-                                                    />
-                                                )}
+                                                onChange={(value) => setFieldValue(field.name, value)}
                                             />
                                         )}
-                                        name="EventDate"
-                                    />
+                                    </Field>
                                 </LocalizationProvider>
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -111,6 +109,18 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
                                     <MenuItem value="AFTERNOON">Buổi chiều</MenuItem>
                                     <MenuItem value="ALLDAY">Cả ngày</MenuItem>
                                 </Field>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Field
+                                    as={TextField}
+                                    name="Note"
+                                    label="Ghi chú"
+                                    multiline
+                                    rows={4}
+                                    fullWidth
+                                    error={touched.Note && Boolean(errors.Note)}
+                                    helperText={touched.Note && errors.Note}
+                                />
                             </Grid>
                         </Grid>
                     </Form>

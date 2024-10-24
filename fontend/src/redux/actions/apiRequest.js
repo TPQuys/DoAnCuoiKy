@@ -13,8 +13,17 @@ export const loginUser = async (user, dispatch, navigate,location) => {
         navigate(from);
         sessionStorage.removeItem("previousPath")
     } catch (error) {
+        console.log(error.response.data?.message)
+        if(error.response.data?.message==="Email not confirmed"){
+            toast.error("Email chưa được xác thực");
+        }
+        if(error.response.data?.message==="Wrong username"){
+            toast.error("Tài khoản không tồn tại");
+        }
+        if(error.response.data?.message==="Wrong password"){
+            toast.error("Mật khẩu không chính xác");
+        }
         console.error("Login failed:", error.response.data);
-        toast.error(error.response.data);
         dispatch(loginFailed());
     }
 };

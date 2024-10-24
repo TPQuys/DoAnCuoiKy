@@ -1,24 +1,26 @@
 import "./bookingPage.css";
-import { Link, useParams } from "react-router-dom";
+import { Link,  useParams } from "react-router-dom";
 import Button from '@mui/material/Button';
 import Header from "../Header/Header";
-import Form from "./BookingForm"
+import Form from "./component/BookingForm"
 import React, { useRef, useState } from "react";
 import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch
 import { addEvent } from "../../redux/actions/eventRequest"; // Import hàm thêm sự kiện từ API
-import { getAllMenus } from "../../redux/actions/menuRequest";
+import { toast } from "react-toastify";
+import { addBooking } from "../../redux/actions/bookingRequest";
 const HomePage = () => {
     const [selected, setSelected] = useState(null);
+    const [isDisabled, setIsDisabled] = useState(false);
+    const [bookingSuccess,setBookingSuccess] = useState(false)
     const formikRef = useRef(null);
+    const { roomId } = useParams();
     const dispatch = useDispatch();
     const menus = useSelector((state) => state.menus?.menus);
-    const { roomId } = useParams();
     const rooms = useSelector((state) => state.rooms?.rooms)
     const room = rooms.find(item => item.RoomEventID == roomId)
-    console.log(room)
+    const user = useSelector((state) => state.auth.login.currentUser)
     const handleSubmit = (values) => {
-        console.log(values);
     }
     const handleSubmitHomePage = async () => {
         if (formikRef.current) {
@@ -29,13 +31,13 @@ const HomePage = () => {
             formik.setTouched({
                 EventType: true,
                 TotalTable: true,
-                EventDate: true, // Cập nhật trường này nếu cần
-                Time: true, // Cập nhật trường này nếu cần
+                EventDate: true,
+                Time: true,
+                Note: true,
             });
 
-            // Nếu form hợp lệ, tiếp tục
             if (isValid && Object.keys(isValid).length === 0) {
-                const formValues = formik.values; // Lấy giá trị từ formik
+                const formValues = formik.values;
 
                 // Lấy thông tin menu đã chọn
                 const selectedMenu = menus.find(menu => menu.MenuID === selected);
@@ -51,28 +53,47 @@ const HomePage = () => {
 
                 // Tạo eventData với thông tin từ form và menu đã chọn
                 const eventData = {
-                    RoomEventID:roomId,
+                    RoomEventID: roomId,
                     MenuID: selected,
                     EventType: formValues.EventType,
                     TotalTable: formValues.TotalTable,
                     EventDate: formValues.EventDate,
                     Time: formValues.Time,
-                    TotalPrice: totalMenuPrice, // Thêm thông tin giá tổng
+                    TotalPrice: totalMenuPrice,
+                    Note: formValues.Note
+                    // Thêm thông tin giá tổng
                     // Thêm các trường khác nếu cần
                 };
 
+                console.log(eventData)
+
                 try {
-                    await addEvent(dispatch, eventData); // Chờ cho đến khi sự kiện được thêm
+                    setIsDisabled(true);
+                    const newEvent = await addEvent(dispatch, eventData);
+                    if (newEvent && user) {
+                        const newBooking = await addBooking(dispatch,
+                            {
+                                EventID: newEvent.EventID,
+                                UserID: user.user.id
+                            }
+                        )
+                        if (newBooking) {
+                        setBookingSuccess(true)
+                            sessionStorage.setItem("booking",JSON.stringify(newBooking))
+                        }
+                    }
+                    else {
+                        console.log("invaid user")
+                    }
                 } catch (error) {
                     console.log(error.message);
                 }
             } else {
-                console.log("Form không hợp lệ:", isValid);
+                toast.info("Form không hợp lệ:", isValid);
             }
         }
+        setIsDisabled(false);
     };
-
-
 
     const handleSelect = (value) => {
         setSelected(value);
@@ -80,13 +101,15 @@ const HomePage = () => {
 
     return (
         <main className="room-container">
-            <Header background="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/homeheader.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21laGVhZGVyLmpwZyIsImlhdCI6MTcyNzYxODE4OSwiZXhwIjoxNzU5MTU0MTg5fQ.QU5J1wJV043dbnA6WzcnrIvAVUFGtf3Xc7QCsdIPvR8&t=2024-09-29T13%3A56%3A29.431Z" title="Room" />
+            <Header background="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/homeheader.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21laGVhZGVyLmpwZyIsImlhdCI6MTcyNzYxODE4OSwiZXhwIjoxNzU5MTU0MTg5fQ.QU5J1wJV043dbnA6WzcnrIvAVUFGtf3Xc7QCsdIPvR8&t=2024-09-29T13%3A56%3A29.431Z" title="ĐẶT CHỖ" />
             <div className="room-body">
                 <div>
                 </div>
                 <div>
                     <div className="booking-room-name">{room?.RoomName}</div>
-                    <div className="booking-img" src="">
+                    <div className="booking-img" style={{
+                        backgroundImage: `url(${room?.RoomImage})`,
+                    }}>
                         <div className="booking-room-info">
                             <div className="booking-room-info-content">
                                 <p>Chiều dài</p>
@@ -133,15 +156,21 @@ const HomePage = () => {
                                         <h1>{menu.Name}</h1>
                                         <h3>{`Price: $${totalMenuPrice.toFixed(0)}`}</h3> {/* Hiển thị giá của menu */}
                                         <div>
-                                            <p><strong>Foods:</strong></p>
+                                            <strong>Foods:</strong>
                                             {menu.Food.map((food, idx) => (
-                                                <p key={idx}>{food.Name}</p>
+                                                <div key={idx} className='menu-item'>
+                                                    <span >{food.Name}</span>
+                                                    {/* <span >{food.UnitPrice}</span> */}
+                                                </div>
                                             ))}
                                         </div>
                                         <div>
-                                            <p><strong>Drinks:</strong></p>
+                                            <strong>Drinks:</strong>
                                             {menu.Drinks.map((drink, idx) => (
-                                                <p key={idx}>{drink.Name}</p>
+                                                <div key={idx} className='menu-item'>
+                                                    <span >{drink.Name}</span>
+                                                    {/* <span >{drink.UnitPrice}</span> */}
+                                                </div>
                                             ))}
                                         </div>
                                     </div>
@@ -161,13 +190,18 @@ const HomePage = () => {
                     </FormGroup>
                 </div>
                 <div>
+                    {bookingSuccess ?
+                        <Link className="booking-link" to={"/payment"}>Đặt thành công, đến trang thanh toán </Link>
+                        :
                     <Button
                         variant="contained"
                         sx={{ backgroundColor: '#64463c', color: '#fff' }}
-                        onClick={handleSubmitHomePage} // Gọi hàm submit của EventForm từ đây
+                        onClick={handleSubmitHomePage}
+                        disabled={isDisabled}
                     >
                         Đặt ngay
                     </Button>
+                    }
                 </div>
             </div>
         </main>
@@ -175,3 +209,15 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};

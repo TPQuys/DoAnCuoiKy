@@ -4,6 +4,7 @@ const Menu = require('../models/Menu'); // Đường dẫn tới model Menu
 const Food = require('../models/Food'); // Đường dẫn tới model Food
 const Drink = require('../models/Drink'); // Đường dẫn tới model Drink
 const RoomEvent = require('../models/RoomEvent');
+const Payment = require('../models/Payment')
 class BookingRepository {
     // Tạo một booking mới
     async createBooking(bookingData) {
@@ -33,11 +34,10 @@ class BookingRepository {
     async getBookingById(bookingId) {
         try {
             const booking = await Booking.findByPk(bookingId, {
-                attributes:[],
+                attributes:["BookingID"],
                 include: [
                     {
                         model:Event,
-                        attributes:["Time","TotalTable"],
                         include: [
                             {
                                 model: Menu,
@@ -54,9 +54,11 @@ class BookingRepository {
                             },
                             {
                                 model:RoomEvent,
-                                attributes: ["Price"]
                             }
                         ]
+                    },
+                    {
+                        model:Payment,
                     }
                 ]
             });
