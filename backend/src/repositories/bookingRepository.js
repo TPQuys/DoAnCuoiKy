@@ -4,7 +4,8 @@ const Menu = require('../models/Menu'); // Đường dẫn tới model Menu
 const Food = require('../models/Food'); // Đường dẫn tới model Food
 const Drink = require('../models/Drink'); // Đường dẫn tới model Drink
 const RoomEvent = require('../models/RoomEvent');
-const Payment = require('../models/Payment')
+const Payment = require('../models/Payment');
+const User = require('../models/User');
 class BookingRepository {
     // Tạo một booking mới
     async createBooking(bookingData) {
@@ -59,6 +60,10 @@ class BookingRepository {
                     },
                     {
                         model:Payment,
+                    },
+                    {
+                        model:User,
+                        attributes : ["email"]
                     }
                 ]
             });
