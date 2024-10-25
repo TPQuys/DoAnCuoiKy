@@ -15,7 +15,7 @@ export default configureStore({
         rooms: roomReducer,
         events: eventReducer,
         menus: menuReducer,
-        booking: bookingReducer,
+        bookings: bookingReducer,
         payment: paymentReducer,
     },
 });

@@ -21,8 +21,8 @@ export const addEvent = async (dispatch, eventData) => {
         toast.success("Thêm sự kiện thành công!");
         return res.data
     } catch (error) {
-        console.error("Thêm sự kiện thất bại:", error);
-        toast.error("Không thể thêm sự kiện!");
+        console.error("Thêm sự kiện thất bại:", error.response.data.message);
+        toast.error(error.response.data.message);
         dispatch(addEventFailed());
     }
 };

@@ -6,10 +6,12 @@ import Register from "../Register/Register";
 import Room from "../Rooms/Room";
 import BookingPage from "../BookingPage/BookingPage";
 import PaymentPage from "../Payment/PaymentPage";
+import UserPage from "../User/UserPage";
 import Footer from "../Footer/Footer"
 import { toast } from "react-toastify";
 import { getAllRooms } from "../../redux/actions/roomRequest";
 import { getAllMenus } from "../../redux/actions/menuRequest";
+import { getBookingByUser } from "../../redux/actions/bookingRequest";
 import { useDispatch } from "react-redux";
 
 const AppRoutes = () => {
@@ -22,6 +24,7 @@ const AppRoutes = () => {
     useEffect(() => {
         getAllRooms(dispatch);
         getAllMenus(dispatch)
+        getBookingByUser(dispatch)
     }, []);
 
     useEffect(() => {
@@ -43,6 +46,7 @@ const AppRoutes = () => {
                     <Route path="/room" element={<Room />} />
                     <Route path="/booking/:roomId" element={<BookingPage />} />
                     <Route path="/payment" element={<PaymentPage />} />
+                    <Route path="/user" element={<UserPage />} />
                 </Routes>
             </div>
             {location.pathname !== "/login" && location.pathname !== "/register" && <Footer />}

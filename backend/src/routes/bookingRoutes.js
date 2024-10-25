@@ -5,7 +5,8 @@ const {
     getAllBookings,
     getBookingById,
     updateBooking,
-    deleteBooking
+    deleteBooking,
+    getBookingByUser
 } = require('../controllers/bookingController'); // Import các hàm từ bookingController
 
 // Route thêm mới booking
@@ -16,6 +17,8 @@ router.get('/', getAllBookings);
 
 // Route lấy một booking theo ID
 router.get('/:id', getBookingById);
+
+router.get('/user/:UserID', getBookingByUser);
 
 // Route cập nhật booking
 router.put('/:id', updateBooking);

@@ -54,7 +54,7 @@ class PaymentService {
             redirecturl: "http://localhost:3000/payment"
         };
         if (Amount && BookingID && url) {
-            const items = [booking];
+            const items = [BookingID];
             const transID = Math.floor(Math.random() * 1000000);
             const order = {
                 app_id: config.app_id,
@@ -106,10 +106,9 @@ class PaymentService {
                         Amount:dataJson.amount,
                         PaymentDate:new Date(),
                         PaymentMethod:"BANKTRANSFER",
-                        BookingID:booking.BookingID
+                        BookingID:booking
                     }
                     const newPayment = await PaymentRepository.createPayment(payment)
-                    console.log(newPayment)
                 }
 
                 result.return_code = 1;

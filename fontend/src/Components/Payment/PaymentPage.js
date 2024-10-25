@@ -27,7 +27,10 @@ const PaymentPage = () => {
     const handlePayment = async () => {
         if (newBooking) {
             const zaloApi = await PostZaloApi(dispatch, newBooking)
+            console.log(zaloApi)
+            if(zaloApi) {
             window.location.href = zaloApi.data.order_url;
+            }
         }
     }
 
@@ -111,10 +114,10 @@ const PaymentPage = () => {
                 </div>
                 <div className='flex'>
                     <div className='payment-menu'>
-                        <h3 className='menu-title'>Menu</h3>
+                        <h3 className=''>Menu</h3>
                         <h6>Tổng giá: {getMenuPrice(event.Menu)} VND/Bàn</h6>
                         <div>
-                            <div className='menu-item'>
+                            <div className=''>
                                 <strong>Món ăn</strong>
                                 {/* <strong>Số lượng</strong> */}
                             </div>
@@ -126,7 +129,7 @@ const PaymentPage = () => {
                             ))}
                         </div>
                         <div>
-                            <div className='menu-item'>
+                            <div className=''>
                                 <strong>Đồ uống</strong>
                                 {/* <strong>Số lượng</strong> */}
                             </div>

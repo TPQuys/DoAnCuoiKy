@@ -26,7 +26,7 @@ const roomSlice = createSlice({
         },
         addRoomSuccess: (state, action) => {
             state.isFetching = false;
-            state.rooms.push(action.payload); // Thêm phòng mới vào danh sách
+            state.rooms.push(action.payload); 
         },
         addRoomFailed: (state) => {
             state.isFetching = false;

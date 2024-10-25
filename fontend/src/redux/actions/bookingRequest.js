@@ -20,7 +20,6 @@ export const getBookingById = async (dispatch, bookingId) => {
         const res = await axios.get(`/v1/booking/${bookingId}`);
         // const res = await axiosJWT.get(`/v1/booking/${bookingId}`);
         if (res) {
-            dispatch(getBookingsSuccess(bookingId));
             return res
         }
     } catch (error) {
@@ -30,17 +29,39 @@ export const getBookingById = async (dispatch, bookingId) => {
     }
 };
 
+// Hàm lấy booking theo user
+export const getBookingByUser = async (dispatch) => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    dispatch(getBookingsStart());
+    console.log(user)
+    if (user) {
+        let axiosJWT = createAxios(user, dispatch, getBookingsSuccess);
+        try {
+            const res = await axios.get(`/v1/booking/user/${user.user.id}`);
+            console.log(res.data);
+            dispatch(getBookingsSuccess(res.data));
+        } catch (error) {
+            console.error("Xóa booking thất bại:", error);
+            toast.error("Không thể xóa booking!");
+            dispatch(getBookingsFailed());
+        }
+    }
+};
+
 
 // Hàm thêm booking
 export const addBooking = async (dispatch, bookingData) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
+    dispatch(addBookingStart());
     let axiosJWT = createAxios(user, dispatch, addBookingSuccess);
     try {
         const res = await axios.post("/v1/booking", bookingData);
+        dispatch(addBookingSuccess(res.data));
         return res.data
     } catch (error) {
         console.error("Thêm booking thất bại:", error);
         toast.error("Không đặt phòng!");
+        dispatch(addBookingFailed());
     }
 };
 
