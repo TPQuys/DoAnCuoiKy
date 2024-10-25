@@ -65,8 +65,6 @@ const HomePage = () => {
                     // Thêm các trường khác nếu cần
                 };
 
-                console.log(eventData)
-
                 try {
                     setIsDisabled(true);
                     const newEvent = await addEvent(dispatch, eventData);
@@ -78,8 +76,9 @@ const HomePage = () => {
                             }
                         )
                         if (newBooking) {
+                            console.log(newBooking)
                         setBookingSuccess(true)
-                            sessionStorage.setItem("booking",JSON.stringify(newBooking))
+                        sessionStorage.setItem("booking",JSON.stringify(newBooking))
                         }
                     }
                     else {
@@ -101,7 +100,7 @@ const HomePage = () => {
 
     return (
         <main className="room-container">
-            <Header background="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/homeheader.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21laGVhZGVyLmpwZyIsImlhdCI6MTcyNzYxODE4OSwiZXhwIjoxNzU5MTU0MTg5fQ.QU5J1wJV043dbnA6WzcnrIvAVUFGtf3Xc7QCsdIPvR8&t=2024-09-29T13%3A56%3A29.431Z" title="ĐẶT CHỖ" />
+            <Header background="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/room-header.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9yb29tLWhlYWRlci5qcGciLCJpYXQiOjE3Mjk4NjU2NDQsImV4cCI6MTc2MTQwMTY0NH0.X1m9vEDzQi-PR17kKxJDvoxcfBTjNmimrzGOFC_F6Eg&t=2024-10-25T14%3A14%3A02.614Z" title="ĐẶT CHỖ" />
             <div className="room-body">
                 <div>
                     <div className="booking-room-name">{room?.RoomName}</div>
@@ -151,7 +150,7 @@ const HomePage = () => {
                                         onClick={() => handleSelect(menu?.MenuID)}
                                     >
                                         <h1>{menu.Name}</h1>
-                                        <h3>{`Price: $${totalMenuPrice.toFixed(0)}`}</h3> {/* Hiển thị giá của menu */}
+                                        <h3>{`Giá: ${totalMenuPrice.toFixed(0)} VND/bàn`}</h3> {/* Hiển thị giá của menu */}
                                         <div>
                                             <strong>Foods:</strong>
                                             {menu.Food.map((food, idx) => (

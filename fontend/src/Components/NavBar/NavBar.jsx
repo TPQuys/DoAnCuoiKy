@@ -16,18 +16,12 @@ const NavBar = () => {
   const id = user?._id;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  let axiosJWT = createAxios(user, dispatch, logOutSuccess);
+  let axiosJWT = createAxios(user);
   const [isScrolled, setIsScrolled] = useState(false);
 
   const handleLogOut = () => {
     logOut(dispatch, id, navigate, accessToken, axiosJWT);
   };
-
-  useEffect(()=>{
-    if(sessionStorage.getItem("user")?.accessToken)
-    setAccessToken("")
-    console.log("invail user")
-  },[sessionStorage])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,18 +51,18 @@ const NavBar = () => {
           <Link to="/event/other">Sự kiện khác</Link>
         </div>
       </div>
-      <div className="navbar-dropdown">
+      {/* <div className="navbar-dropdown">
         <Link to="/food" className="navbar-home"><FaUtensils /> Thực đơn </Link>
         <div className="dropdown-menu">
           <Link to="/food/main-course">Món chính</Link>
           <Link to="/food/side-dish">Món phụ</Link>
           <Link to="/food/drinks">Đồ uống</Link>
         </div>
-      </div>
-      <Link to="/decore" className="navbar-home"><GiFlowers /> Trang trí </Link>
-      <Link to="/room" className="navbar-home"><FaTag /> Đặt phòng </Link>
-      <Link to="/discount" className="navbar-home"><FaTag /> Ưu đãi </Link>
-      <Link to="/news" className="navbar-home"><FaNewspaper /> Tin tức </Link>
+      </div> */}
+      {/* <Link to="/decore" className="navbar-home"><GiFlowers /> Trang trí </Link> */}
+      <Link to="/room" className="navbar-home"><FaTag /> Đặt nhà hàng </Link>
+      {/* <Link to="/discount" className="navbar-home"><FaTag /> Ưu đãi </Link> */}
+      {/* <Link to="/news" className="navbar-home"><FaNewspaper /> Tin tức </Link> */}
       {user ? (
         <>
           <Link to="/user" className="navbar-user"><FaUser /> Cá nhân <span> {user.username} </span> </Link>

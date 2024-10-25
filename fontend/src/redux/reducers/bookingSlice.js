@@ -19,6 +19,7 @@ const bookingSlice = createSlice({
         getBookingsFailed: (state) => {
             state.loading = false;
             state.error = true;
+            state.bookings = [];
         },
         addBookingStart: (state) => {
             state.loading = true;

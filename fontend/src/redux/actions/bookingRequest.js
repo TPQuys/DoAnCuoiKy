@@ -14,18 +14,15 @@ import { createAxios } from '../../createInstance'; // Import hàm createAxios
 // Hàm lấy booking theo id
 export const getBookingById = async (dispatch, bookingId) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
-    dispatch(getBookingsStart());
-    let axiosJWT = createAxios(user, dispatch, getBookingsSuccess);
+    let axiosJWT = createAxios(user);
     try {
-        const res = await axios.get(`/v1/booking/${bookingId}`);
-        // const res = await axiosJWT.get(`/v1/booking/${bookingId}`);
+        const res = await axiosJWT.get(`/v1/booking/${bookingId}`);
         if (res) {
             return res
         }
     } catch (error) {
         console.error("Xóa booking thất bại:", error);
-        toast.error("Không thể xóa booking!");
-        dispatch(getBookingsFailed());
+        toast.error("Không thể lấy booking!");
     }
 };
 
@@ -33,16 +30,13 @@ export const getBookingById = async (dispatch, bookingId) => {
 export const getBookingByUser = async (dispatch) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     dispatch(getBookingsStart());
-    console.log(user)
     if (user) {
-        let axiosJWT = createAxios(user, dispatch, getBookingsSuccess);
+        let axiosJWT = createAxios(user);
         try {
-            const res = await axios.get(`/v1/booking/user/${user.user.id}`);
-            console.log(res.data);
+            const res = await axiosJWT.get(`/v1/booking/user/${user.user.id}`);
             dispatch(getBookingsSuccess(res.data));
         } catch (error) {
-            console.error("Xóa booking thất bại:", error);
-            toast.error("Không thể xóa booking!");
+            console.error("lấy booking thất bại:", error);
             dispatch(getBookingsFailed());
         }
     }
@@ -53,10 +47,10 @@ export const getBookingByUser = async (dispatch) => {
 export const addBooking = async (dispatch, bookingData) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     dispatch(addBookingStart());
-    let axiosJWT = createAxios(user, dispatch, addBookingSuccess);
+    let axiosJWT = createAxios(user);
     try {
-        const res = await axios.post("/v1/booking", bookingData);
-        dispatch(addBookingSuccess(res.data));
+        const res = await axiosJWT.post("/v1/booking", bookingData);
+        getBookingByUser(dispatch)
         return res.data
     } catch (error) {
         console.error("Thêm booking thất bại:", error);
@@ -69,7 +63,7 @@ export const addBooking = async (dispatch, bookingData) => {
 export const updateBooking = async (dispatch, bookingId, bookingData) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     dispatch(updateBookingStart());
-    let axiosJWT = createAxios(user, dispatch, updateBookingSuccess);
+    let axiosJWT = createAxios(user);
     try {
         const res = await axiosJWT.put(`/v1/booking/${bookingId}`, bookingData);
         dispatch(updateBookingSuccess(res.data));
@@ -85,7 +79,7 @@ export const updateBooking = async (dispatch, bookingId, bookingData) => {
 export const deleteBooking = async (dispatch, bookingId) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     dispatch(deleteBookingStart());
-    let axiosJWT = createAxios(user, dispatch, deleteBookingSuccess);
+    let axiosJWT = createAxios(user);
     try {
         await axiosJWT.delete(`/v1/booking/${bookingId}`);
         dispatch(deleteBookingSuccess(bookingId));
