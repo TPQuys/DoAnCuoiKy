@@ -37,6 +37,7 @@ const PaymentPage = () => {
     }
 
     const getMenuPrice = (menu) => {
+       if(menu){
         let totalMenuPrice = 0
         // Tính toán giá của menu
         const foodTotalPrice = menu?.Food.reduce((total, food) => {
@@ -49,6 +50,8 @@ const PaymentPage = () => {
 
         totalMenuPrice = foodTotalPrice + drinksTotalPrice;
         return totalMenuPrice
+       }
+       return 0;
     }
 
     const formatDate = (date) => {
