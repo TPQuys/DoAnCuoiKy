@@ -70,8 +70,9 @@ class PaymentService {
         const totalPriceDrinks = this.calculateTotal(drinkData, 'MenuDrinks');
 
         const totalTable = eventData?.TotalTable || 1; // Tổng số bàn, mặc định là 1 nếu không có
-        const roomPrice = roomEventData?.Price || 0; // Giá phòng
-
+        const Time = eventData?.Time; // Tổng số bàn, mặc định là 1 nếu không có
+        const roomPrice = (Time === "ALLDAY"? roomEventData?.Price *1.5 : roomEventData?.Price) || 0; // Giá phòng
+        console.log(roomPrice)
         // Tính tổng tiền thanh toán
         const Amount = (totalPriceFoods + totalPriceDrinks) * totalTable + roomPrice;
         await ngrok.kill()
