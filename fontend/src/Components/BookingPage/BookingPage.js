@@ -65,8 +65,6 @@ const HomePage = () => {
                     // Thêm các trường khác nếu cần
                 };
 
-                console.log(eventData)
-
                 try {
                     setIsDisabled(true);
                     const newEvent = await addEvent(dispatch, eventData);
@@ -78,8 +76,9 @@ const HomePage = () => {
                             }
                         )
                         if (newBooking) {
+                            console.log(newBooking)
                         setBookingSuccess(true)
-                            sessionStorage.setItem("booking",JSON.stringify(newBooking))
+                        sessionStorage.setItem("booking",JSON.stringify(newBooking))
                         }
                     }
                     else {
@@ -101,10 +100,8 @@ const HomePage = () => {
 
     return (
         <main className="room-container">
-            <Header background="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/homeheader.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21laGVhZGVyLmpwZyIsImlhdCI6MTcyNzYxODE4OSwiZXhwIjoxNzU5MTU0MTg5fQ.QU5J1wJV043dbnA6WzcnrIvAVUFGtf3Xc7QCsdIPvR8&t=2024-09-29T13%3A56%3A29.431Z" title="ĐẶT CHỖ" />
+            <Header background="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/room-header.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9yb29tLWhlYWRlci5qcGciLCJpYXQiOjE3Mjk4NjU2NDQsImV4cCI6MTc2MTQwMTY0NH0.X1m9vEDzQi-PR17kKxJDvoxcfBTjNmimrzGOFC_F6Eg&t=2024-10-25T14%3A14%3A02.614Z" title="ĐẶT CHỖ" />
             <div className="room-body">
-                <div>
-                </div>
                 <div>
                     <div className="booking-room-name">{room?.RoomName}</div>
                     <div className="booking-img" style={{
@@ -112,28 +109,27 @@ const HomePage = () => {
                     }}>
                         <div className="booking-room-info">
                             <div className="booking-room-info-content">
-                                <p>Chiều dài</p>
-                                <h3>{room?.HeightRoom}</h3>
+                                <h6>Chiều dài</h6>
+                                <h5>{room?.HeightRoom}</h5>
                             </div>
                             <div className="booking-room-info-content">
-                                <p>Chiều rộng</p>
-                                <h3>{room?.WidthRoom}</h3>
+                                <h6>Chiều rộng</h6>
+                                <h5>{room?.WidthRoom}</h5>
                             </div>
                             <div className="booking-room-info-content">
-                                <p>Số bàn</p>
-                                <h3>{room?.MaxTable}</h3>
+                                <h6>Số bàn</h6>
+                                <h5>{room?.MaxTable}</h5>
                             </div>
                             <div className="booking-room-info-content">
-                                <p>Giá</p>
-                                <h3>{room?.Price}</h3>
+                                <h6>Giá</h6>
+                                <h5>{room?.Price}</h5>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div>
+                <div className="booking-center">
                     <Form ref={formikRef} handleSubmit={handleSubmit} />
 
-                    <div>
                         <div className="menu-container">
                             {menus.map((menu, index) => {
                                 // Tính toán giá của menu
@@ -154,7 +150,7 @@ const HomePage = () => {
                                         onClick={() => handleSelect(menu?.MenuID)}
                                     >
                                         <h1>{menu.Name}</h1>
-                                        <h3>{`Price: $${totalMenuPrice.toFixed(0)}`}</h3> {/* Hiển thị giá của menu */}
+                                        <h3>{`Giá: ${totalMenuPrice.toFixed(0)} VND/bàn`}</h3> {/* Hiển thị giá của menu */}
                                         <div>
                                             <strong>Foods:</strong>
                                             {menu.Food.map((food, idx) => (
@@ -178,24 +174,23 @@ const HomePage = () => {
                             })}
 
                         </div>
-                    </div>
 
                 </div>
-                <div>
-                    <h1>decore</h1>
-                    <FormGroup sx={{ flexDirection: "row", justifyContent: "center", background: "#fafaeb", padding: 5, gap: 5 }}>
+                {/* <div>
+                    <div className="booking-room-name">decore</div>
+                    <FormGroup sx={{ flexDirection: "row", justifyContent: "center", padding: 5, gap: 5 }}>
                         <FormControlLabel control={<Checkbox defaultChecked />} label="LobbyDecore" labelPlacement="top" />
                         <FormControlLabel control={<Checkbox />} label="StageDecore" labelPlacement="top" />
                         <FormControlLabel control={<Checkbox />} label="TableDecore" labelPlacement="top" />
                     </FormGroup>
-                </div>
+                </div> */}
                 <div>
                     {bookingSuccess ?
                         <Link className="booking-link" to={"/payment"}>Đặt thành công, đến trang thanh toán </Link>
                         :
                     <Button
                         variant="contained"
-                        sx={{ backgroundColor: '#64463c', color: '#fff' }}
+                        sx={{ backgroundColor: '#64463c', color: '#fff' ,margin:"20px"}}
                         onClick={handleSubmitHomePage}
                         disabled={isDisabled}
                     >

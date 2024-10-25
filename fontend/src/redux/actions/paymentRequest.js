@@ -14,16 +14,16 @@ import { createAxios } from '../../createInstance'; // Import hàm createAxios
 export const addPayment = async (dispatch, paymentData) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     dispatch(addPaymentStart());
-    let axiosJWT = createAxios(user, dispatch, addPaymentSuccess);
+    let axiosJWT = createAxios(user);
     try {
         // const res = await axiosJWT.post("/v1/payment", paymentData);
-        const res = await axios.post("/v1/payment", paymentData);
+        const res = await axiosJWT.post("/v1/payment", paymentData);
         console.log(res.data)
         dispatch(addPaymentSuccess(res.data));
         return res.data
     } catch (error) {
         console.error("Thêm thanh toán thất bại:", error);
-        toast.error("Không thể đặt phòng!");
+        toast.error("Không thể thanh toans!");
         dispatch(addPaymentFailed());
     }
 };
@@ -32,7 +32,7 @@ export const addPayment = async (dispatch, paymentData) => {
 export const updatePayment = async (dispatch, paymentId, paymentData) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     dispatch(updatePaymentStart());
-    let axiosJWT = createAxios(user, dispatch, updatePaymentSuccess);
+    let axiosJWT = createAxios(user);
     try {
         const res = await axiosJWT.put(`/v1/payment/${paymentId}`, paymentData);
         dispatch(updatePaymentSuccess(res.data));
@@ -48,7 +48,7 @@ export const updatePayment = async (dispatch, paymentId, paymentData) => {
 export const deletePayment = async (dispatch, paymentId) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     dispatch(deletePaymentStart());
-    let axiosJWT = createAxios(user, dispatch, deletePaymentSuccess);
+    let axiosJWT = createAxios(user);
     try {
         await axiosJWT.delete(`/v1/payment/${paymentId}`);
         dispatch(deletePaymentSuccess(paymentId));
@@ -64,10 +64,10 @@ export const deletePayment = async (dispatch, paymentId) => {
 export const PostZaloApi = async (dispatch, booking) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     dispatch(addPaymentStart());
-    let axiosJWT = createAxios(user, dispatch, addPaymentSuccess);
+    let axiosJWT = createAxios(user);
     try {
         // await axiosJWT.delete(`/v1/payment/${paymentId}`);
-        const res = await axios.post("/v1/payment/zalopay",booking)
+        const res = await axiosJWT.post("/v1/payment/zalopay",booking)
         dispatch(addPaymentSuccess());
         return res;
     } catch (error) {

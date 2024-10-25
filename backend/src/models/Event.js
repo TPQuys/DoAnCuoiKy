@@ -21,7 +21,7 @@ const Event = sequelize.define('Event', {
         allowNull: false
     },
     EventType: {
-        type: DataTypes.ENUM('WEDDING','CONFERENCE','BIRTHDAY',"ORDER"),
+        type: DataTypes.ENUM('WEDDING','CONFERENCE','BIRTHDAY',"ORTHER"),
         allowNull: false
     },
     Time:{

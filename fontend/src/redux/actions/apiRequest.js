@@ -1,6 +1,7 @@
 import axios from "axios";
 import { loginFailed, loginStart, loginSuccess, logOutFailed, logOutStart, logOutSuccess, registerFailed, registerStart, registerSuccess } from "../reducers/authSlice";
 import { toast } from 'react-toastify';
+import { getBookingByUser } from "./bookingRequest";
 
 export const loginUser = async (user, dispatch, navigate,location) => {
     dispatch(loginStart());
@@ -10,6 +11,7 @@ export const loginUser = async (user, dispatch, navigate,location) => {
         dispatch(loginSuccess(res.data));
         toast.success("Đăng nhập thành công!"); // Thông báo thành công
         sessionStorage.setItem('user', JSON.stringify(res.data));
+        getBookingByUser(dispatch)
         navigate(from);
         sessionStorage.removeItem("previousPath")
     } catch (error) {
@@ -51,13 +53,11 @@ export const logOut = async (dispatch, id, navigate, accessToken, axiosJWT) => {
         });
         dispatch(logOutSuccess());
         toast.success("Đăng xuất thành công!"); 
-
-        sessionStorage.removeItem('user');
-
         navigate("/login");
     } catch (error) {
         console.error("Logout failed:", error);
         toast.error("Đăng xuất thất bại!"); 
-        dispatch(logOutFailed());
+        dispatch(logOutSuccess());
+        
     }
 };
