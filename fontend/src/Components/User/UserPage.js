@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Header from '../Header/Header';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { Link, useNavigate } from "react-router-dom";
+import { getBookingByUser } from "../../redux/actions/bookingRequest";
 
 const formatDate = (date) => {
     if (date) {
@@ -25,7 +26,7 @@ const getEventType = (type) => {
             return "Hội nghị"
         } else if (type === "BIRTHDAY") {
             return "Sinh nhật"
-        } else if (type === "ORDER") {
+        } else if (type === "ORTHER") {
             return "Khác"
         }
     }
@@ -33,13 +34,13 @@ const getEventType = (type) => {
 
 const getTime = (time) => {
     if (time) {
-        if (time = "MORNING") {
+        if (time == "MORNING") {
             return "Buổi sáng"
         }
-        if (time = "AFTERNOON") {
+        if (time == "AFTERNOON") {
             return "Buổi chiều"
         }
-        if (time = "ALLDAY") {
+        if (time == "ALLDAY") {
             return "Cả ngày"
         }
     }
@@ -48,14 +49,18 @@ const getTime = (time) => {
 const UserPage = () => {
     const bookings = useSelector((state) => state.bookings?.bookings)
     const navigate = useNavigate();
+    const dispatch = useDispatch()
     const handleClick = (booking) => {
         sessionStorage.setItem("booking",JSON.stringify(booking))
         navigate("/payment")
     }
-
+    useEffect(()=>{
+        if(bookings.length<1)
+        getBookingByUser(dispatch)
+    },[])
     return (
         <main className='room-container'>
-            <Header background="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/homeheader.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21laGVhZGVyLmpwZyIsImlhdCI6MTcyNzYxODE4OSwiZXhwIjoxNzU5MTU0MTg5fQ.QU5J1wJV043dbnA6WzcnrIvAVUFGtf3Xc7QCsdIPvR8&t=2024-09-29T13%3A56%3A29.431Z" title="NGƯỜI DÙNG" />
+            <Header background="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/user-header.webp?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC91c2VyLWhlYWRlci53ZWJwIiwiaWF0IjoxNzI5ODY1NDgwLCJleHAiOjE3NjE0MDE0ODB9.skF1ZqXKPkSYiMKxkwb_KaZETbIpPrffb9M8bMj893U&t=2024-10-25T14%3A11%3A18.654Z" title="NGƯỜI DÙNG" />
             <div className="payment-body">
                 <TableContainer component={Paper} title="Lịch sử đặt sự kiện">
                     <Table stickyHeader aria-label="simple table">
@@ -71,14 +76,14 @@ const UserPage = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {bookings.map((booking) => (
-                                <TableRow key={booking.BookingID}>
-                                    <TableCell>{getEventType(booking.Event.EventType)}</TableCell>
-                                    <TableCell>{booking.Event.TotalTable}</TableCell> {/* Tổng số bàn */}
-                                    <TableCell>{formatDate(new Date(booking.Event.EventDate))}</TableCell> {/* Tổ chức ngày */}
-                                    <TableCell>{getTime(booking.Event.Time)}</TableCell> {/* Thời gian */}
-                                    <TableCell>{booking.Event.Note}</TableCell> {/* Thời gian */}
-                                    <TableCell>{booking.Event.RoomEvent.RoomName}</TableCell> {/* Tên nhà hàng */}
+                            {bookings?.map((booking) => (
+                                <TableRow key={booking?.BookingID}>
+                                    <TableCell>{getEventType(booking.Event?.EventType)}</TableCell>
+                                    <TableCell>{booking.Event?.TotalTable}</TableCell> {/* Tổng số bàn */}
+                                    <TableCell>{formatDate(new Date(booking.Event?.EventDate))}</TableCell> {/* Tổ chức ngày */}
+                                    <TableCell>{getTime(booking.Event?.Time)}</TableCell> {/* Thời gian */}
+                                    <TableCell>{booking.Event?.Note}</TableCell> {/* Thời gian */}
+                                    <TableCell>{booking.Event?.RoomEvent?.RoomName}</TableCell> {/* Tên nhà hàng */}
                                     <TableCell>{booking.Payment ? booking.Payment.PaymentMethod :
                                        <Button onClick={()=>(handleClick(booking))}>Thanh toán ngay</Button>
                                     }</TableCell> {/* Thành tiền */}

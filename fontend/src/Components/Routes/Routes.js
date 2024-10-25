@@ -15,24 +15,26 @@ import { getBookingByUser } from "../../redux/actions/bookingRequest";
 import { useDispatch } from "react-redux";
 
 const AppRoutes = () => {
+    const user = sessionStorage.getItem("user");
+
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const previousPath = location.pathname; 
+    const previousPath = location.pathname;
 
     useEffect(() => {
         getAllRooms(dispatch);
-        getAllMenus(dispatch)
-        getBookingByUser(dispatch)
+        getAllMenus(dispatch);
     }, []);
 
     useEffect(() => {
-        const user = sessionStorage.getItem("user");
-        if (!user && (location.pathname === "/booking" || location.pathname === "/room")) {
-            toast.info("Hãy đăng nhập để đặt phòng");
-            sessionStorage.setItem("previousPath",previousPath)
-            navigate("/login"); 
+        if (!user && (location.pathname === "/login" || location.pathname === "/user")) {
+            if (location.pathname === "/booking" || location.pathname === "/room") {
+                toast.info("Hãy đăng nhập để đặt phòng");
+                sessionStorage.setItem("previousPath", previousPath)
+            }
+            navigate("/login");
         }
     }, [sessionStorage, location.pathname, navigate, previousPath]);
 

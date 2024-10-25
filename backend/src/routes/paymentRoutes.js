@@ -1,3 +1,4 @@
+const middlewareController = require("../middlewares/middlewareController");
 const express = require('express');
 const router = express.Router();
 const {
@@ -14,7 +15,7 @@ const paymentService = require('../services/paymentService');
 // Route thêm mới payment
 router.post('/', createPayment);
 
-router.post('/zalopay', postZaloApi);
+router.post('/zalopay', middlewareController.verifyToken, postZaloApi);
 
 router.post('/callback', callback.bind(paymentService));
 

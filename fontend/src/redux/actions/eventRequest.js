@@ -13,9 +13,9 @@ export const addEvent = async (dispatch, eventData) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     console.log(user)
     dispatch(addEventStart());
-    let axiosJWT = createAxios(user, dispatch, addEventSuccess);
+    let axiosJWT = createAxios(user);
     try {
-        const res = await axios.post("/v1/event", eventData);
+        const res = await axiosJWT.post("/v1/event", eventData);
         dispatch(addEventSuccess(res.data));
         console.log("Thêm sự kiện thành công" + JSON.stringify(res.data))
         toast.success("Thêm sự kiện thành công!");
@@ -32,7 +32,7 @@ export const updateEvent = async (dispatch, eventId, eventData) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
 
     dispatch(updateEventStart());
-    let axiosJWT = createAxios(user, dispatch, updateEventSuccess);
+    let axiosJWT = createAxios(user);
     try {
         const res = await axiosJWT.put(`/v1/event/${eventId}`, eventData);
         dispatch(updateEventSuccess(res.data));
@@ -48,7 +48,7 @@ export const updateEvent = async (dispatch, eventId, eventData) => {
 export const deleteEvent = async (dispatch, eventId) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     dispatch(deleteEventStart());
-    let axiosJWT = createAxios(user, dispatch, deleteEventSuccess);
+    let axiosJWT = createAxios(user);
 
     try {
         await axiosJWT.delete(`/v1/event/${eventId}`);

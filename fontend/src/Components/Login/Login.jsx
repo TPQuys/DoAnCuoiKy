@@ -31,8 +31,7 @@ const Login = () => {
                 email: values.email,
                 password: values.password,
             };
-            loginUser(newUser, dispatch, navigate);
-        setIsDisable(false)
+            loginUser(newUser, dispatch, navigate).then(setIsDisable(false));
         };
 
     const handleClickShowPassword = () => {
