@@ -1,9 +1,12 @@
+require('dotenv').config();
+
 const PaymentRepository = require('../repositories/paymentRepository');
 const bookingRepository = require('../repositories/bookingRepository');
 const axios = require('axios').default; // npm install axios
 const CryptoJS = require('crypto-js'); // npm install crypto-js
 const moment = require('moment'); // npm install moment
 const ngrok = require('ngrok');
+const nodemailer = require('nodemailer');
 
 const config = {
     app_id: "2554",
@@ -19,6 +22,30 @@ class PaymentService {
             const quantity = item?.[throughField]?.dataValues?.Quantity || 0; // Số lượng từ bảng through
             return total + (unitPrice * quantity);
         }, 0); // Bắt đầu từ 0
+    }
+
+    async sendSuccessEmail(email, payment) {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            }
+        });
+
+        const mailOptions = {
+            from: 'quy097255@gmail.com',
+            to: email,
+            subject: 'Thông báo thanh toán thành công',
+            text: `Xin chào! Bạn đã được thanh toán thành công. Thông tin thanh toán:\n- Số tiền: ${payment.Amount}\n- Phương thức thanh toán: ${payment.PaymentMethod}\n- Ngày thanh toán: ${payment.PaymentDate.toLocaleDateString()}\n\nCảm ơn bạn đã sử dụng dịch vụ của chúng tôi.\n\nTrân trọng,\nĐội ngũ hỗ trợ`
+        };
+
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log("Email đã được gửi thành công!");
+        } catch (error) {
+            console.error("Không thể gửi email:", error);
+        }
     }
 
 
@@ -54,7 +81,7 @@ class PaymentService {
             redirecturl: "http://localhost:3000/payment"
         };
         if (Amount && BookingID && url) {
-            const items = [BookingID];
+            const items = [BookingID, findBooking.User.email];
             const transID = Math.floor(Math.random() * 1000000);
             const order = {
                 app_id: config.app_id,
@@ -69,6 +96,7 @@ class PaymentService {
                 //dùng ngrok để tạo url này
                 callback_url: url + "/v1/payment/callback"
             };
+
             // appid|app_trans_id|appuser|amount|apptime|embeddata|item
             const data = config.app_id + "|" + order.app_trans_id + "|" + order.app_user + "|" + order.amount + "|" + order.app_time + "|" + order.embed_data + "|" + order.item;
             order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
@@ -101,14 +129,18 @@ class PaymentService {
                 console.log("update order's status = success where app_trans_id =", dataJson["app_trans_id"]);
                 const items = JSON.parse(dataJson.item)
                 const booking = items[0]
-                if(items[0]){
+                const email = items[1]
+                if (items[0]) {
                     const payment = {
-                        Amount:dataJson.amount,
-                        PaymentDate:new Date(),
-                        PaymentMethod:"BANKTRANSFER",
-                        BookingID:booking
+                        Amount: dataJson.amount,
+                        PaymentDate: new Date(),
+                        PaymentMethod: "BANKTRANSFER",
+                        BookingID: booking
                     }
                     const newPayment = await PaymentRepository.createPayment(payment)
+                    if (newPayment) {
+                        await this.sendSuccessEmail(email, payment)
+                    }
                 }
 
                 result.return_code = 1;
@@ -118,20 +150,19 @@ class PaymentService {
             result.return_code = 0; // ZaloPay server sẽ callback lại (tối đa 3 lần)
             result.return_message = ex.message;
         }
-        await ngrok.kill()
         return result
-    }
+        }
     async getPaymentById(paymentId) {
-        return await PaymentRepository.getPaymentById(paymentId);
-    }
+            return await PaymentRepository.getPaymentById(paymentId);
+        }
 
     async updatePayment(paymentId, updatedData) {
-        return await PaymentRepository.updatePayment(paymentId, updatedData);
-    }
+            return await PaymentRepository.updatePayment(paymentId, updatedData);
+        }
 
     async deletePayment(paymentId) {
-        return await PaymentRepository.deletePayment(paymentId);
+            return await PaymentRepository.deletePayment(paymentId);
+        }
     }
-}
 
 module.exports = new PaymentService();
