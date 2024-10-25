@@ -91,6 +91,17 @@ const PaymentPage = () => {
             }
         }
     }
+
+    const rommPriceByEvent = (event,roomPrice) =>{
+        if(event?.Time=="ALLDAY"){
+            console.log(roomPrice*1.5)
+            return roomPrice*1.5
+        }
+        else {
+            console.log(roomPrice)
+            return roomPrice
+        }
+    }
     return (
         <main className='room-container'>
             <Header background="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/homeheader.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21laGVhZGVyLmpwZyIsImlhdCI6MTcyNzYxODE4OSwiZXhwIjoxNzU5MTU0MTg5fQ.QU5J1wJV043dbnA6WzcnrIvAVUFGtf3Xc7QCsdIPvR8&t=2024-09-29T13%3A56%3A29.431Z" title="Thanh toán" />
@@ -98,7 +109,7 @@ const PaymentPage = () => {
                 <div className='flex'>
                     <div className='payment-room'>
                         <h3>Nhà hàng: {event.RoomEvent?.RoomName}</h3>
-                        <h4>Giá: {event.RoomEvent?.Price} VND</h4>
+                        <h4>Giá: {(event.RoomEvent?.Price)?.toLocaleString()} VND</h4>
                         <img src={event.RoomEvent?.RoomImage} className='payment-img'></img>
                     </div>
 
@@ -117,7 +128,7 @@ const PaymentPage = () => {
                 <div className='flex'>
                     <div className='payment-menu'>
                         <h3 className=''>Menu</h3>
-                        <h6>Tổng giá: {getMenuPrice(event.Menu)} VND/Bàn</h6>
+                        <h6>Tổng giá: {getMenuPrice(event.Menu)?.toLocaleString()} VND/Bàn</h6>
                         <div>
                             <div className=''>
                                 <strong>Món ăn</strong>
@@ -146,7 +157,7 @@ const PaymentPage = () => {
                     <div className='payment-menu'>
                         <div className="payment-price">
                             <h3>TỔNG GIÁ</h3>
-                            <h1>{getMenuPrice(event.Menu) * event.TotalTable + event.RoomEvent?.Price} VND</h1>
+                            <h1>{(getMenuPrice(event.Menu) * event.TotalTable + rommPriceByEvent(event, event.RoomEvent?.Price))?.toLocaleString()} VND</h1>
                         </div>
                     </div>
                 </div>
