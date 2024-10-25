@@ -23,7 +23,7 @@ export const addPayment = async (dispatch, paymentData) => {
         return res.data
     } catch (error) {
         console.error("Thêm thanh toán thất bại:", error);
-        toast.error("Không thể đặt phòng!");
+        toast.error("Không thể thanh toans!");
         dispatch(addPaymentFailed());
     }
 };

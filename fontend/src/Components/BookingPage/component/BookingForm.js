@@ -12,6 +12,7 @@ import {
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 
 // Định nghĩa schema cho validation
 const validationSchema = Yup.object().shape({
@@ -20,7 +21,9 @@ const validationSchema = Yup.object().shape({
         .required('Vui lòng nhập tổng số bàn')
         .positive('Số bàn phải là số dương')
         .integer('Số bàn phải là số nguyên'),
-    EventDate: Yup.date().required('Vui lòng nhập thời gian bắt đầu'),
+    EventDate: Yup.date()
+        .required('Vui lòng chọn ngày')
+        .min(dayjs().add(1, 'day'), 'Ngày sự kiện phải từ ngày mai trở đi'),
     Time: Yup.string().required('Vui lòng chọn thời gian'),
     Note: Yup.string() 
 });
@@ -81,15 +84,16 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
                                         {({ field }) => (
                                             <DatePicker
                                                 sx={{ width: "100%" }}
-                                                label="Thời Gian Bắt Đầu"
+                                                label="Ngày"
                                                 value={field.value}
                                                 slotProps={{
                                                     textField: {
                                                         error: touched.EventDate && Boolean(errors.EventDate),
-                                                        helperText: touched.EventDate && errors.EventDate
+                                                        helperText: touched.EventDate && errors.EventDate,
                                                     },
                                                 }}
                                                 onChange={(value) => setFieldValue(field.name, value)}
+                                                format='DD/MM/YYYY'
                                             />
                                         )}
                                     </Field>

@@ -13,6 +13,10 @@ class BookingService {
         return await BookingRepository.getBookingById(bookingId);
     }
 
+    async getBookingByUser(UserID) {
+        return await BookingRepository.getBookingsByUser(UserID);
+    }
+
     async updateBooking(bookingId, updatedData) {
         return await BookingRepository.updateBooking(bookingId, updatedData);
     }

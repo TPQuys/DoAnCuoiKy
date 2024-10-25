@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const Event = require('../models/Event');
 
 const eventRepository = {
@@ -8,6 +9,20 @@ const eventRepository = {
     findById: async (eventId) => {
         return await Event.findByPk(eventId);
     },
+
+    findByRoomAndTime: async (RoomEventID, EventDate, Time) => {
+        return await Event.findOne({
+            where: {
+                RoomEventID,
+                EventDate,
+                [Op.or]: [
+                    { Time: 'ALLDAY' }, // Nếu đã có sự kiện ALLDAY
+                    { Time: Time === 'ALLDAY' ? { [Op.in]: ['MORNING', 'AFTERNOON'] } : Time } // Nếu sự kiện mới là ALLDAY, kiểm tra cả MORNING và AFTERNOON
+                ]
+            }
+        });
+    },
+    
 
     create: async (eventData) => {
         return await Event.create(eventData);
