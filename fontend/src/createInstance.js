@@ -11,12 +11,11 @@ const refreshToken = async () => {
         });
         return res.data;
     } catch (error) {
-        sessionStorage.removeItem("user")
         console.log(error);
     }
 }
 
-export const createAxios = (user, dispatch, stateSuccess) => {
+export const createAxios = (user) => {
     const newInstance = axios.create();
     newInstance.interceptors.request.use(
         async (config) => {
@@ -28,7 +27,6 @@ export const createAxios = (user, dispatch, stateSuccess) => {
                 ...user,
                 accessToken: data.accessToken,
             };
-            dispatch(stateSuccess(refreshUser));
             config.headers["token"] = "Bearer " + data.accessToken;
             // }
             return config;

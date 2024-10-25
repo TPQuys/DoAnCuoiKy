@@ -4,7 +4,8 @@ const Menu = require('../models/Menu'); // Đường dẫn tới model Menu
 const Food = require('../models/Food'); // Đường dẫn tới model Food
 const Drink = require('../models/Drink'); // Đường dẫn tới model Drink
 const RoomEvent = require('../models/RoomEvent');
-const Payment = require('../models/Payment')
+const Payment = require('../models/Payment');
+const User = require('../models/User');
 class BookingRepository {
     // Tạo một booking mới
     async createBooking(bookingData) {
@@ -59,6 +60,10 @@ class BookingRepository {
                     },
                     {
                         model:Payment,
+                    },
+                    {
+                        model:User,
+                        attributes : ["email"]
                     }
                 ]
             });
@@ -72,6 +77,51 @@ class BookingRepository {
         }
     }
 
+    async getBookingsByUser(UserID) {
+        try {
+            const bookings = await Booking.findAll({
+                attributes: ["BookingID"],
+                where: { UserID }, // Tìm tất cả booking của user
+                include: [
+                    {
+                        model: Event,
+                        include: [
+                            {
+                                model: Menu,
+                                include: [
+                                    {
+                                        model: Food,
+                                        through: { attributes: ["Quantity"] }, // Lấy số lượng từ bảng trung gian
+                                    },
+                                    {
+                                        model: Drink,
+                                        through: { attributes: ["Quantity"] }, // Lấy số lượng từ bảng trung gian
+                                    }
+                                ]
+                            },
+                            {
+                                model: RoomEvent, // Bao gồm thông tin phòng sự kiện
+                            }
+                        ]
+                    },
+                    {
+                        model: Payment, // Bao gồm thông tin thanh toán
+                    }
+                ]
+            });
+    
+            // Nếu không tìm thấy bất kỳ booking nào, ném lỗi
+            if (bookings.length === 0) {
+                throw new Error("No bookings found for this user");
+            }
+    
+            return bookings; // Trả về danh sách các bookings
+        } catch (error) {
+            console.error("Error fetching bookings:", error);
+            throw new Error("Could not fetch bookings");
+        }
+    }
+    
     // Cập nhật booking theo ID
     async updateBooking(bookingId, updatedData) {
         try {

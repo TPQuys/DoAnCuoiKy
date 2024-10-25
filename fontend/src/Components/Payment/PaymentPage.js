@@ -9,7 +9,7 @@ const PaymentPage = () => {
     const booking = JSON.parse(sessionStorage.getItem("booking"))
     const [event, setEvent] = useState({});
     const [newBooking, setNewBooking] = useState({});
-
+    const [isDisable, setIsDisable] = useState(false);
     const dispatch = useDispatch();
 
     const getBooking = async () => {
@@ -25,9 +25,14 @@ const PaymentPage = () => {
     }, [])
 
     const handlePayment = async () => {
+        setIsDisable(true)
         if (newBooking) {
             const zaloApi = await PostZaloApi(dispatch, newBooking)
-            window.location.href = zaloApi.data.order_url;
+            console.log(zaloApi)
+            if (zaloApi) {
+                window.location.href = zaloApi.data.order_url;
+                setIsDisable(false)
+            }
         }
     }
 
@@ -67,7 +72,7 @@ const PaymentPage = () => {
                 return "Hội nghị"
             } else if (type === "BIRTHDAY") {
                 return "Sinh nhật"
-            } else if (type === "ORDER") {
+            } else if (type === "ORTHER") {
                 return "Khác"
             }
         }
@@ -75,13 +80,13 @@ const PaymentPage = () => {
 
     const getTime = (time) => {
         if (time) {
-            if (time = "MORNING") {
+            if (time == "MORNING") {
                 return "Buổi sáng"
             }
-            if (time = "AFTERNOON") {
+            if (time == "AFTERNOON") {
                 return "Buổi chiều"
             }
-            if (time = "ALLDAY") {
+            if (time == "ALLDAY") {
                 return "Cả ngày"
             }
         }
@@ -100,21 +105,21 @@ const PaymentPage = () => {
                     <div className='payment-event'>
                         <h3>Thông tin sự kiện:</h3>
                         <div className="payment-content">
-                        <p>Ngày tổ chức: {formatDate(new Date(event?.EventDate))}</p>
-                        <p>Loại sự kiện: {getEventType(event?.EventType)}</p>
-                        <p>Thời gian: {getTime(event?.Time)}</p>
-                        <p>Tống số bàn: {event?.TotalTable}</p>
-                        <p>Ghi chú: {event?.Note}</p>
+                            <p>Ngày tổ chức: {formatDate(new Date(event?.EventDate))}</p>
+                            <p>Loại sự kiện: {getEventType(event?.EventType)}</p>
+                            <p>Thời gian: {getTime(event?.Time)}</p>
+                            <p>Tống số bàn: {event?.TotalTable}</p>
+                            <p>Ghi chú: {event?.Note}</p>
                         </div>
                     </div>
 
                 </div>
                 <div className='flex'>
                     <div className='payment-menu'>
-                        <h3 className='menu-title'>Menu</h3>
+                        <h3 className=''>Menu</h3>
                         <h6>Tổng giá: {getMenuPrice(event.Menu)} VND/Bàn</h6>
                         <div>
-                            <div className='menu-item'>
+                            <div className=''>
                                 <strong>Món ăn</strong>
                                 {/* <strong>Số lượng</strong> */}
                             </div>
@@ -126,7 +131,7 @@ const PaymentPage = () => {
                             ))}
                         </div>
                         <div>
-                            <div className='menu-item'>
+                            <div className=''>
                                 <strong>Đồ uống</strong>
                                 {/* <strong>Số lượng</strong> */}
                             </div>
@@ -150,8 +155,9 @@ const PaymentPage = () => {
                         <Button
                             component="a"
                             variant="contained"
-                            sx={{width:"400px", alignSelf:"center", background:"#e5cc5f"}}
-                            onClick={()=>handlePayment()}
+                            sx={{ width: "400px", alignSelf: "center", background: "#e5cc5f" }}
+                            onClick={() => handlePayment()}
+                            disabled={isDisable}
                         >
                             Thanh toán</Button>
                     }

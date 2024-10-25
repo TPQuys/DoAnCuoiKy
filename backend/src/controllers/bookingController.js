@@ -30,6 +30,15 @@ const getBookingById = async (req, res) => {
     }
 };
 
+const getBookingByUser = async (req, res) => {
+    try {
+        const booking = await BookingService.getBookingByUser(req.params.UserID);
+        res.status(200).json(booking);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
+
 // Cập nhật booking
 const updateBooking = async (req, res) => {
     try {
@@ -55,5 +64,6 @@ module.exports = {
     getAllBookings,
     getBookingById,
     updateBooking,
-    deleteBooking
+    deleteBooking,
+    getBookingByUser
 };
