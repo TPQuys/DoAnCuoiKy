@@ -29,12 +29,19 @@ const AppRoutes = () => {
     }, []);
 
     useEffect(() => {
-        if (!user && (location.pathname === "/login" || location.pathname === "/user")) {
+        const user1 = sessionStorage.getItem("user");
+
+        if (!user1) {
             if (location.pathname === "/booking" || location.pathname === "/room") {
                 toast.info("Hãy đăng nhập để đặt phòng");
                 sessionStorage.setItem("previousPath", previousPath)
+                navigate("/login");
+
             }
-            navigate("/login");
+            if (location.pathname === "/logout" || location.pathname === "/user") {
+                navigate("/login");
+
+            }
         }
     }, [sessionStorage, location.pathname, navigate, previousPath]);
 
