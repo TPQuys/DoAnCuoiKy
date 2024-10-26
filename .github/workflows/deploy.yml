@@ -28,8 +28,11 @@ jobs:
         with:
           node-version: lts/*
 
+      - name: Change to backend directory
+        run: cd backend
+
       - name: Install step
-        run: "npm i"
+        run: npm i
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
@@ -37,5 +40,3 @@ jobs:
           project: "tpquys-doancuoiky-75"
           entrypoint: "npm start"
           root: "backend"
-          
-          
