@@ -35,7 +35,7 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "tpquys-doancuoiky-75"
-          entrypoint: ""
+          entrypoint: "src/index.js"
           root: "backend"
           
           
