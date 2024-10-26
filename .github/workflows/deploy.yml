@@ -29,13 +29,13 @@ jobs:
           node-version: lts/*
 
       - name: Install step
-        run: "npm start"
+        run: "npm i"
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
           project: "tpquys-doancuoiky-75"
-          entrypoint: ""
+          entrypoint: "npm start"
           root: "backend"
           
           
