@@ -150,7 +150,7 @@ const HomePage = () => {
                                         onClick={() => handleSelect(menu?.MenuID)}
                                     >
                                         <h1>{menu.Name}</h1>
-                                        <h3>{`Giá: ${totalMenuPrice.toFixed(0)} VND/bàn`}</h3> {/* Hiển thị giá của menu */}
+                                        <h3>{`Giá: ${totalMenuPrice.toLocaleString()} VND/bàn`}</h3> {/* Hiển thị giá của menu */}
                                         <div>
                                             <strong>Foods:</strong>
                                             {menu.Food.map((food, idx) => (
