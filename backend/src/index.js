@@ -37,6 +37,8 @@ app.use('/v1/booking', bookingRoutes);
 app.use('/v1/payment', paymentRoutes);
 
 // Khởi động server
-app.listen(8000, () => {
-    console.log("Server is running on port 8000");
+const PORT = process.env.PORT || 8000;  // Sử dụng PORT từ môi trường nếu có
+app.listen(PORT, '0.0.0.0', () => {     // Lắng nghe trên 0.0.0.0 để Fly.io có thể truy cập
+    console.log(`Server is running on port ${PORT}`);
 });
+
