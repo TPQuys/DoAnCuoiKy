@@ -52,6 +52,6 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://backend-withered-pond-1466.fly.dev/"
+  "proxy": "http://localhost:8000/"
 
 }
