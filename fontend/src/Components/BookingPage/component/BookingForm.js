@@ -2,33 +2,38 @@ import React, { forwardRef } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import {
-    TextField,
-    Button,
     MenuItem,
     Grid,
-    Typography,
     Paper,
+    TextField,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
+import { styled } from '@mui/material/styles';
 
-// Định nghĩa schema cho validation
-const validationSchema = Yup.object().shape({
-    EventType: Yup.string().required('Vui lòng chọn loại sự kiện'),
-    TotalTable: Yup.number()
-        .required('Vui lòng nhập tổng số bàn')
-        .positive('Số bàn phải là số dương')
-        .integer('Số bàn phải là số nguyên'),
-    EventDate: Yup.date()
-        .required('Vui lòng chọn ngày')
-        .min(dayjs().add(1, 'day'), 'Ngày sự kiện phải từ ngày mai trở đi'),
-    Time: Yup.string().required('Vui lòng chọn thời gian'),
-    Note: Yup.string() 
+
+// Tạo một component Paper có nền trong suốt
+const TransparentPaper = styled(Paper)({
+    padding: 16,
+    backgroundColor: 'transparent',
+    boxShadow: 'none'
 });
 
-const EventForm = forwardRef(({ handleSubmit }, ref) => {
+// Tạo một TextField tùy chỉnh có nền trắng
+const WhiteTextField = styled(({ ...props }) => <Field as={TextField} {...props} />)({
+    '& .MuiInputBase-root': {
+        color: 'black',
+        backgroundColor: 'white',
+        borderRadius: 4,
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+        borderColor: 'rgba(0, 0, 0, 0.23)',
+    }
+});
+
+const EventForm = forwardRef(({ handleSubmit, maxTable }, ref) => {
     const initialValues = {
         EventType: '',
         TotalTable: '',
@@ -37,11 +42,24 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
         Note: '',
     };
 
+    // Định nghĩa schema cho validation
+const validationSchema = Yup.object().shape({
+    EventType: Yup.string().required('Vui lòng chọn loại sự kiện'),
+    TotalTable: Yup.number()
+        .required('Vui lòng nhập tổng số bàn')
+        .positive('Số bàn phải là số dương')
+        .integer('Số bàn phải là số nguyên')
+        .min(maxTable * 0.7, `Số bàn tối thiểu là ${Math.round(maxTable * 0.7)}`)
+        .max(maxTable,`Số bàn tối ta là ${maxTable}`),
+    EventDate: Yup.date()
+        .required('Vui lòng chọn ngày')
+        .min(dayjs().add(1, 'day'), 'Ngày sự kiện phải từ ngày mai trở đi'),
+    Time: Yup.string().required('Vui lòng chọn thời gian'),
+    Note: Yup.string()
+});
+
     return (
-        <Paper sx={{ padding: 2 }}>
-            <Typography variant="h5" gutterBottom>
-                Nhập Thông Tin Sự Kiện
-            </Typography>
+        <TransparentPaper>
             <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
@@ -52,8 +70,7 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
                     <Form>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
-                                <Field
-                                    as={TextField}
+                                <WhiteTextField
                                     name="EventType"
                                     select
                                     label="Loại Sự Kiện"
@@ -65,11 +82,10 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
                                     <MenuItem value="CONFERENCE">Hội Nghị</MenuItem>
                                     <MenuItem value="BIRTHDAY">Sinh nhật</MenuItem>
                                     <MenuItem value="ORTHER">Khác</MenuItem>
-                                </Field>
+                                </WhiteTextField>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <Field
-                                    as={TextField}
+                                <WhiteTextField
                                     name="TotalTable"
                                     label="Tổng Số Bàn"
                                     type="number"
@@ -83,7 +99,13 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
                                     <Field name="EventDate">
                                         {({ field }) => (
                                             <DatePicker
-                                                sx={{ width: "100%" }}
+                                                sx={{
+                                                    width: "100%",
+                                                    '& .MuiInputBase-input': {
+                                                        color: 'black',
+                                                        backgroundColor: 'white',
+                                                    }
+                                                }}
                                                 label="Ngày"
                                                 value={field.value}
                                                 slotProps={{
@@ -100,8 +122,7 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
                                 </LocalizationProvider>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <Field
-                                    as={TextField}
+                                <WhiteTextField
                                     name="Time"
                                     select
                                     label="Thời gian"
@@ -112,11 +133,10 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
                                     <MenuItem value="MORNING">Buổi sáng</MenuItem>
                                     <MenuItem value="AFTERNOON">Buổi chiều</MenuItem>
                                     <MenuItem value="ALLDAY">Cả ngày</MenuItem>
-                                </Field>
+                                </WhiteTextField>
                             </Grid>
                             <Grid item xs={12}>
-                                <Field
-                                    as={TextField}
+                                <WhiteTextField
                                     name="Note"
                                     label="Ghi chú"
                                     multiline
@@ -130,7 +150,7 @@ const EventForm = forwardRef(({ handleSubmit }, ref) => {
                     </Form>
                 )}
             </Formik>
-        </Paper>
+        </TransparentPaper>
     );
 });
 

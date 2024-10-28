@@ -1,10 +1,9 @@
 import "./bookingPage.css";
-import { Link,  useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Button from '@mui/material/Button';
 import Header from "../Header/Header";
 import Form from "./component/BookingForm"
 import React, { useRef, useState } from "react";
-import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch
 import { addEvent } from "../../redux/actions/eventRequest"; // Import hàm thêm sự kiện từ API
 import { toast } from "react-toastify";
@@ -12,13 +11,13 @@ import { addBooking } from "../../redux/actions/bookingRequest";
 const HomePage = () => {
     const [selected, setSelected] = useState(null);
     const [isDisabled, setIsDisabled] = useState(false);
-    const [bookingSuccess,setBookingSuccess] = useState(false)
+    const [bookingSuccess, setBookingSuccess] = useState(false)
     const formikRef = useRef(null);
     const { roomId } = useParams();
     const dispatch = useDispatch();
     const menus = useSelector((state) => state.menus?.menus);
     const rooms = useSelector((state) => state.rooms?.rooms)
-    const room = rooms.find(item => item.RoomEventID == roomId)
+    const room = rooms.find(item => item.RoomEventID === roomId)
     const user = useSelector((state) => state.auth.login.currentUser)
     const handleSubmit = (values) => {
     }
@@ -77,8 +76,8 @@ const HomePage = () => {
                         )
                         if (newBooking) {
                             console.log(newBooking)
-                        setBookingSuccess(true)
-                        sessionStorage.setItem("booking",JSON.stringify(newBooking))
+                            setBookingSuccess(true)
+                            sessionStorage.setItem("booking", JSON.stringify(newBooking))
                         }
                     }
                     else {
@@ -127,55 +126,61 @@ const HomePage = () => {
                         </div>
                     </div>
                 </div>
+                <div className="booking-room-name">Nhập Thông Tin Sự Kiện</div>
                 <div className="booking-center">
-                    <Form ref={formikRef} handleSubmit={handleSubmit} />
-
-                        <div className="menu-container">
-                            {menus.map((menu, index) => {
-                                // Tính toán giá của menu
-                                const foodTotalPrice = menu.Food.reduce((total, food) => {
-                                    return total + (food.UnitPrice * food.MenuFoods.Quantity);
-                                }, 0);
-
-                                const drinksTotalPrice = menu.Drinks.reduce((total, drink) => {
-                                    return total + (drink.UnitPrice * drink.MenuDrinks.Quantity);
-                                }, 0);
-
-                                const totalMenuPrice = foodTotalPrice + drinksTotalPrice;
-
-                                return (
-                                    <div
-                                        key={index}
-                                        className={`radio-div ${selected === menu?.MenuID ? 'selected' : ''}`}
-                                        onClick={() => handleSelect(menu?.MenuID)}
-                                    >
-                                        <h1>{menu.Name}</h1>
-                                        <h3>{`Giá: ${totalMenuPrice.toLocaleString()} VND/bàn`}</h3> {/* Hiển thị giá của menu */}
-                                        <div>
-                                            <strong>Foods:</strong>
-                                            {menu.Food.map((food, idx) => (
-                                                <div key={idx} className='menu-item'>
-                                                    <span >{food.Name}</span>
-                                                    {/* <span >{food.UnitPrice}</span> */}
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <div>
-                                            <strong>Drinks:</strong>
-                                            {menu.Drinks.map((drink, idx) => (
-                                                <div key={idx} className='menu-item'>
-                                                    <span >{drink.Name}</span>
-                                                    {/* <span >{drink.UnitPrice}</span> */}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-
-                        </div>
+                    <Form ref={formikRef} handleSubmit={handleSubmit} maxTable={room?.MaxTable}/>
 
                 </div>
+                <div className="booking-room-name">Chọn Menu</div>
+
+                <div className="booking-center">
+                    <div className="menu-container">
+                        {menus.map((menu, index) => {
+                            // Tính toán giá của menu
+                            const foodTotalPrice = menu.Food.reduce((total, food) => {
+                                return total + (food.UnitPrice * food.MenuFoods.Quantity);
+                            }, 0);
+
+                            const drinksTotalPrice = menu.Drinks.reduce((total, drink) => {
+                                return total + (drink.UnitPrice * drink.MenuDrinks.Quantity);
+                            }, 0);
+
+                            const totalMenuPrice = foodTotalPrice + drinksTotalPrice;
+
+                            return (
+                                <div
+                                    key={index}
+                                    className={`radio-div ${selected === menu?.MenuID ? 'selected' : ''}`}
+                                    onClick={() => handleSelect(menu?.MenuID)}
+                                >
+                                    <h1>{menu.Name}</h1>
+                                    <h3>{`Giá: ${totalMenuPrice.toLocaleString()} VND/bàn`}</h3> {/* Hiển thị giá của menu */}
+                                    <div>
+                                        <strong>Foods:</strong>
+                                        {menu.Food.map((food, idx) => (
+                                            <div key={idx} className='menu-item'>
+                                                <span >{food.Name}</span>
+                                                {/* <span >{food.UnitPrice}</span> */}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div>
+                                        <strong>Drinks:</strong>
+                                        {menu.Drinks.map((drink, idx) => (
+                                            <div key={idx} className='menu-item'>
+                                                <span >{drink.Name}</span>
+                                                {/* <span >{drink.UnitPrice}</span> */}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
+
+                    </div>
+
+                </div>
+
                 {/* <div>
                     <div className="booking-room-name">decore</div>
                     <FormGroup sx={{ flexDirection: "row", justifyContent: "center", padding: 5, gap: 5 }}>
@@ -188,14 +193,14 @@ const HomePage = () => {
                     {bookingSuccess ?
                         <Link className="booking-link" to={"/payment"}>Đặt thành công, đến trang thanh toán </Link>
                         :
-                    <Button
-                        variant="contained"
-                        sx={{ backgroundColor: '#64463c', color: '#fff' ,margin:"20px"}}
-                        onClick={handleSubmitHomePage}
-                        disabled={isDisabled}
-                    >
-                        Đặt ngay
-                    </Button>
+                        <Button
+                            variant="contained"
+                            sx={{ backgroundColor: '#64463c', color: '#fff', margin: "20px" }}
+                            onClick={handleSubmitHomePage}
+                            disabled={isDisabled}
+                        >
+                            Đặt ngay
+                        </Button>
                     }
                 </div>
             </div>
@@ -204,15 +209,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-};

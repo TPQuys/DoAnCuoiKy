@@ -11,11 +11,9 @@ import Footer from "../Footer/Footer"
 import { toast } from "react-toastify";
 import { getAllRooms } from "../../redux/actions/roomRequest";
 import { getAllMenus } from "../../redux/actions/menuRequest";
-import { getBookingByUser } from "../../redux/actions/bookingRequest";
 import { useDispatch } from "react-redux";
 
 const AppRoutes = () => {
-    const user = sessionStorage.getItem("user");
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -26,7 +24,7 @@ const AppRoutes = () => {
     useEffect(() => {
         getAllRooms(dispatch);
         getAllMenus(dispatch);
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
         const user1 = sessionStorage.getItem("user");
@@ -43,7 +41,7 @@ const AppRoutes = () => {
 
             }
         }
-    }, [sessionStorage, location.pathname, navigate, previousPath]);
+    }, [location.pathname, navigate, previousPath]);
 
     return (
         <>

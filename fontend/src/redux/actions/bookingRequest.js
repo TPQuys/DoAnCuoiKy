@@ -1,6 +1,5 @@
-import axios from "axios";
 import {
-    addBookingStart, addBookingSuccess, addBookingFailed,
+    addBookingStart, addBookingFailed,
     updateBookingStart, updateBookingSuccess, updateBookingFailed,
     deleteBookingStart, deleteBookingSuccess, deleteBookingFailed,
     getBookingsSuccess,
