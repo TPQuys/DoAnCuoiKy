@@ -6,6 +6,7 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.1.1",
+    "@mui/lab": "^6.0.0-beta.13",
     "@mui/material": "^6.1.4",
     "@mui/x-date-pickers": "^7.20.0",
     "@reduxjs/toolkit": "^1.7.0",
@@ -53,5 +54,4 @@
     ]
   },
   "proxy": "http://localhost:8000/"
-
 }

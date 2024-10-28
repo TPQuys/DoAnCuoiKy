@@ -22,7 +22,7 @@ const PaymentPage = () => {
     }
     useEffect(() => {
         getBooking()
-    }, [])
+    })
 
     const handlePayment = async () => {
         setIsDisable(true)
@@ -83,20 +83,20 @@ const PaymentPage = () => {
 
     const getTime = (time) => {
         if (time) {
-            if (time == "MORNING") {
+            if (time === "MORNING") {
                 return "Buổi sáng"
             }
-            if (time == "AFTERNOON") {
+            if (time === "AFTERNOON") {
                 return "Buổi chiều"
             }
-            if (time == "ALLDAY") {
+            if (time === "ALLDAY") {
                 return "Cả ngày"
             }
         }
     }
 
     const rommPriceByEvent = (event,roomPrice) =>{
-        if(event?.Time=="ALLDAY"){
+        if(event?.Time==="ALLDAY"){
             console.log(roomPrice*1.5)
             return roomPrice*1.5
         }
@@ -113,7 +113,7 @@ const PaymentPage = () => {
                     <div className='payment-room'>
                         <h3>Nhà hàng: {event.RoomEvent?.RoomName}</h3>
                         <h4>Giá: {(event.RoomEvent?.Price)?.toLocaleString()} VND</h4>
-                        <img src={event.RoomEvent?.RoomImage} className='payment-img'></img>
+                        <img src={event.RoomEvent?.RoomImage} className='payment-img' alt="Room-img"></img>
                     </div>
 
                     <div className='payment-event'>

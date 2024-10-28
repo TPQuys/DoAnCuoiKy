@@ -4,15 +4,18 @@ import { useEffect, useState } from "react";
 import "./navbar.css";
 import { logOut } from "../../redux/actions/apiRequest";
 import { createAxios } from "../../createInstance";
-import { logOutSuccess } from "../../redux/reducers/authSlice";
-import { FaHome, FaUtensils, FaTag, FaNewspaper, FaCalendarAlt ,FaUserCircle, FaUser } from 'react-icons/fa';
+import { FaHome, 
+  // FaUtensils, 
+  FaTag, 
+  // FaNewspaper, 
+  FaCalendarAlt ,FaUserCircle, FaUser } from 'react-icons/fa';
 import { CiLogin } from "react-icons/ci";
 import { IoCloseCircle } from "react-icons/io5";
-import { GiFlowers } from "react-icons/gi";
+// import { GiFlowers } from "react-icons/gi";
 
 const NavBar = () => {
   const user = useSelector((state) => state.auth.login.currentUser);
-  const [accessToken,setAccessToken] = useState(user?.accessToken);
+  const [accessToken] = useState(user?.accessToken);
   const id = user?._id;
   const dispatch = useDispatch();
   const navigate = useNavigate();

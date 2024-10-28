@@ -1,5 +1,4 @@
 import "./footer.css";
-import { Link, useNavigate } from "react-router-dom";
 import FacebookIcon from '@mui/icons-material/Facebook';
 import EmailIcon from '@mui/icons-material/Email';
 import WebIcon from '@mui/icons-material/Web';
