@@ -27,7 +27,7 @@ const authController = {
                 sameSite: "strict",
             });
 
-            const { password, ...other } = user;
+            const { password, resetToken, tokenExpiry, ...other } = user;
             res.status(200).json({ user: other, accessToken });
         } catch (error) {
             res.status(400).json({ message: error.message });
