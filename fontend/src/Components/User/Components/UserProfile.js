@@ -7,18 +7,24 @@ import {
     Grid,
     Button,
     Avatar,
+    Icon,
+    Dialog,
+    DialogTitle,
+    DialogContent
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
-import { updateUser } from '../../redux/actions/userRequest';
+import { sendResetPassword, updateUser, uploadAvatar } from '../../../redux/actions/userRequest';
 import { useDispatch } from 'react-redux';
+import { FaEdit } from 'react-icons/fa';
+import DropzoneImagePicker from './DropzoneImagePicker';
 
 const validationSchema = Yup.object({
     fullname: Yup.string(),
     gender: Yup.string(),
-    dayofbirth: Yup.date().nullable().max(new Date(),"Ngày sinh không hợp lệ"),
+    dayofbirth: Yup.date().nullable().max(new Date(), "Ngày sinh không hợp lệ"),
     address: Yup.string(),
     phone: Yup.string()
         .matches(/^[0-9]+$/, "Must be only digits")
@@ -26,10 +32,34 @@ const validationSchema = Yup.object({
         .max(10, 'Must be exactly 10 digits'),
 });
 
+
+
 const MyForm = () => {
-    const user = JSON.parse(sessionStorage.getItem("user"))?.user || null
-    const dispatch = useDispatch()
-    const [edit, setEdit] = useState(false)
+    const [user, setUser] = useState(JSON.parse(sessionStorage.getItem("user"))?.user || null);
+    const dispatch = useDispatch();
+    const [edit, setEdit] = useState(false);
+    const [open, setOpen] = useState(false); // State to control modal
+    const [selectedFile, setSelectedFile] = useState(null);
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const handleUploadAvatar = async () => {
+        console.log(selectedFile)
+        if (selectedFile) {
+            const avatarUrl = await uploadAvatar(dispatch, selectedFile, user); // Gọi hàm uploadAvatar
+            setUser((prevUser) => ({ ...prevUser, avatar: avatarUrl })); // Cập nhật avatar mới cho user
+            handleClose(); // Đóng modal
+        }
+    };
+
+    const handleResetPassword = async (user) => {
+        const confirmReset = window.confirm("Bạn có chắc chắn muốn đổi mật khẩu?");
+        if (confirmReset) {
+            await sendResetPassword(user, console.log);
+        }
+    };
+
     return (
         <Formik
             initialValues={{
@@ -40,14 +70,48 @@ const MyForm = () => {
                 phone: user.phone || '',
             }}
             validationSchema={validationSchema}
-            onSubmit={(values) => {
-                updateUser(dispatch,values)
-                console.log(values)
+            onSubmit={async (values) => {
+                const res = await updateUser(dispatch, values);
+                setUser(res.user);
+                setEdit(false);
             }}
         >
-            {({ errors, touched, handleChange, values, setFieldValue }) => (
+            {({ errors, touched, handleChange, values, setFieldValue, resetForm }) => (
                 <Form>
-                    <Avatar sx={{ width: "200px", height: "200px" }} />
+                    <Avatar sx={{ width: "200px", height: "200px" }} src={user.avatar}/>
+                    <Button
+                        sx={{ position: "relative", bottom: "55px", left: "65px", color: "black", fontSize: "20px", padding: 0 }}
+                        onClick={handleOpen} // Open modal on click
+                    >
+                        <FaEdit />
+                    </Button>
+
+                    {/* Password Reset Button */}
+                    <Button
+                        sx={{ color: 'red' }}
+                        onClick={() => handleResetPassword(user)}
+                    >
+                        Đổi mật khẩu
+                    </Button>
+
+                    {/* Modal for Image Picker */}
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>Chọn ảnh mới</DialogTitle>
+                        <DialogContent sx={{ justifyItems: "center" }}>
+                            <DropzoneImagePicker setSelectedFile={setSelectedFile} />
+                            <Button
+                                variant='contained'
+                                type='button'
+                                title="Sửa"
+                                sx={{ background: "#81695e", marginTop: "20px" }}
+                                onClick={handleUploadAvatar} // Tải lên ảnh khi nhấn nút xác nhận
+                            >
+                                Xác nhận
+                            </Button>
+                        </DialogContent>
+
+                    </Dialog>
+
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -60,12 +124,11 @@ const MyForm = () => {
                                 label="Họ tên"
                                 fullWidth
                                 disabled={!edit}
-                                value={values.fullname} // Thêm dòng này
-                                onChange={handleChange} // Thêm dòng này
+                                value={values.fullname}
+                                onChange={handleChange}
                                 error={touched.fullname && Boolean(errors.fullname)}
                                 helperText={touched.fullname && errors.fullname}
-                            >
-                            </TextField>
+                            />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -88,7 +151,6 @@ const MyForm = () => {
                                 <MenuItem value="male">Nam</MenuItem>
                                 <MenuItem value="female">Nữ</MenuItem>
                                 <MenuItem value="orther">Khác</MenuItem>
-
                             </TextField>
                         </Grid>
 
@@ -101,7 +163,6 @@ const MyForm = () => {
                                                 width: "100%",
                                                 '& .MuiInputBase-input': {
                                                     color: 'black',
-                                                    // backgroundColor: 'white',
                                                 },
                                                 '& .MuiInputBase-input.Mui-disabled': {
                                                     WebkitTextFillColor: 'black',
@@ -133,14 +194,12 @@ const MyForm = () => {
                                     '& .MuiInputBase-input.Mui-disabled': {
                                         WebkitTextFillColor: 'black',
                                     },
-                                }}     
-                                value={values.phone} // Thêm dòng này
-                                onChange={handleChange} // Thêm dòng này
+                                }}
+                                value={values.phone}
+                                onChange={handleChange}
                                 error={touched.phone && Boolean(errors.phone)}
                                 helperText={touched.phone && errors.phone}
-                                
-                            >
-                            </TextField>
+                            />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -153,21 +212,24 @@ const MyForm = () => {
                                         WebkitTextFillColor: 'black',
                                     },
                                 }}
-                                value={values.address} // Thêm dòng này
-                                onChange={handleChange} // Thêm dòng này
+                                value={values.address}
+                                onChange={handleChange}
                                 error={touched.address && Boolean(errors.address)}
                                 helperText={touched.address && errors.address}
-                            >
-                            </TextField>
+                            />
                         </Grid>
                     </Grid>
                     {!edit ? (
-                        <Button type='button' title="Sửa" onClick={() => setEdit(true)} >Sửa</Button>
+                        <Button variant='contained' type='button' title="Sửa" sx={{ background: "#81695e" }}
+                            onClick={() => setEdit(true)} >Sửa</Button>
                     ) : (
                         <Grid item xs={12} sm={6}>
-
-                            <Button title="Lưu" type="submit" >Lưu</Button>
-                            <Button title="Hủy" onClick={() => setEdit(false)} >Hủy</Button>
+                            <Button title="Lưu" type="submit" sx={{ background: "#81695e", marginRight: "10px" }} variant='contained' >Lưu</Button>
+                            <Button title="Hủy" sx={{ background: "lightgrey", color: "black" }} variant='contained'
+                                onClick={() => {
+                                    setEdit(false)
+                                    resetForm({ values: { ...user, dayofbirth: dayjs(user.dayofbirth) } });
+                                }} >Hủy</Button>
                         </Grid>
                     )}
                 </Form>

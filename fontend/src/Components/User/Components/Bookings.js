@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
-import { getBookingByUser } from "../../redux/actions/bookingRequest";
+import { getBookingByUser } from "../../../redux/actions/bookingRequest";
 
 const formatDate = (date) => {
     if (date) {

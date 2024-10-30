@@ -1,8 +1,8 @@
-// import axios from "axios";
 import { getUsersStart, getUsersSuccess, getUsersFailed } from "../reducers/userSlice";
 import { toast } from "react-toastify";
 import { updateUserStart,updateUserSuccess,updateUserFailed } from "../reducers/userSlice";
 import { createAxios } from "../../createInstance";
+import axios from "axios";
 
 export const getAllUsers = async (dispatch, axiosJWT) => {
     dispatch(getUsersStart());
@@ -19,7 +19,6 @@ export const getAllUsers = async (dispatch, axiosJWT) => {
     try {
         const res = await axiosJWT.get("/v1/user")
         dispatch(getUsersSuccess(res.data)); 
-        console.log(res.data)
         toast.success("Lấy danh sách người dùng thành công!");
     } catch (error) {
         console.error("Get users failed:", error);
@@ -35,14 +34,61 @@ export const updateUser = async (dispatch, userData) => {
     let axiosJWT = createAxios(user);
     try {
         const res = await axiosJWT.put(`/v1/user/${user.user.id}`, userData);
-        console.log(res.data)
         const editedUser = {...user,user:res.data}
         dispatch(updateUserSuccess(editedUser))
-        
-        return res.data
+        toast.success("Cập nhật thông tin người dùng thành công!");
+        return editedUser
     } catch (error) {
-        console.error("Thêm booking thất bại:", error);
-        toast.error("Không đặt phòng!");
+        console.error("Update user failed:", error);
+        toast.error("Cập nhật thất bại!");
         dispatch(updateUserFailed());
+    }
+};
+
+// Hàm gửi email reset password
+export const sendResetPassword = async (userData,setIsdisable) => {
+    try {
+        setIsdisable(true)
+        await axios.post(`/v1/user/reset_password`, userData);
+        toast.success("Đã gửi mail xác nhận đến gmail của bạn!");
+    } catch (error) {
+        setIsdisable(false)
+        console.error("Failed:", error);
+        toast.error("Gửi email thất bại!");
+    }
+};
+
+// Hàm gửi update password
+export const updatePassword = async (token,newPassword,navigate) => {
+    try {
+        await axios.put(`/v1/user/update_password`, {token,newPassword});
+        toast.success("Cập nhật mật khẩu thành công!");
+        navigate("/")
+    } catch (error) {
+        console.error("Update user failed:", error);
+        toast.error("Cập nhật thất bại!");
+    }
+};
+
+// Hàm tải ảnh
+export const uploadAvatar = async (dispatch, file, user) => {
+    try {
+        const formData = new FormData();
+        formData.append('avatar', file); // Thêm file vào FormData
+        dispatch(getUsersStart())
+        // Gửi yêu cầu PUT với FormData
+        const res = await axios.put(`/v1/user/${user.id}/avatar`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data', // Đảm bảo Content-Type được thiết lập đúng
+            },
+        });
+        const avatarUrl = `${res.data.avatarUrl}?t=${new Date().getTime()}`;
+        dispatch(getUsersSuccess({...user,avater:avatarUrl}))
+        toast.success("Cập nhật ảnh đại diện thành công!"); // Thông báo thành công
+        return avatarUrl
+    } catch (error) {
+        console.error("Cập nhật ảnh đại diện thất bại:", error);
+        toast.error("Cập nhật thất bại!"); // Thông báo thất bại
+        dispatch(getUsersFailed()); 
     }
 };
