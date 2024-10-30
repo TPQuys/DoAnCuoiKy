@@ -48,6 +48,40 @@ const updateUser = async (req, res) => {
     }
 };
 
+const sendResetPassword = async (req, res) => {
+    try {
+        console.log(req.body.email)
+        const result = await UserService.sendResetPassword(req.body.email);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
+
+const updatePassword = async (req, res) => {
+    try {
+        const result = await UserService.updatePassword(req.body.token,req.body.newPassword);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
+
+const uploadAvatar  = async (req, res) => {
+    const userId = req.params.id;
+
+    if (!req.file) {
+        return res.status(400).json({ error: "Không có tệp nào được tải lên." });
+    }
+
+    try {
+        const avatarUrl = await UserService.updateAvatar(userId, req.file); // Gọi hàm updateAvatar
+        res.status(200).json({ message: "Avatar đã được cập nhật!", avatarUrl });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
 // Xóa user
 const deleteUser = async (req, res) => {
     try {
@@ -64,4 +98,7 @@ module.exports = {
     getUserById,
     updateUser,
     deleteUser,
+    sendResetPassword,
+    updatePassword,
+    uploadAvatar
 };
