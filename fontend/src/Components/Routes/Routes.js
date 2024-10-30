@@ -8,6 +8,8 @@ import BookingPage from "../BookingPage/BookingPage";
 import PaymentPage from "../Payment/PaymentPage";
 import UserPage from "../User/UserPage";
 import Footer from "../Footer/Footer"
+import ResetPassword from "../ResetPassword/ResetPassword"
+import ResetPasswordEmail from "../ResetPassword/ResetPasswordEmail"
 import { toast } from "react-toastify";
 import { getAllRooms } from "../../redux/actions/roomRequest";
 import { getAllMenus } from "../../redux/actions/menuRequest";
@@ -54,6 +56,8 @@ const AppRoutes = () => {
                     <Route path="/booking/:roomId" element={<BookingPage />} />
                     <Route path="/payment" element={<PaymentPage />} />
                     <Route path="/user" element={<UserPage />} />
+                    <Route path="/reset_password" element={<ResetPassword />} />
+                    <Route path="/reset_password_email" element={<ResetPasswordEmail />} />
                 </Routes>
             </div>
             {location.pathname !== "/login" && location.pathname !== "/register" && <Footer />}
