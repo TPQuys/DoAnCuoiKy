@@ -1,4 +1,3 @@
-import axios from "axios";
 import {
     addEventStart, addEventSuccess, addEventFailed,
     deleteEventSuccess, updateEventSuccess,

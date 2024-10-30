@@ -1,5 +1,5 @@
 import "./login.css";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../redux/actions/apiRequest";
 import { Formik, Form } from "formik";
@@ -31,7 +31,7 @@ const Login = () => {
                 email: values.email,
                 password: values.password,
             };
-            loginUser(newUser, dispatch, navigate).then(setIsDisable(false));
+            loginUser(newUser, dispatch, navigate).then(()=>setIsDisable(false));
         };
 
     const handleClickShowPassword = () => {
@@ -112,8 +112,8 @@ const Login = () => {
                         </Form>
                     )}
                 </Formik>
-                <div className="text-center mt-3">Chưa có tài khoản?</div>
-                <Link className="login-register-link" to="/register">Đăng kí miễn phí ngay</Link>
+                <div className="text-center mt-3">Chưa có tài khoản? <Link className="login-register-link" to="/register">Đăng kí miễn phí ngay</Link></div>
+                <Link className="login-register-link" to="/reset_password_email">Quên mật khẩu ?</Link>
             </div>
             </div>
         </section>

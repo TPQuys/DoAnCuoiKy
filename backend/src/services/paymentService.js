@@ -59,6 +59,7 @@ class PaymentService {
 
     async postZaloApi(booking) {
         const findBooking = await bookingRepository.getBookingById(booking.BookingID)
+        if(booking.Payment){
         const eventData = findBooking?.Event || {};
         const roomEventData = eventData?.RoomEvent || {};
         const menuData = eventData?.Menu || {};
@@ -104,6 +105,8 @@ class PaymentService {
 
             const result = await axios.post(config.endpoint, null, { params: order })
             return result.data
+        }else 
+        throw "Sự kiện này đã được thanh toán trước"
         }
     }
     async callback(req) {

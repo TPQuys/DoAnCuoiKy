@@ -57,6 +57,17 @@ form {
   color: rgb(189, 0, 189) !important;
   font-weight: 700;
 }
+
+.login-reset-password-link {
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+  margin-top: 1rem;
+  color: rgb(189, 154, 0) !important;
+  font-weight: 700;
+}
+
+
 .text-danger {
   color: red;
   font-size: 0.875rem;

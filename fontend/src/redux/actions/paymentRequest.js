@@ -1,11 +1,7 @@
-import axios from "axios";
 import {
     addPaymentStart, addPaymentSuccess, addPaymentFailed,
     updatePaymentStart, updatePaymentSuccess, updatePaymentFailed,
     deletePaymentStart, deletePaymentSuccess, deletePaymentFailed,
-    getPaymentsStart,
-    getPaymentsSuccess,
-    getPaymentsFailed
 } from "../reducers/paymentSlice";
 import { toast } from "react-toastify";
 import { createAxios } from '../../createInstance'; // Import hàm createAxios
