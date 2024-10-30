@@ -50,6 +50,18 @@ User.init(
             allowNull: true,
             unique: true,
         },
+        resetToken: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        tokenExpiry: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        avatar:{
+            type: DataTypes.STRING,
+            allowNull: true,
+        }
     },
     {
         sequelize,
