@@ -22,7 +22,7 @@ const PaymentPage = () => {
     }
     useEffect(() => {
         getBooking()
-    })
+    },[])
 
     const handlePayment = async () => {
         setIsDisable(true)
