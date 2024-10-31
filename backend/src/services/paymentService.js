@@ -59,55 +59,56 @@ class PaymentService {
 
     async postZaloApi(booking) {
         const findBooking = await bookingRepository.getBookingById(booking.BookingID)
-        if(booking.Payment){
-        const eventData = findBooking?.Event || {};
-        const roomEventData = eventData?.RoomEvent || {};
-        const menuData = eventData?.Menu || {};
-        const foodData = menuData?.Food || [];
-        const drinkData = menuData?.Drinks || [];
+        if (!booking.Payment) {
+            const eventData = findBooking?.Event || {};
+            const roomEventData = eventData?.RoomEvent || {};
+            const menuData = eventData?.Menu || {};
+            const foodData = menuData?.Food || [];
+            const drinkData = menuData?.Drinks || [];
 
-        // Tính tổng giá của thức ăn và đồ uống
-        const totalPriceFoods = this.calculateTotal(foodData, 'MenuFoods');
-        const totalPriceDrinks = this.calculateTotal(drinkData, 'MenuDrinks');
+            // Tính tổng giá của thức ăn và đồ uống
+            const totalPriceFoods = this.calculateTotal(foodData, 'MenuFoods');
+            const totalPriceDrinks = this.calculateTotal(drinkData, 'MenuDrinks');
 
-        const totalTable = eventData?.TotalTable || 1; // Tổng số bàn, mặc định là 1 nếu không có
-        const Time = eventData?.Time; // Tổng số bàn, mặc định là 1 nếu không có
-        const roomPrice = (Time === "ALLDAY"? roomEventData?.Price *1.5 : roomEventData?.Price) || 0; // Giá phòng
-        console.log(roomPrice)
-        // Tính tổng tiền thanh toán
-        const Amount = (totalPriceFoods + totalPriceDrinks) * totalTable + roomPrice;
-        await ngrok.kill()
-        const url = await ngrok.connect(8000)
-        const BookingID = findBooking.BookingID
-        const embed_data = {
-            redirecturl: "http://localhost:3000/payment"
-        };
-        if (Amount && BookingID && url) {
-            const items = [BookingID, findBooking.User.email];
-            const transID = Math.floor(Math.random() * 1000000);
-            const order = {
-                app_id: config.app_id,
-                app_trans_id: `${moment().format('YYMMDD')}_${transID}`, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
-                app_user: "user123",
-                app_time: Date.now(), // miliseconds
-                item: JSON.stringify(items),
-                embed_data: JSON.stringify(embed_data),
-                amount: Amount,
-                description: `Lazada - Payment for the order #${transID}`,
-                bank_code: "",
-                //dùng ngrok để tạo url này
-                callback_url: url + "/v1/payment/callback"
+            const totalTable = eventData?.TotalTable || 1; // Tổng số bàn, mặc định là 1 nếu không có
+            const Time = eventData?.Time; // Tổng số bàn, mặc định là 1 nếu không có
+            const roomPrice = (Time === "ALLDAY" ? roomEventData?.Price * 1.5 : roomEventData?.Price) || 0; // Giá phòng
+            console.log(roomPrice)
+            // Tính tổng tiền thanh toán
+            const Amount = (totalPriceFoods + totalPriceDrinks) * totalTable + roomPrice;
+            await ngrok.kill()
+            const url = await ngrok.connect(8000)
+            const BookingID = findBooking.BookingID
+            const embed_data = {
+                redirecturl: "http://localhost:3000/payment"
             };
+            if (Amount && BookingID && url) {
+                const items = [BookingID, findBooking.User.email];
+                const transID = Math.floor(Math.random() * 1000000);
+                const order = {
+                    app_id: config.app_id,
+                    app_trans_id: `${moment().format('YYMMDD')}_${transID}`, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
+                    app_user: "user123",
+                    app_time: Date.now(), // miliseconds
+                    item: JSON.stringify(items),
+                    embed_data: JSON.stringify(embed_data),
+                    amount: Amount,
+                    description: `Lazada - Payment for the order #${transID}`,
+                    bank_code: "",
+                    //dùng ngrok để tạo url này
+                    callback_url: url + "/v1/payment/callback"
+                };
 
-            // appid|app_trans_id|appuser|amount|apptime|embeddata|item
-            const data = config.app_id + "|" + order.app_trans_id + "|" + order.app_user + "|" + order.amount + "|" + order.app_time + "|" + order.embed_data + "|" + order.item;
-            order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
+                // appid|app_trans_id|appuser|amount|apptime|embeddata|item
+                const data = config.app_id + "|" + order.app_trans_id + "|" + order.app_user + "|" + order.amount + "|" + order.app_time + "|" + order.embed_data + "|" + order.item;
+                order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
 
-            const result = await axios.post(config.endpoint, null, { params: order })
-            return result.data
-        }else 
-        throw "Sự kiện này đã được thanh toán trước"
+                const result = await axios.post(config.endpoint, null, { params: order })
+                return result.data
+            }
         }
+        else
+            throw "Sự kiện này đã được thanh toán trước"
     }
     async callback(req) {
         let result = {};
@@ -155,18 +156,18 @@ class PaymentService {
             result.return_message = ex.message;
         }
         return result
-        }
+    }
     async getPaymentById(paymentId) {
-            return await PaymentRepository.getPaymentById(paymentId);
-        }
+        return await PaymentRepository.getPaymentById(paymentId);
+    }
 
     async updatePayment(paymentId, updatedData) {
-            return await PaymentRepository.updatePayment(paymentId, updatedData);
-        }
+        return await PaymentRepository.updatePayment(paymentId, updatedData);
+    }
 
     async deletePayment(paymentId) {
-            return await PaymentRepository.deletePayment(paymentId);
-        }
+        return await PaymentRepository.deletePayment(paymentId);
     }
+}
 
 module.exports = new PaymentService();

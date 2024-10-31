@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import Button from '@mui/material/Button';
 import Header from '../Header/Header'
 import { sendResetPassword } from "../../redux/actions/userRequest";
-import axios from "axios";
 const HomePage = () => {
   return (
     <main className="home-container">

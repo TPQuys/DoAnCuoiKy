@@ -19,6 +19,7 @@ import { sendResetPassword, updateUser, uploadAvatar } from '../../../redux/acti
 import { useDispatch } from 'react-redux';
 import { FaEdit } from 'react-icons/fa';
 import DropzoneImagePicker from './DropzoneImagePicker';
+import { toast } from 'react-toastify';
 
 const validationSchema = Yup.object({
     fullname: Yup.string(),
@@ -37,6 +38,7 @@ const MyForm = () => {
     const [edit, setEdit] = useState(false);
     const [open, setOpen] = useState(false); // State to control modal
     const [selectedFile, setSelectedFile] = useState(null);
+    const [isDisable, setIsDisable] = useState(false);
 
     console.log(user)
 
@@ -45,12 +47,22 @@ const MyForm = () => {
 
     const handleUploadAvatar = async () => {
         if (selectedFile) {
-            console.log(selectedFile)
-            // const avatarUrl = await uploadAvatar(dispatch, selectedFile, user); // Gọi hàm uploadAvatar
-            // setUser((prevUser) => ({ ...prevUser, avatar: avatarUrl })); // Cập nhật avatar mới cho user
-            // handleClose(); // Đóng modal
+            if (selectedFile?.type.startsWith("image/")) {
+                setIsDisable(true)
+                const newUser = await uploadAvatar(dispatch, selectedFile, user); // Gọi hàm uploadAvatar
+                setUser(newUser); // Cập nhật avatar mới cho user
+                setIsDisable(false)
+                handleClose(); // Đóng modal
+            } else {
+                toast.error("Vui lòng chọn một tệp hình ảnh.");
+                setIsDisable(false)
+            }
+        }
+        else {
+            toast.error("Vui lòng chọn một tệp hình ảnh.");
         }
     };
+
 
     const handleResetPassword = async (user) => {
         const confirmReset = window.confirm("Bạn có chắc chắn muốn đổi mật khẩu?");
@@ -210,7 +222,7 @@ const MyForm = () => {
                                     helperText={touched.address && errors.address}
                                 />
                             </Grid>
-                            <Grid xs={12} sm={12} sx={{marginTop:"20px"}}>
+                            <Grid xs={12} sm={12} sx={{ marginTop: "20px" }}>
                                 {!edit ? (
                                     <Button
                                         variant='contained'
@@ -257,7 +269,9 @@ const MyForm = () => {
                             <DropzoneImagePicker setSelectedFile={setSelectedFile} />
                             <Button
                                 variant='contained'
+                                disabled={isDisable}
                                 type='button'
+                                title="Sửa"
                                 sx={{ background: "#81695e", marginTop: "20px" }}
                                 onClick={handleUploadAvatar} // Tải lên ảnh khi nhấn nút xác nhận
                             >
