@@ -72,6 +72,7 @@ export const updatePassword = async (token,newPassword,navigate) => {
 
 // Hàm tải ảnh
 export const uploadAvatar = async (dispatch, file, user) => {
+    const curentUser = JSON.parse(sessionStorage.getItem("user"));
     try {
         const formData = new FormData();
         formData.append('avatar', file); // Thêm file vào FormData
@@ -83,9 +84,11 @@ export const uploadAvatar = async (dispatch, file, user) => {
             },
         });
         const avatarUrl = `${res.data.avatarUrl}?t=${new Date().getTime()}`;
-        dispatch(getUsersSuccess({...user,avater:avatarUrl}))
+        const newUser = {...user,avatar:avatarUrl}
+        dispatch(getUsersSuccess(newUser))
+        sessionStorage.setItem("user",JSON.stringify({...curentUser,user:newUser}))
         toast.success("Cập nhật ảnh đại diện thành công!"); // Thông báo thành công
-        return avatarUrl
+        return newUser
     } catch (error) {
         console.error("Cập nhật ảnh đại diện thất bại:", error);
         toast.error("Cập nhật thất bại!"); // Thông báo thất bại

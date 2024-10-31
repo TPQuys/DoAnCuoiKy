@@ -1,9 +1,10 @@
 import "./bookingPage.css";
-import { Link, useParams } from "react-router-dom";
+import { Link,  useParams } from "react-router-dom";
 import Button from '@mui/material/Button';
 import Header from "../Header/Header";
 import Form from "./component/BookingForm"
 import React, { useRef, useState } from "react";
+import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch
 import { addEvent } from "../../redux/actions/eventRequest"; // Import hàm thêm sự kiện từ API
 import { toast } from "react-toastify";
@@ -76,8 +77,9 @@ const HomePage = () => {
                         )
                         if (newBooking) {
                             console.log(newBooking)
-                            setBookingSuccess(true)
-                            sessionStorage.setItem("booking", JSON.stringify(newBooking))
+                        setBookingSuccess(true)
+                        sessionStorage.setItem("booking",JSON.stringify(newBooking))
+
                         }
                     }
                     else {
@@ -209,3 +211,15 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};

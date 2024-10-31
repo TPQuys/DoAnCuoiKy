@@ -112,8 +112,8 @@ class UserService {
             const avatarUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/Event/public/${userId}/avatar.png`;
 
             // Cập nhật avatar URL vào cơ sở dữ liệu
-            await UserRepository.updateUser(userId, { avatar: avatarUrl });
-
+            const user = await UserRepository.updateUser(userId, { avatar: avatarUrl });
+            console.log(user)
             return avatarUrl; // Trả về URL của avatar
         }
     }

@@ -68,7 +68,13 @@ const NavBar = () => {
       {/* <Link to="/news" className="navbar-home"><FaNewspaper /> Tin tức </Link> */}
       {user ? (
         <>
-          <Link to="/user" className="navbar-user"><FaUser /> Cá nhân <span> {user.username} </span> </Link>
+          <div className="navbar-dropdown">
+            <Link to="/user" className="navbar-home"><FaUser /> Cá nhân <span> {user.username} </span> </Link>
+            <div className="dropdown-menu">
+              <Link to="/user/info">Thông tin cá nhân</Link>
+              <Link to="/payment">Thanh toán</Link>
+            </div>
+          </div>
           <Link className="navbar-logout" onClick={handleLogOut}> <IoCloseCircle /> Đăng xuất</Link>
         </>
       ) : (
