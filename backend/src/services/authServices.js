@@ -1,10 +1,7 @@
-// services/authService.js
 const supabase = require('../utils/supabase/supabaseClient');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const authRepository = require('../repositories/authRepository');
-
-let refreshTokens = [];
 
 const authService = {
     registerUser: async (email, password) => {
@@ -26,7 +23,6 @@ const authService = {
         }
 
         const newUser = await authRepository.createUser(email, hashed);
-
         return newUser;
     },
 
@@ -59,60 +55,21 @@ const authService = {
     },
 
     generateAccessToken: (user) => {
-        return jwt.sign({
+        const payload = {
             id: user.id,
             email: user.email,
-        }, process.env.JWT_ACCESS_KEY, { expiresIn: "60s" });
+        };
+    
+        const options = {
+            expiresIn: "1h", 
+        };
+    
+        return jwt.sign(payload, process.env.JWT_ACCESS_KEY, options);
     },
-
-    generateRefreshToken: (user) => {
-        return jwt.sign({
-            id: user.id,
-            email: user.email,
-        }, process.env.JWT_REFRESH_KEY, { expiresIn: "9h" });
-    },
-
-    requestRefreshToken: (refreshToken) => {
-        if (!refreshToken) throw new Error("You're not authenticated");
-        if (!refreshTokens.includes(refreshToken)) {
-            throw new Error("Refresh token is not valid");
-        }
-
-        return new Promise((resolve, reject) => {
-            jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY, (err, user) => {
-                if (err) {
-                    return reject("Refresh token is not valid");
-                }
-
-                refreshTokens = refreshTokens.filter(token => token !== refreshToken);
-                const newAccessToken = authService.generateAccessToken(user);
-                const newRefreshToken = authService.generateRefreshToken(user);
-                refreshTokens.push(newRefreshToken);
-
-                resolve({ newAccessToken, newRefreshToken });
-            });
-        });
-    },
-
-    logoutUser: async (refreshToken) => {
-        if (!refreshToken) throw new Error("Bạn chưa đăng nhập.");
-        
-        refreshTokens = refreshTokens.filter(token => token !== refreshToken);
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-            throw new Error(error.message);
-        }
-
+    
+    logoutUser: async () => {
         return "Đăng xuất thành công.";
     },
-
-    addRefreshToken: (token) => {
-        refreshTokens.push(token);
-    },
-
-    removeRefreshToken: (token) => {
-        refreshTokens = refreshTokens.filter(t => t !== token);
-    }
 };
 
 module.exports = authService;

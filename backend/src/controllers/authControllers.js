@@ -17,46 +17,18 @@ const authController = {
         try {
             const user = await authService.loginUser(req.body.email, req.body.password);
             const accessToken = authService.generateAccessToken(user);
-            const refreshToken = authService.generateRefreshToken(user);
-            authService.addRefreshToken(refreshToken);
-
-            res.cookie("refreshToken", refreshToken, {
-                httpOnly: true,
-                secure: false,
-                path: "/",
-                sameSite: "strict",
-            });
-
-            const { password, resetToken, tokenExpiry, ...other } = user;
+            const { password, ...other } = user;
             res.status(200).json({ user: other, accessToken });
         } catch (error) {
             res.status(400).json({ message: error.message });
         }
     },
 
-    requestRefreshToken: async (req, res) => {
-        const refreshToken = req.cookies.refreshToken;
-        try {
-            const { newAccessToken, newRefreshToken } = await authService.requestRefreshToken(refreshToken);
-            res.cookie("refreshToken", newRefreshToken, {
-                httpOnly: true,
-                secure: false,
-                path: "/",
-                sameSite: "strict",
-            });
-
-            res.status(200).json({ accessToken: newAccessToken });
-        } catch (error) {
-            res.status(401).json({ message: error.message });
-        }
-    },
-
     userLogout: async (req, res) => {
-        const refreshToken = req.cookies.refreshToken;
         try {
-            const message = await authService.logoutUser(refreshToken);
-            res.clearCookie("refreshToken");
-            res.status(200).json(message);
+            // Không cần xử lý refreshToken
+            res.clearCookie("accessToken");
+            res.status(200).json({ message: "Đăng xuất thành công." });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
