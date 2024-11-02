@@ -60,7 +60,7 @@ class UserService {
             to: email,
             subject: 'Password Reset',
             html: `<p>Bấm vào đường link sau để reset mật khẩu của bạn:</p>
-                   <a href="http://localhost:3000/reset_password?token=${token}">Reset Password</a>`
+                   <a href="${process.env.FRONTEND_URL}/reset_password?token=${token}">Reset Password</a>`
         };
 
         // Gửi email
