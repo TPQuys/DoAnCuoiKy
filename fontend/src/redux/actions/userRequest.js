@@ -1,8 +1,8 @@
 import { getUsersStart, getUsersSuccess, getUsersFailed } from "../reducers/userSlice";
 import { toast } from "react-toastify";
 import { updateUserStart,updateUserSuccess,updateUserFailed } from "../reducers/userSlice";
-import { createAxios } from "../../createInstance";
-import axios from "axios";
+import { createAxios } from '../../utils/createInstance'; // Import hàm createAxios
+import axios from "../../utils/axiosConfig";
 
 export const getAllUsers = async (dispatch, axiosJWT) => {
     dispatch(getUsersStart());

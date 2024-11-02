@@ -4,7 +4,7 @@ import {
     deletePaymentStart, deletePaymentSuccess, deletePaymentFailed,
 } from "../reducers/paymentSlice";
 import { toast } from "react-toastify";
-import { createAxios } from '../../createInstance'; // Import hàm createAxios
+import { createAxios } from '../../utils/createInstance'; // Import hàm createAxios
 
 // Hàm thêm payment
 export const addPayment = async (dispatch, paymentData) => {

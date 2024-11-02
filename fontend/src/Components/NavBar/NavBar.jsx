@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import "./navbar.css";
 import { logOut } from "../../redux/actions/apiRequest";
-import { createAxios } from "../../createInstance";
+import { createAxios } from "../../utils/createInstance";
 import { FaHome, 
   // FaUtensils, 
   FaTag, 

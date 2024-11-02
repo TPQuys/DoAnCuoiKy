@@ -5,7 +5,7 @@ import {
     updateEventFailed, deleteEventFailed
 } from "../reducers/eventSlice";
 import { toast } from "react-toastify";
-import { createAxios } from '../../createInstance'; // Import hàm createAxios
+import { createAxios } from '../../utils/createInstance'; // Import hàm createAxios
 
 
 export const addEvent = async (dispatch, eventData) => {

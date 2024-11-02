@@ -7,7 +7,7 @@ import {
     getBookingsFailed
 } from "../reducers/bookingSlice";
 import { toast } from "react-toastify";
-import { createAxios } from '../../createInstance'; // Import hàm createAxios
+import { createAxios } from "../../utils/createInstance";
 
 
 // Hàm lấy booking theo id
