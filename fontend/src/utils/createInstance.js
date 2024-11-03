@@ -2,7 +2,8 @@ import axios from "axios";
 
 // Không cần hàm refreshToken nữa
 
-export const createAxios = (user) => {
+export const createAxios = () => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
     const newInstance = axios.create();
     newInstance.interceptors.request.use(
         async (config) => {

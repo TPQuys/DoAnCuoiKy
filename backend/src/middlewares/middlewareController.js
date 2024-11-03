@@ -21,7 +21,7 @@ const middlewareController = {
     // Kiểm tra quyền Admin
     verifyTokenAdmin: (req, res, next) => {
         middlewareController.verifyToken(req, res, () => {
-            if (req.user.id === req.params.id || req.user.admin) {
+            if ( req.user.admin) {
                 next();
             } else {
                 res.status(403).json({ message: "Bạn không có quyền truy cập." });

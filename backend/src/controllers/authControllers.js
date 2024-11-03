@@ -26,8 +26,6 @@ const authController = {
 
     userLogout: async (req, res) => {
         try {
-            // Không cần xử lý refreshToken
-            res.clearCookie("accessToken");
             res.status(200).json({ message: "Đăng xuất thành công." });
         } catch (error) {
             res.status(500).json({ message: error.message });

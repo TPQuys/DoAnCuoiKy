@@ -58,6 +58,7 @@ const authService = {
         const payload = {
             id: user.id,
             email: user.email,
+            admin: user.admin
         };
     
         const options = {

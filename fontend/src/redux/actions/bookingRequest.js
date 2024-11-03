@@ -30,7 +30,7 @@ export const getBookingByUser = async (dispatch) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     dispatch(getBookingsStart());
     if (user) {
-        let axiosJWT = createAxios(user);
+        let axiosJWT = createAxios();
         try {
             const res = await axiosJWT.get(`/v1/booking/user/${user.user.id}`);
             dispatch(getBookingsSuccess(res.data));
@@ -46,7 +46,7 @@ export const getBookingByUser = async (dispatch) => {
 export const addBooking = async (dispatch, bookingData) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     dispatch(addBookingStart());
-    let axiosJWT = createAxios(user);
+    let axiosJWT = createAxios();
     try {
         const res = await axiosJWT.post("/v1/booking", bookingData);
         getBookingByUser(dispatch)

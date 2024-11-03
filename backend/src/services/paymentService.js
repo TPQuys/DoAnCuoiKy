@@ -57,7 +57,9 @@ class PaymentService {
         return await PaymentRepository.getAllPayments();
     }
 
-    async postZaloApi(booking, url) {
+    async postZaloApi(booking,backendURL ) {
+        ngrok.kill()
+        const url = backendURL.includes("localhost") ? await ngrok.connect(8000) : backendURL
         console.log(url)
         const findBooking = await bookingRepository.getBookingById(booking.BookingID)
         if (!booking.Payment) {
