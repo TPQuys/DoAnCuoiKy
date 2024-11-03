@@ -52,10 +52,13 @@ const deletePayment = async (req, res) => {
 
 const postZaloApi = async (req, res) => {
     try {
+        const fullUrl = "https" + '://' + req.get('host') ;
         const booking = req.body
-        console.log(booking)
-
-        const result = await PaymentService.postZaloApi(booking);
+        const referer = req.headers.referer;
+        const url = new URL(referer);
+        console.log(url)
+        const result = await PaymentService.postZaloApi(booking,fullUrl);
+        console.log(result)
         res.status(200).json(result);
     } catch (error) {
         console.log(error)

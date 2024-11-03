@@ -11,6 +11,7 @@ import UserPage from "../User/UserPage";
 import UserInfoPage from "../UserInfo/UserInfo";
 import DecorePage from "../Decore/DecorePage";
 import Footer from "../Footer/Footer"
+import AdminPage from "../Admin/AdminPage"
 import { toast } from "react-toastify";
 import { getAllRooms } from "../../redux/actions/roomRequest";
 import { getAllMenus } from "../../redux/actions/menuRequest";
@@ -60,6 +61,7 @@ const AppRoutes = () => {
                     <Route path="/user" element={<UserPage />} />
                     <Route path="/user/info" element={<UserInfoPage />} />
                     <Route path="/event" element={<EventPage />} />
+                    <Route path="/admin" element={<AdminPage />} />
                     <Route path="/decore" element={<DecorePage />} />
                     <Route path="/reset_password" element={<ResetPassword />} />
                     <Route path="/reset_password_email" element={<ResetPasswordEmail />} />

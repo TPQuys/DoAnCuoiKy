@@ -38,7 +38,7 @@ const roomSlice = createSlice({
         },
         updateRoomSuccess: (state, action) => {
             state.isFetching = false;
-            const index = state.rooms.findIndex(room => room.id === action.payload.id);
+            const index = state.rooms.findIndex(room => room.RoomEventID === action.payload.RoomEventID);
             if (index !== -1) {
                 state.rooms[index] = action.payload; 
             }
@@ -53,7 +53,7 @@ const roomSlice = createSlice({
         },
         deleteRoomSuccess: (state, action) => {
             state.isFetching = false;
-            state.rooms = state.rooms.filter(room => room.id !== action.payload); 
+            state.rooms = state.rooms.filter(room => room.RoomEventID !== action.payload); 
         },
         deleteRoomFailed: (state) => {
             state.isFetching = false;

@@ -1,9 +1,9 @@
-import axios from "axios";
+import axios from "../../utils/axiosConfig";
 import { loginFailed, loginStart, loginSuccess, logOutStart, logOutSuccess, registerFailed, registerStart, registerSuccess } from "../reducers/authSlice";
 import { toast } from 'react-toastify';
 import { getBookingByUser } from "./bookingRequest";
 
-export const loginUser = async (user, dispatch, navigate,location) => {
+export const loginUser = async (user, dispatch, navigate, location) => {
     dispatch(loginStart());
     const from = sessionStorage.getItem("previousPath") || "/";
     try {
@@ -16,13 +16,13 @@ export const loginUser = async (user, dispatch, navigate,location) => {
         sessionStorage.removeItem("previousPath")
     } catch (error) {
         console.log(error.response.data?.message)
-        if(error.response.data?.message==="Email not confirmed"){
+        if (error.response.data?.message === "Email not confirmed") {
             toast.error("Email chưa được xác thực");
         }
-        if(error.response.data?.message==="Wrong username"){
+        if (error.response.data?.message === "Wrong username") {
             toast.error("Tài khoản không tồn tại");
         }
-        if(error.response.data?.message==="Wrong password"){
+        if (error.response.data?.message === "Wrong password") {
             toast.error("Mật khẩu không chính xác");
         }
         console.error("Login failed:", error.response.data);
@@ -52,12 +52,12 @@ export const logOut = async (dispatch, id, navigate, accessToken, axiosJWT) => {
             headers: { token: `Bearer ${accessToken}` },
         });
         dispatch(logOutSuccess());
-        toast.success("Đăng xuất thành công!"); 
+        toast.success("Đăng xuất thành công!");
         navigate("/login");
     } catch (error) {
         console.error("Logout failed:", error);
-        toast.error("Đăng xuất thất bại!"); 
+        toast.error("Đăng xuất thất bại!");
         dispatch(logOutSuccess());
-        
+
     }
 };

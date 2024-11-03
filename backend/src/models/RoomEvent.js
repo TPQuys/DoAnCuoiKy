@@ -39,6 +39,11 @@ const RoomEvent = sequelize.define('RoomEvent', {
     RoomImage: {
         type: DataTypes.TEXT,
         allowNull: true,
+    },
+    Status:{
+        type: DataTypes.ENUM("OPEN","CLOSE"),
+        defaultValue:"OPEN",
+        allowNull: false,
     }
 },{
     timestamps: false 

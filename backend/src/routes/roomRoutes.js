@@ -1,5 +1,6 @@
 const middlewareController = require("../middlewares/middlewareController");
 const roomController = require("../controllers/roomEventController");
+const upload = require('../utils/supabase/uploadImage');
 
 const router = require("express").Router();
 
@@ -7,15 +8,18 @@ const router = require("express").Router();
 router.get("/", roomController.getAllRoomEvents);
 
 // Lấy theo id
-router.get("/id/:id", roomController.getAllRoomEvents);
+router.get("/id/:id", roomController.getRoomEventById);
 
-// Thêm phòng mới
-router.post("/", middlewareController.verifyTokenAdmin, roomController.createRoomEvent);
-
-// Cập nhật phòng theo ID
+// Cập nhật phòng theo ID khi không có hình ảnh
 router.put("/:id", middlewareController.verifyTokenAdmin, roomController.updateRoomEvent);
 
 // Xóa phòng theo ID
 router.delete("/:id", middlewareController.verifyTokenAdmin, roomController.deleteRoomEvent);
+
+// Cập nhật phòng theo ID có hình ảnh
+router.put('/:id/image', upload.single('imageRoom'),middlewareController.verifyTokenAdmin, roomController.uploadRoom)
+
+//thêm room
+router.post('/', upload.single('imageRoom'),middlewareController.verifyTokenAdmin, roomController.addRoom)
 
 module.exports = router;

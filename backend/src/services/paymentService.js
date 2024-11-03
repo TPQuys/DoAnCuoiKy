@@ -57,7 +57,10 @@ class PaymentService {
         return await PaymentRepository.getAllPayments();
     }
 
-    async postZaloApi(booking) {
+    async postZaloApi(booking,backendURL ) {
+        ngrok.kill()
+        const url = backendURL.includes("localhost") ? await ngrok.connect(8000) : backendURL
+        console.log(url)
         const findBooking = await bookingRepository.getBookingById(booking.BookingID)
         if (!booking.Payment) {
             const eventData = findBooking?.Event || {};
@@ -76,11 +79,9 @@ class PaymentService {
             console.log(roomPrice)
             // Tính tổng tiền thanh toán
             const Amount = (totalPriceFoods + totalPriceDrinks) * totalTable + roomPrice;
-            await ngrok.kill()
-            const url = await ngrok.connect(8000)
             const BookingID = findBooking.BookingID
             const embed_data = {
-                redirecturl: "http://localhost:3000/payment"
+                redirecturl: `${process.env.FRONTEND_URL}/payment`
             };
             if (Amount && BookingID && url) {
                 const items = [BookingID, findBooking.User.email];
@@ -95,7 +96,6 @@ class PaymentService {
                     amount: Amount,
                     description: `Lazada - Payment for the order #${transID}`,
                     bank_code: "",
-                    //dùng ngrok để tạo url này
                     callback_url: url + "/v1/payment/callback"
                 };
 
@@ -103,12 +103,15 @@ class PaymentService {
                 const data = config.app_id + "|" + order.app_trans_id + "|" + order.app_user + "|" + order.amount + "|" + order.app_time + "|" + order.embed_data + "|" + order.item;
                 order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
 
-                const result = await axios.post(config.endpoint, null, { params: order })
-                return result.data
+                try {
+                    const result = await axios.post(config.endpoint, null, { params: order })
+                    return result.data
+                } catch (error) {
+                    return error
+                }
             }
-        }
-        else
-            throw "Sự kiện này đã được thanh toán trước"
+        } else
+            return "Sự kiện này đã được thanh toán trước"
     }
     async callback(req) {
         let result = {};
