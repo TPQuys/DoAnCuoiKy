@@ -1,7 +1,7 @@
 import axios from "../../utils/axiosConfig";
 import { loginFailed, loginStart, loginSuccess, logOutStart, logOutSuccess, registerFailed, registerStart, registerSuccess } from "../reducers/authSlice";
 import { toast } from 'react-toastify';
-import { getBookingByUser } from "./bookingRequest";
+import { getAllBooking, getBookingByUser } from "./bookingRequest";
 
 export const loginUser = async (user, dispatch, navigate, location) => {
     dispatch(loginStart());
@@ -10,7 +10,12 @@ export const loginUser = async (user, dispatch, navigate, location) => {
         const res = await axios.post("/v1/auth/login", user);
         toast.success("Đăng nhập thành công!"); // Thông báo thành công
         sessionStorage.setItem('user', JSON.stringify(res.data));
-        getBookingByUser(dispatch)
+        if(res.data.user.admin){
+            getAllBooking(dispatch)
+        }
+        else{
+            getBookingByUser(dispatch)
+        }
         navigate(from);
         dispatch(loginSuccess(res.data));
         sessionStorage.removeItem("previousPath")

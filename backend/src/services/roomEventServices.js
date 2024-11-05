@@ -24,11 +24,18 @@ const roomEventService = {
     },
 
     deleteRoomEvent: async (id) => {
-        const roomEvent = await roomEventRepository.close(id);
-        if (roomEvent<0) {
+        const roomEvent = await roomEventRepository.findById(id);
+        if (!roomEvent) {
             throw new Error("RoomEvent not found");
         }
-        return roomEvent
+    
+        // Kiểm tra xem RoomEvent có bất kỳ Event nào liên kết hay không
+        const events = await roomEvent.getEvents();
+        if (events.length > 0) {
+            throw new Error("Cannot delete RoomEvent because it has associated events");
+        }
+    
+        await roomEventRepository.destroy(roomEvent);
     },
 
     uploadRoomImage: async (roomId, imageFile) => {

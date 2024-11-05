@@ -4,8 +4,9 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import DropZone from './DropzoneImagePicker';
 
-const RoomFormModal = ({ open, onClose, onSubmit, initialValues, editMode, setSelectedImage }) => {
+const RoomFormModal = ({ open, onClose, onSubmit, initialValues, editMode, setSelectedImage, handleDeleteRoom }) => {
     const [isDisable, setIsDisable] = useState(false)
+    console.log(initialValues)
     const validationSchema = Yup.object().shape({
         RoomName: Yup.string().required("Tên phòng là bắt buộc"),
         HeightRoom: Yup.number().required("Chiều cao là bắt buộc").positive("Chiều cao phải là số dương"),
@@ -138,6 +139,7 @@ const RoomFormModal = ({ open, onClose, onSubmit, initialValues, editMode, setSe
                             <DialogActions>
                                 <Button onClick={onClose} color="primary">Hủy</Button>
                                 <Button type="submit" color="primary" disabled={isDisable}>{editMode ? "Cập nhật" : "Thêm"}</Button>
+                                <Button color="error" onClick={()=>handleDeleteRoom(initialValues.RoomEventID)} >Xóa</Button>
                             </DialogActions>
                         </Form>
                     )}

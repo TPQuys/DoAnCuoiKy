@@ -135,6 +135,7 @@ const Room = () => {
                 initialValues={formData}
                 editMode={editMode}
                 setSelectedImage={setSelectedImage}
+                handleDeleteRoom={handleDeleteRoom}
             />
         </div>
     );

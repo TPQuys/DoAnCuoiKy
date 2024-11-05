@@ -14,7 +14,7 @@ const {
 router.post('/', middlewareController.verifyToken, createBooking);
 
 // Route lấy toàn bộ booking
-router.get('/', middlewareController.verifyToken, getAllBookings);
+router.get('/', middlewareController.verifyTokenAdmin, getAllBookings);
 
 // Route lấy một booking theo ID
 router.get('/:id', middlewareController.verifyToken, getBookingById);

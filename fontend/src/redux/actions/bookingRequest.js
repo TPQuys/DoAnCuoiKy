@@ -41,6 +41,23 @@ export const getBookingByUser = async (dispatch) => {
     }
 };
 
+// Hàm lấy booking theo user
+export const getAllBooking = async (dispatch) => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    dispatch(getBookingsStart());
+    if (user) {
+        let axiosJWT = createAxios();
+        try {
+            const res = await axiosJWT.get(`/v1/booking`);
+            console.log(res.data);
+            dispatch(getBookingsSuccess(res.data));
+        } catch (error) {
+            console.error("lấy booking thất bại:", error);
+            dispatch(getBookingsFailed());
+        }
+    }
+};
+
 
 // Hàm thêm booking
 export const addBooking = async (dispatch, bookingData) => {
