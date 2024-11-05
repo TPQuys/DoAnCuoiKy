@@ -45,7 +45,7 @@ const getTime = (time) => {
     }
 }
 
-const Bookings = ({bookings}) => {
+const Bookings = ({ bookings }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch()
     const handleClick = (booking) => {
@@ -55,38 +55,43 @@ const Bookings = ({bookings}) => {
     useEffect(() => {
         if (bookings.length < 1)
             getBookingByUser(dispatch)
-    }, [bookings.length,dispatch])
+    }, [bookings.length, dispatch])
     return (
-                    <TableContainer component={Paper} title="Lịch sử đặt sự kiện">
-                        <Table stickyHeader aria-label="simple table">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Loại sự kiện</TableCell>
-                                    <TableCell>Tổng số bàn</TableCell>
-                                    <TableCell>Tổ chức ngày</TableCell>
-                                    <TableCell>Thời gian</TableCell>
-                                    <TableCell>Ghi chú</TableCell>
-                                    <TableCell>Tên nhà hàng</TableCell>
-                                    <TableCell>Phương thức thanh toán</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {bookings?.map((booking) => (
-                                    <TableRow key={booking?.BookingID}>
-                                        <TableCell>{getEventType(booking.Event?.EventType)}</TableCell>
-                                        <TableCell>{booking.Event?.TotalTable}</TableCell> {/* Tổng số bàn */}
-                                        <TableCell>{formatDate(new Date(booking.Event?.EventDate))}</TableCell> {/* Tổ chức ngày */}
-                                        <TableCell>{getTime(booking.Event?.Time)}</TableCell> {/* Thời gian */}
-                                        <TableCell>{booking.Event?.Note}</TableCell> {/* Thời gian */}
-                                        <TableCell>{booking.Event?.RoomEvent?.RoomName}</TableCell> {/* Tên nhà hàng */}
-                                        <TableCell>{booking.Payment ? booking.Payment.PaymentMethod :
-                                            <Button onClick={() => (handleClick(booking))}>Thanh toán ngay</Button>
-                                        }</TableCell> {/* Thành tiền */}
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+        <TableContainer component={Paper} title="Lịch sử đặt sự kiện">
+            <Table stickyHeader aria-label="simple table">
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Loại sự kiện</TableCell>
+                        <TableCell>Tổng số bàn</TableCell>
+                        <TableCell>Tổ chức ngày</TableCell>
+                        <TableCell>Thời gian</TableCell>
+                        <TableCell>Ghi chú</TableCell>
+                        <TableCell>Tên nhà hàng</TableCell>
+                        <TableCell>Phương thức thanh toán</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {bookings?.filter(booking => booking != null).map((booking) => (
+                        <TableRow key={booking?.BookingID}>
+                            <TableCell>{getEventType(booking.Event?.EventType)}</TableCell>
+                            <TableCell>{booking.Event?.TotalTable}</TableCell>
+                            <TableCell>{formatDate(new Date(booking.Event?.EventDate))}</TableCell>
+                            <TableCell>{getTime(booking.Event?.Time)}</TableCell>
+                            <TableCell>{booking.Event?.Note || "Không có"}</TableCell>
+                            <TableCell>{booking.Event?.RoomEvent?.RoomName}</TableCell>
+                            <TableCell>
+                                {booking.Payment ? (
+                                    booking.Payment.PaymentMethod
+                                ) : (
+                                    <Button onClick={() => handleClick(booking)}>Thanh toán ngay</Button>
+                                )}
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+
+            </Table>
+        </TableContainer>
     );
 };
 
