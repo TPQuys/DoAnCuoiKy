@@ -54,10 +54,22 @@ const postZaloApi = async (req, res) => {
     try {
         const fullUrl = "https" + '://' + req.get('host') ;
         const booking = req.body
-        const referer = req.headers.referer;
-        const url = new URL(referer);
-        console.log(url)
+        // const referer = req.headers.referer;
+        // const url = new URL(referer);
+        // console.log(url)
         const result = await PaymentService.postZaloApi(booking,fullUrl);
+        console.log(result)
+        res.status(200).json(result);
+    } catch (error) {
+        console.log(error)
+        res.status(403).json({ message: error.message });
+    }
+};
+
+const postZaloApiMobile = async (req, res) => {
+    try {
+        const booking = req.body
+        const result = await PaymentService.postZaloApi(booking);
         console.log(result)
         res.status(200).json(result);
     } catch (error) {

@@ -59,6 +59,63 @@ class PaymentService {
 
     async postZaloApi(booking,backendURL ) {
         ngrok.kill()
+        const url = backendURL.includes("8000") ? await ngrok.connect(8000) : backendURL
+        console.log(url)
+        const findBooking = await bookingRepository.getBookingById(booking.BookingID)
+        if (!booking.Payment) {
+            const eventData = findBooking?.Event || {};
+            const roomEventData = eventData?.RoomEvent || {};
+            const menuData = eventData?.Menu || {};
+            const foodData = menuData?.Food || [];
+            const drinkData = menuData?.Drinks || [];
+
+            // Tính tổng giá của thức ăn và đồ uống
+            const totalPriceFoods = this.calculateTotal(foodData, 'MenuFoods');
+            const totalPriceDrinks = this.calculateTotal(drinkData, 'MenuDrinks');
+
+            const totalTable = eventData?.TotalTable || 1; // Tổng số bàn, mặc định là 1 nếu không có
+            const Time = eventData?.Time; // Tổng số bàn, mặc định là 1 nếu không có
+            const roomPrice = (Time === "ALLDAY" ? roomEventData?.Price * 1.5 : roomEventData?.Price) || 0; // Giá phòng
+            console.log(roomPrice)
+            // Tính tổng tiền thanh toán
+            const Amount = (totalPriceFoods + totalPriceDrinks) * totalTable + roomPrice;
+            const BookingID = findBooking.BookingID
+            const embed_data = {
+                redirecturl: `${process.env.FRONTEND_URL}/payment`
+            };
+            if (Amount && BookingID && url) {
+                const items = [BookingID, findBooking.User.email];
+                const transID = Math.floor(Math.random() * 1000000);
+                const order = {
+                    app_id: config.app_id,
+                    app_trans_id: `${moment().format('YYMMDD')}_${transID}`, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
+                    app_user: "user123",
+                    app_time: Date.now(), // miliseconds
+                    item: JSON.stringify(items),
+                    embed_data: JSON.stringify(embed_data),
+                    amount: Amount,
+                    description: `Lazada - Payment for the order #${transID}`,
+                    bank_code: "",
+                    callback_url: url + "/v1/payment/callback"
+                };
+
+                // appid|app_trans_id|appuser|amount|apptime|embeddata|item
+                const data = config.app_id + "|" + order.app_trans_id + "|" + order.app_user + "|" + order.amount + "|" + order.app_time + "|" + order.embed_data + "|" + order.item;
+                order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
+
+                try {
+                    const result = await axios.post(config.endpoint, null, { params: order })
+                    return result.data
+                } catch (error) {
+                    return error
+                }
+            }
+        } else
+            return "Sự kiện này đã được thanh toán trước"
+    }
+
+    async postZaloApiMobile(booking,backendURL ) {
+        ngrok.kill()
         const url = backendURL.includes("localhost") ? await ngrok.connect(8000) : backendURL
         console.log(url)
         const findBooking = await bookingRepository.getBookingById(booking.BookingID)
@@ -113,6 +170,7 @@ class PaymentService {
         } else
             return "Sự kiện này đã được thanh toán trước"
     }
+    
     async callback(req) {
         let result = {};
 

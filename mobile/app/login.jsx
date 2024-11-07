@@ -23,7 +23,8 @@ const Login = () => {
             password: values.password,
         };
         console.log('Logging in with:', values);
-        const seccess = await loginUser(newUser, dispatch, router)
+        const success = await loginUser(newUser, dispatch, router)
+        router.push("")
     };
 
     return (

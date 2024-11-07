@@ -6,47 +6,48 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useDispatch } from 'react-redux';
 import { getAllRooms } from '@/redux/actions/roomRequest';
-
+import { getAllMenus } from '@/redux/actions/menuRequest'
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const dispatch = useDispatch()
-  useEffect(()=>{
+  useEffect(() => {
     getAllRooms(dispatch)
-  },[])
+    getAllMenus(dispatch)
+  }, [])
   return (
-      <Tabs
-        screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-          headerShown: false,
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        headerShown: false,
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Trang chủ',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+          ),
         }}
-      >
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: 'Trang chủ',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-            ),
-          }}
-        />
-         <Tabs.Screen
-          name="room"
-          options={{
-            title: 'Đặt phòng',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'book' : 'book-outline'} color={color} />
-            ),
-          }}
-        />
-         <Tabs.Screen
-          name="about"
-          options={{
-            title: 'Cá nhân',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
-            ),
-          }}
-        />
-      </Tabs>
+      />
+      <Tabs.Screen
+        name="room"
+        options={{
+          title: 'Đặt phòng',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'book' : 'book-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="about"
+        options={{
+          title: 'Cá nhân',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
   );
 }

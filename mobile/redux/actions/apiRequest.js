@@ -1,14 +1,12 @@
 import axios from "@/utils/axiosConfig";
 import { loginFailed, loginStart, loginSuccess, logOutStart, logOutSuccess, registerFailed, registerStart, registerSuccess } from "../reducers/authSlice";
 // import { getAllBooking, getBookingByUser } from "./bookingRequest";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const loginUser = async (user, dispatch, router) => {
     dispatch(loginStart());
-    const from = sessionStorage.getItem("previousPath") || "/";
     try {
         const res = await axios.post("/v1/auth/login", user);
-        await AsyncStorage.setItem('user', JSON.stringify(res.data));
         // if(res.data.user.admin){
         //     getAllBooking(dispatch)
         // }

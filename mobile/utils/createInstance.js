@@ -1,9 +1,9 @@
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 // Không cần hàm refreshToken nữa
 
-export const createAxios = () => {
-    const user = JSON.parse(sessionStorage.getItem("user"));
+export const createAxios = (user) => {
     const newInstance = axios.create();
     newInstance.interceptors.request.use(
         async (config) => {

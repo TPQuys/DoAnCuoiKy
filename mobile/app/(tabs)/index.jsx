@@ -46,12 +46,9 @@ const renderContentBox = (title, text, imageUrl) => {
 };
 
 const styles = StyleSheet.create({
-  homeContainer: {
-    alignItems: 'center',
-    textAlign: 'center',
-  },
   homeBody: {
-    margin: 30,
+    padding: 30,
+    backgroundColor: '#fff3d1',
   },
   contentCenter: {
     alignItems: 'center',
@@ -76,11 +73,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#81695e',
     textAlign: 'justify',
-    width:"100%"
+    margin:10
   },
   contentImg: {
-    width: '90%',
-    height: '45vw',
+    width: "100%",
+    height: 240,
+    resizeMode:'cover',
   },
   button: {
     marginTop: 10,
