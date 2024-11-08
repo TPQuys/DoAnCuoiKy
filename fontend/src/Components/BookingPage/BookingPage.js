@@ -1,5 +1,5 @@
 import "./bookingPage.css";
-import { Link,  useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Button from '@mui/material/Button';
 import Header from "../Header/Header";
 import Form from "./component/BookingForm"
@@ -9,10 +9,17 @@ import { useDispatch, useSelector } from "react-redux"; // Import useDispatch
 import { addEvent } from "../../redux/actions/eventRequest"; // Import hàm thêm sự kiện từ API
 import { toast } from "react-toastify";
 import { addBooking } from "../../redux/actions/bookingRequest";
+import { addDecore } from "../../redux/actions/decoreRequest";
 const HomePage = () => {
     const [selected, setSelected] = useState(null);
     const [isDisabled, setIsDisabled] = useState(false);
     const [bookingSuccess, setBookingSuccess] = useState(false)
+    const [Decore, setDecore] = useState({
+        LobbyDecore: false,
+        StageDecore: false,
+        TableDecore: false,
+    });
+
     const formikRef = useRef(null);
     const { roomId } = useParams();
     const dispatch = useDispatch();
@@ -22,6 +29,13 @@ const HomePage = () => {
     const user = useSelector((state) => state.auth.login.currentUser)
     const handleSubmit = (values) => {
     }
+    const handleChangeCheckbox = (event) => {
+        const { name, checked } = event.target;
+        setDecore({
+            ...Decore,
+            [name]: checked,
+        });
+    };
     const handleSubmitHomePage = async () => {
         if (formikRef.current) {
             const formik = formikRef.current;
@@ -35,6 +49,8 @@ const HomePage = () => {
                 Time: true,
                 Note: true,
             });
+
+            const decore = await addDecore(dispatch,Decore)
 
             if (isValid && Object.keys(isValid).length === 0) {
                 const formValues = formik.values;
@@ -55,6 +71,7 @@ const HomePage = () => {
                 const eventData = {
                     RoomEventID: roomId,
                     MenuID: selected,
+                    DecoreID: decore.DecoreID,
                     EventType: formValues.EventType,
                     TotalTable: formValues.TotalTable,
                     EventDate: formValues.EventDate,
@@ -77,8 +94,8 @@ const HomePage = () => {
                         )
                         if (newBooking) {
                             console.log(newBooking)
-                        setBookingSuccess(true)
-                        sessionStorage.setItem("booking",JSON.stringify(newBooking))
+                            setBookingSuccess(true)
+                            sessionStorage.setItem("booking", JSON.stringify(newBooking))
 
                         }
                     }
@@ -130,7 +147,7 @@ const HomePage = () => {
                 </div>
                 <div className="booking-room-name">Nhập Thông Tin Sự Kiện</div>
                 <div className="booking-center">
-                    <Form ref={formikRef} handleSubmit={handleSubmit} maxTable={room?.MaxTable}/>
+                    <Form ref={formikRef} handleSubmit={handleSubmit} maxTable={room?.MaxTable} />
 
                 </div>
                 <div className="booking-room-name">Chọn Menu</div>
@@ -183,14 +200,27 @@ const HomePage = () => {
 
                 </div>
 
-                {/* <div>
-                    <div className="booking-room-name">decore</div>
+                <div>
+                    <div className="booking-room-name">Trang trí</div>
                     <FormGroup sx={{ flexDirection: "row", justifyContent: "center", padding: 5, gap: 5 }}>
-                        <FormControlLabel control={<Checkbox defaultChecked />} label="LobbyDecore" labelPlacement="top" />
-                        <FormControlLabel control={<Checkbox />} label="StageDecore" labelPlacement="top" />
-                        <FormControlLabel control={<Checkbox />} label="TableDecore" labelPlacement="top" />
+                        <FormControlLabel
+                            control={<Checkbox checked={Decore.LobbyDecore} onChange={handleChangeCheckbox} name="LobbyDecore" />}
+                            label="Sảnh"
+                            labelPlacement="top"
+                        />
+                        <FormControlLabel
+                            control={<Checkbox checked={Decore.StageDecore} onChange={handleChangeCheckbox} name="StageDecore" />}
+                            label="Sân khấu"
+                            labelPlacement="top"
+                        />
+                        <FormControlLabel
+                            control={<Checkbox checked={Decore.TableDecore} onChange={handleChangeCheckbox} name="TableDecore" />}
+                            label="Bàn"
+                            labelPlacement="top"
+                        />
                     </FormGroup>
-                </div> */}
+
+                </div>
                 <div>
                     {bookingSuccess ?
                         <Link className="booking-link" to={"/payment"}>Đặt thành công, đến trang thanh toán </Link>
