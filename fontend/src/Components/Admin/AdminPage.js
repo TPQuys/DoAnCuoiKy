@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Header from '../Header/Header';
 import Room from "./component/Room/Room";
 import Bookings from "./component/Bookng/Booking";
+import User from "./component/User/UserManager";
+import UserProfile from "./component/Profile/UserProfile";
 import { useSelector } from "react-redux";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -24,14 +26,17 @@ const UserPage = () => {
                     <TabContext value={value}>
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                             <TabList onChange={handleChange} aria-label="lab API tabs example">
-                                <Tab label="Phòng" value="1" />
-                                <Tab label="Lịch sử đặt" value="2" />
-                                <Tab label="Item Three" value="3" />
+                                <Tab label="Cá nhân" value="1" />
+                                <Tab label="Phòng" value="2" />
+                                <Tab label="Lịch sử đặt" value="3" />
+                                <Tab label="Người dùng" value="4" />
                             </TabList>
                         </Box>
-                        <TabPanel value="1"> <Room rooms={rooms}/></TabPanel>
-                        <TabPanel value="2"> <Bookings bookings={Booking} rooms={rooms}/></TabPanel>
-                        <TabPanel value="3">Item Three</TabPanel>
+                        <TabPanel value="1"><UserProfile/></TabPanel>
+                        <TabPanel value="2"><Room rooms={rooms}/></TabPanel>
+                        <TabPanel value="3"><Bookings bookings={Booking} rooms={rooms}/></TabPanel>
+                        <TabPanel value="4"><User/></TabPanel>
+                   
                     </TabContext>
                     <Stack direction="row" >
                     </Stack>

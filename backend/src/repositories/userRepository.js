@@ -13,13 +13,29 @@ class UserRepository {
 
     async getAllUsers() {
         try {
-            const users = await User.findAll();
+            const users = await User.findAll({
+                attributes: [
+                    "id",
+                    "email",
+                    "admin",
+                    "isVerified",
+                    "gender",
+                    "dayofbirth",
+                    "fullname",
+                    "address",
+                    "phone",
+                    "avatar",
+                    "createdAt",
+                    "updatedAt"
+                ]
+            });
             return users;
         } catch (error) {
             console.error("Error fetching users:", error);
             throw new Error("Could not fetch users");
         }
     }
+    
 
     async getUserById(userId) {
         try {
