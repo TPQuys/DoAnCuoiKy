@@ -93,7 +93,7 @@ export const deleteRoom = async (dispatch, roomId) => {
         toast.success("Xóa phòng thành công!");
     } catch (error) {
         console.error("Delete room failed:", error);
-        toast.error("Không thể xóa phòng!");
+        toast.error("Không thể xóa phòng đã được đặt!");
         dispatch(deleteRoomFailed());
     }
 };

@@ -22,7 +22,37 @@ class BookingRepository {
     async getAllBookings() {
         try {
             const bookings = await Booking.findAll({
-                include: ['User', 'Event'] // Bao gồm liên kết với User và Event nếu cần
+                attributes:["BookingID","BookingTime"],
+                include: [
+                    {
+                        model:Event,
+                        include: [
+                            {
+                                model: Menu,
+                                include: [
+                                    {
+                                        model: Food,
+                                        through: { attributes: ["Quantity"] }, 
+                                    },
+                                    {
+                                        model: Drink,
+                                        through: { attributes: ["Quantity"] }, 
+                                    }
+                                ]
+                            },
+                            {
+                                model:RoomEvent,
+                            }
+                        ]
+                    },
+                    {
+                        model:Payment,
+                    },
+                    {
+                        model:User,
+                        attributes : ["email"]
+                    }
+                ]
             });
             return bookings;
         } catch (error) {
@@ -35,7 +65,7 @@ class BookingRepository {
     async getBookingById(bookingId) {
         try {
             const booking = await Booking.findByPk(bookingId, {
-                attributes:["BookingID"],
+                attributes:["BookingID","BookingTime"],
                 include: [
                     {
                         model:Event,
@@ -106,6 +136,10 @@ class BookingRepository {
                     },
                     {
                         model: Payment, // Bao gồm thông tin thanh toán
+                    },
+                    {
+                        model:User,
+                        attributes : ["email"]
                     }
                 ]
             });

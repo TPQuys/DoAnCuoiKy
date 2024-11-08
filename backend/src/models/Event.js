@@ -31,6 +31,10 @@ const Event = sequelize.define('Event', {
     Note: {
         type: DataTypes.TEXT,
         allowNull: true
+    },
+    RoomEventID: {
+        type: DataTypes.UUID,
+        allowNull: false,
     }
 }, {
     timestamps: false

@@ -14,7 +14,7 @@ const {
 router.post('/', middlewareController.verifyToken, createBooking);
 
 // Route lấy toàn bộ booking
-router.get('/', middlewareController.verifyToken, getAllBookings);
+router.get('/', middlewareController.verifyTokenAdmin, getAllBookings);
 
 // Route lấy một booking theo ID
 router.get('/:id', middlewareController.verifyToken, getBookingById);
@@ -25,6 +25,6 @@ router.get('/user/:UserID', middlewareController.verifyToken, getBookingByUser);
 router.put('/:id', middlewareController.verifyToken, updateBooking);
 
 // Route xóa booking
-router.delete('/:id', middlewareController.verifyToken, deleteBooking);
+router.delete('/:id', middlewareController.verifyTokenAdmin, deleteBooking);
 
 module.exports = router;

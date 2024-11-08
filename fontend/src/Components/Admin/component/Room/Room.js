@@ -6,17 +6,12 @@ import { useState } from "react";
 import RoomFormModal from './RoomModal'; // Đảm bảo đường dẫn đúng
 import { toast } from "react-toastify";
 
-const Room = () => {
+const Room = ({rooms}) => {
     const dispatch = useDispatch();
-    const rooms = useSelector((state) => state.rooms?.rooms);
     const [openDialog, setOpenDialog] = useState(false);
     const [formData, setFormData] = useState({});
     const [editMode, setEditMode] = useState(false);
     const [selectedImage, setSelectedImage] = useState();
-
-    useEffect(() => {
-        getAllRooms(dispatch); // Lấy danh sách phòng khi component được mount
-    }, [dispatch]);
 
     const handleOpenDialog = (room = null) => {
         if (room) {
@@ -127,7 +122,6 @@ const Room = () => {
                 </Table>
             </TableContainer>
             <Button sx={{ marginTop: "20px" }} variant="contained" color="primary" onClick={() => handleOpenDialog()}>Thêm phòng</Button>
-
             <RoomFormModal
                 open={openDialog}
                 onClose={handleCloseDialog}
@@ -135,6 +129,7 @@ const Room = () => {
                 initialValues={formData}
                 editMode={editMode}
                 setSelectedImage={setSelectedImage}
+                handleDeleteRoom={handleDeleteRoom}
             />
         </div>
     );

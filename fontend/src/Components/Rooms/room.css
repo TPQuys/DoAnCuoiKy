@@ -94,6 +94,11 @@
         width: 100%;
     }
 
+    .room-text-box {
+        flex: 1;
+        padding: 0 !important;
+        margin: 0;
+    }
 
     .room-content-center {
         flex-direction: column;
