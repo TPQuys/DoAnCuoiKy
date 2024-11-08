@@ -45,6 +45,18 @@ const getTime = (time) => {
     }
 }
 
+const getDecore = (Decore) => {
+    const lobby = Decore.LobbyDecore ? "sảnh" : "";
+    const stage = Decore.StageDecore ? "sân khấu" : "";
+    const table = Decore.TableDecore ? "bàn" : "";
+
+    const decoreArray = [lobby, stage, table].filter(item => item !== "");
+
+    const formattedDecoreArray = decoreArray.map(item => item.charAt(0).toUpperCase() + item.slice(1));
+
+    return formattedDecoreArray.join(", ");
+};
+
 const Bookings = ({ bookings }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch()

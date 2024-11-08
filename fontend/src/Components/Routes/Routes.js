@@ -18,6 +18,7 @@ import { getAllMenus } from "../../redux/actions/menuRequest";
 import { useDispatch } from "react-redux";
 import ResetPassword from "../ResetPassword/ResetPassword"
 import ResetPasswordEmail from "../ResetPassword/ResetPasswordEmail"
+import { getAllUsers } from "../../redux/actions/userRequest";
 const AppRoutes = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -28,7 +29,7 @@ const AppRoutes = () => {
     useEffect(() => {
         getAllRooms(dispatch);
         getAllMenus(dispatch);
-
+        getAllUsers(dispatch)
     }, [dispatch]);
 
     useEffect(() => {

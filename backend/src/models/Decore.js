@@ -24,7 +24,4 @@ const Decore = sequelize.define('Decore', {
     timestamps: false 
 });
 
-DecorePrice.hasMany(Decore, { foreignKey: 'DecorePriceID' });
-Decore.belongsTo(DecorePrice, { foreignKey: 'DecorePriceID' });
-
 module.exports = Decore;

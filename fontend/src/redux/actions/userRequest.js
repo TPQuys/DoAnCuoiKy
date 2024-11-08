@@ -1,25 +1,18 @@
-import { getUsersStart, getUsersSuccess, getUsersFailed } from "../reducers/userSlice";
+import { getUsersStart, getUsersSuccess, getUsersFailed, deleteUserStart, deleteUserSuccess, deleteUserFailed } from "../reducers/userSlice";
 import { toast } from "react-toastify";
 import { updateUserStart,updateUserSuccess,updateUserFailed } from "../reducers/userSlice";
 import { createAxios } from '../../utils/createInstance'; // Import hàm createAxios
 import axios from "../../utils/axiosConfig";
 
-export const getAllUsers = async (dispatch, axiosJWT) => {
+export const getAllUsers = async (dispatch) => {
     dispatch(getUsersStart());
-
-    const storedUser = sessionStorage.getItem('user');
-    const accessToken = storedUser ? JSON.parse(storedUser).accessToken : null;
-
-    if (!accessToken) {
-        toast.error("Token không tồn tại, vui lòng đăng nhập lại!");
-        dispatch(getUsersFailed());
-        return;
-    }
-
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    console.log(user)
+    const axiosJWT = createAxios(user);
     try {
         const res = await axiosJWT.get("/v1/user")
         dispatch(getUsersSuccess(res.data)); 
-        toast.success("Lấy danh sách người dùng thành công!");
+        console.log(res.data)
     } catch (error) {
         console.error("Get users failed:", error);
         toast.error("Không thể lấy danh sách người dùng!");
@@ -93,5 +86,21 @@ export const uploadAvatar = async (dispatch, file, user) => {
         console.error("Cập nhật ảnh đại diện thất bại:", error);
         toast.error("Cập nhật thất bại!"); // Thông báo thất bại
         dispatch(getUsersFailed()); 
+    }
+};
+
+export const deleteUser = async (dispatch, userId) => {
+    const storedUser = JSON.parse(sessionStorage.getItem("user"));
+    const axiosJWT = createAxios(storedUser);
+
+    dispatch(deleteUserStart());
+    try {
+        await axiosJWT.delete(`/v1/user/${userId}`);
+        dispatch(deleteUserSuccess(userId));
+        toast.success("Xóa người dùng thành công!");
+    } catch (error) {
+        console.error("Xóa người dùng thất bại:", error);
+        toast.error("Xóa người dùng thất bại!");
+        dispatch(deleteUserFailed());
     }
 };

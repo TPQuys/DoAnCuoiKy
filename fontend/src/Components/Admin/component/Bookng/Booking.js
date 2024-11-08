@@ -33,6 +33,19 @@ const getTime = (time) => {
     }
 };
 
+const getDecore = (Decore) => {
+    const lobby = Decore.LobbyDecore ? "sảnh" : "";
+    const stage = Decore.StageDecore ? "sân khấu" : "";
+    const table = Decore.TableDecore ? "bàn" : "";
+
+    const decoreArray = [lobby, stage, table].filter(item => item !== "");
+
+    const formattedDecoreArray = decoreArray.map(item => item.charAt(0).toUpperCase() + item.slice(1));
+
+    return formattedDecoreArray.join(", ");
+};
+
+
 const Bookings = ({ bookings, rooms }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isPaymentOpen, setIsPaymentOpen] = useState(false);
@@ -143,6 +156,7 @@ const Bookings = ({ bookings, rooms }) => {
                             </TableSortLabel>
                         </TableCell>
                         <TableCell>Menu</TableCell>
+                        <TableCell>Trang trí</TableCell>
                         <TableCell>Phương thức thanh toán</TableCell>
                         <TableCell>Hành động</TableCell>
                     </TableRow>
@@ -157,6 +171,7 @@ const Bookings = ({ bookings, rooms }) => {
                             <TableCell>{getTime(booking.Event?.Time)}</TableCell>
                             <TableCell>{booking.Event?.Note || "Không có"}</TableCell>
                             <TableCell>{booking.Event?.RoomEvent?.RoomName}</TableCell>
+                            <TableCell>{getDecore(booking.Event?.Decore)}</TableCell>
                             <TableCell>{booking.Event?.Menu?.MenuID && <Button sx={{ padding: 0, margin: 0 }} variant="text" onClick={() => openMenu(booking.Event?.Menu)}>Chi tiết Menu</Button>}</TableCell>
                             <TableCell>
                                 {booking.Payment ? (

@@ -5,7 +5,7 @@ const upload = require('../utils/supabase/uploadImage');
 const router = require("express").Router();
 
 // Lấy danh sách user
-router.get("/", middlewareController.verifyToken, userController.getAllUsers);
+router.get("/", middlewareController.verifyTokenAdmin, userController.getAllUsers);
 
 // Lấy user theo ID
 router.get("/:id", middlewareController.verifyToken, userController.getUserById);

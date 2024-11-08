@@ -6,6 +6,7 @@ const Drink = require('../models/Drink'); // Đường dẫn tới model Drink
 const RoomEvent = require('../models/RoomEvent');
 const Payment = require('../models/Payment');
 const User = require('../models/User');
+const Decore = require('../models/Decore');
 class BookingRepository {
     // Tạo một booking mới
     async createBooking(bookingData) {
@@ -39,6 +40,9 @@ class BookingRepository {
                                         through: { attributes: ["Quantity"] }, 
                                     }
                                 ]
+                            },
+                            {
+                                model:Decore,
                             },
                             {
                                 model:RoomEvent,
@@ -82,6 +86,9 @@ class BookingRepository {
                                         through: { attributes: ["Quantity"] }, 
                                     }
                                 ]
+                            },
+                            {
+                                model:Decore,
                             },
                             {
                                 model:RoomEvent,
@@ -128,6 +135,9 @@ class BookingRepository {
                                         through: { attributes: ["Quantity"] }, // Lấy số lượng từ bảng trung gian
                                     }
                                 ]
+                            },
+                            {
+                                model:Decore,
                             },
                             {
                                 model: RoomEvent, // Bao gồm thông tin phòng sự kiện

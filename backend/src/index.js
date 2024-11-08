@@ -10,6 +10,8 @@ const eventRoutes = require('./routes/eventRoutes');
 const menuRoutes = require("./routes/menuRoutes");
 const bookingRoutes = require("./routes/bookingRoutes")
 const paymentRoutes = require("./routes/paymentRoutes")
+const decodeRoute = require("./routes/decodeRoute")
+
 const app = express();
 
 
@@ -36,6 +38,7 @@ app.use('/v1/event', eventRoutes);
 app.use('/v1/menu', menuRoutes);
 app.use('/v1/booking', bookingRoutes);
 app.use('/v1/payment', paymentRoutes);
+app.use('/v1/decore', decodeRoute);
 
 // Khởi động server
 const PORT = process.env.PORT || 8000;  // Sử dụng PORT từ môi trường nếu có

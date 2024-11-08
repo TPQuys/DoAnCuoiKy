@@ -83,10 +83,10 @@ const NavBar = () => {
         ) : (
           <>
             <div className="navbar-dropdown">
-              <Link to="/user" className="navbar-home"><FaUser /> Cá nhân <span> {user.username} </span> </Link>
+              <Link to="/user/info" className="navbar-home"><FaUser /> Cá nhân <span> {user.username} </span> </Link>
               <div className="dropdown-menu">
                 <Link to="/user/info">Thông tin cá nhân</Link>
-                <Link to="/payment">Thanh toán</Link>
+                <Link to="/user">Lịch sử</Link>
               </div>
             </div>
             <Link className="navbar-logout" onClick={handleLogOut}> <IoCloseCircle /> Đăng xuất</Link>
