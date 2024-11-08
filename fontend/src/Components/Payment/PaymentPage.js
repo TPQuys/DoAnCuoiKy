@@ -96,14 +96,17 @@ const PaymentPage = () => {
     }
 
     const getDecore = (Decore) => {
-        const lobby = Decore.LobbyDecore ? "sảnh" : "";
-        const stage = Decore.StageDecore ? "sân khấu" : "";
-        const table = Decore.TableDecore ? "bàn" : "";
+        const lobby = Decore?.LobbyDecore ? "sảnh" : "";
+        const stage = Decore?.StageDecore ? "sân khấu" : "";
+        const table = Decore?.TableDecore ? "bàn" : "";
     
         const decoreArray = [lobby, stage, table].filter(item => item !== "");
     
-        return decoreArray.join(", ");
+        const formattedDecoreArray = decoreArray.map(item => item.charAt(0).toUpperCase() + item.slice(1));
+    
+        return formattedDecoreArray.join(", ");
     };
+    
     
 
     const rommPriceByEvent = (event,roomPrice) =>{
@@ -134,7 +137,7 @@ const PaymentPage = () => {
                             <p>Loại sự kiện: {getEventType(event?.EventType)}</p>
                             <p>Thời gian: {getTime(event?.Time)}</p>
                             <p>Tống số bàn: {event?.TotalTable}</p>
-                            <p>Trang trí: {getDecore(event.Decore)}</p>
+                            <p>Trang trí: {getDecore(event?.Decore)}</p>
                             <p>Ghi chú: {event?.Note}</p>
                         </div>
                     </div>
