@@ -23,17 +23,18 @@ const AppRoutes = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const user1 = sessionStorage.getItem("user");
 
     const previousPath = location.pathname;
-
     useEffect(() => {
         getAllRooms(dispatch);
         getAllMenus(dispatch);
-        getAllUsers(dispatch)
-    }, [dispatch]);
+        if (user1.user.admin) {
+            getAllUsers(dispatch)
+        }
+    }, [dispatch,user1]);
 
     useEffect(() => {
-        const user1 = sessionStorage.getItem("user");
 
         if (!user1) {
             if (location.pathname === "/booking" || location.pathname === "/room") {
@@ -47,7 +48,7 @@ const AppRoutes = () => {
 
             }
         }
-    }, [sessionStorage, location.pathname, navigate, previousPath]);
+    }, [sessionStorage, location.pathname, navigate, previousPath],user1);
 
     return (
         <>
