@@ -29,8 +29,10 @@ const AppRoutes = () => {
     useEffect(() => {
         getAllRooms(dispatch);
         getAllMenus(dispatch);
-        if (user1.user.admin) {
-            getAllUsers(dispatch)
+        if(user1){
+            if (user1?.user?.admin) {
+                getAllUsers(dispatch)
+            }
         }
     }, [dispatch,user1]);
 

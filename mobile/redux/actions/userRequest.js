@@ -1,6 +1,7 @@
 import { getUsersStart, getUsersSuccess, getUsersFailed } from "../reducers/userSlice";
 import { updateUserStart,updateUserSuccess,updateUserFailed } from "../reducers/userSlice";
 import { createAxios } from '@/utils/createInstance';
+import { ToastAndroid } from 'react-native';
 import axios from "@/utils/axiosConfig";
 
 export const getAllUsers = async (dispatch, axiosJWT,user) => {
@@ -30,6 +31,7 @@ export const updateUser = async (dispatch, userData,user,curentUser) => {
         const res = await axiosJWT.put(`/v1/user/${curentUser.user.id}`, userData);
         const editedUser = {...curentUser,user:res.data}
         dispatch(updateUserSuccess(editedUser))
+        ToastAndroid.show("Cập nhập thành công", ToastAndroid.SHORT)
         return editedUser
     } catch (error) {
         console.error("Update user failed:", error);
@@ -42,6 +44,7 @@ export const sendResetPassword = async (userData,setIsdisable) => {
     try {
         setIsdisable(true)
         await axios.post(`/v1/user/reset_password`, userData);
+        ToastAndroid.show("Gửi email đặt lại mật khẩu thành công", ToastAndroid.SHORT)
     } catch (error) {
         setIsdisable(false)
         console.error("Failed:", error);
@@ -59,8 +62,8 @@ export const updatePassword = async (token,newPassword,navigate) => {
 };
 
 // Hàm tải ảnh
-export const uploadAvatar = async (dispatch, file, user) => {
-    const curentUser = {...user}
+export const uploadAvatar = async (dispatch, file, curentUser) => {
+    const user = curentUser.user
     try {
         const formData = new FormData();
         formData.append('avatar', file); // Thêm file vào FormData
@@ -73,7 +76,8 @@ export const uploadAvatar = async (dispatch, file, user) => {
         });
         const avatarUrl = `${res.data.avatarUrl}?t=${new Date().getTime()}`;
         const newUser = {...user,avatar:avatarUrl}
-        dispatch(getUsersSuccess(newUser))
+        dispatch(getUsersSuccess({...curentUser,newUser}))
+        ToastAndroid.show("Cập nhật ảnh đại diện thành công", ToastAndroid.SHORT)
         return newUser
     } catch (error) {
         console.error("Cập nhật ảnh đại diện thất bại:", error);

@@ -27,4 +27,6 @@ router.put('/:id', middlewareController.verifyToken, updateBooking);
 // Route xóa booking
 router.delete('/:id', middlewareController.verifyTokenAdmin, deleteBooking);
 
+router.delete('/:id/user', middlewareController.verifyToken, deleteBooking);
+
 module.exports = router;

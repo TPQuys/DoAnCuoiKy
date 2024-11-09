@@ -34,16 +34,21 @@ const getTime = (time) => {
 };
 
 const getDecore = (Decore) => {
-    const lobby = Decore.LobbyDecore ? "sảnh" : "";
-    const stage = Decore.StageDecore ? "sân khấu" : "";
-    const table = Decore.TableDecore ? "bàn" : "";
+    const lobby = Decore?.LobbyDecore ? "sảnh" : "";
+    const stage = Decore?.StageDecore ? "sân khấu" : "";
+    const table = Decore?.TableDecore ? "bàn" : "";
 
-    const decoreArray = [lobby, stage, table].filter(item => item !== "");
+    // Tạo một mảng chỉ chứa các phần tử không rỗng
+    const decoreArray = [lobby, stage, table]?.filter(item => item !== "");
 
-    const formattedDecoreArray = decoreArray.map(item => item.charAt(0).toUpperCase() + item.slice(1));
+    // Chỉ viết hoa chữ cái đầu tiên của phần tử đầu tiên
+    if (decoreArray.length > 0) {
+        decoreArray[0] = decoreArray[0].charAt(0).toUpperCase() + decoreArray[0].slice(1);
+    }
 
-    return formattedDecoreArray.join(", ");
+    return decoreArray.join(", ");
 };
+
 
 
 const Bookings = ({ bookings, rooms }) => {
@@ -155,8 +160,8 @@ const Bookings = ({ bookings, rooms }) => {
                                 Tên nhà hàng
                             </TableSortLabel>
                         </TableCell>
-                        <TableCell>Menu</TableCell>
                         <TableCell>Trang trí</TableCell>
+                        <TableCell>Menu</TableCell>
                         <TableCell>Phương thức thanh toán</TableCell>
                         <TableCell>Hành động</TableCell>
                     </TableRow>

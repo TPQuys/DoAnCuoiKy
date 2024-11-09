@@ -124,7 +124,6 @@ const EventForm = forwardRef(({ handleSubmit, maxTable }, ref) => {
                         <Text style={styles.errorText}>{errors.Note}</Text>
                     )}
 
-                    {/* Submit Button */}
                 </View>
             )}
         </Formik>

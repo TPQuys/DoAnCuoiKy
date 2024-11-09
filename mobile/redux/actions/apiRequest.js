@@ -1,50 +1,60 @@
 import axios from "@/utils/axiosConfig";
 import { loginFailed, loginStart, loginSuccess, logOutStart, logOutSuccess, registerFailed, registerStart, registerSuccess } from "../reducers/authSlice";
-// import { getAllBooking, getBookingByUser } from "./bookingRequest";
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createAxios } from "@/utils/createInstance";
 
+import { ToastAndroid } from 'react-native';
 export const loginUser = async (user, dispatch, router) => {
     dispatch(loginStart());
     try {
         const res = await axios.post("/v1/auth/login", user);
-        // if(res.data.user.admin){
-        //     getAllBooking(dispatch)
-        // }
-        // else{
-        //     getBookingByUser(dispatch)
-        // }
-        // navigate(from);
-        dispatch(loginSuccess(res.data));
-        router.push("/room")
-        console.log(res.data)
+        const avatarUrl = `${res.data.user.avatar}?t=${new Date().getTime()}`;
+        const newUser = { ...res.data.user, avatar: avatarUrl }
+        dispatch(loginSuccess({ ...res.data, user: newUser }));
+        ToastAndroid.show("Đăng nhập thành công", ToastAndroid.SHORT)
+        router.push("/(tabs)/home")
         return true
     } catch (error) {
-        console.error("Login failed:", error.response.data);
+        console.log(error.response.data?.message)
+        if (error.response.data?.message === "Email not confirmed") {
+            ToastAndroid.show("Email chưa được xác thực", ToastAndroid.SHORT)
+        }
+        if (error.response.data?.message === "Wrong username") {
+            ToastAndroid.show("Tài khoản không tồn tại", ToastAndroid.SHORT)
+        }
+        if (error.response.data?.message === "Wrong password") {
+            ToastAndroid.show("Mật khẩu không chính xác", ToastAndroid.SHORT)
+        }
         dispatch(loginFailed());
     }
 };
 
 
-export const registerUser = async (user, dispatch, navigate) => {
+export const registerUser = async (user, dispatch, router) => {
     dispatch(registerStart());
     try {
         await axios.post("/v1/auth/register", user);
         dispatch(registerSuccess());
-        navigate("/login");
+        ToastAndroid.show("Đăng kí thành công, vui lòng kiểm tra email để xác thực.", ToastAndroid.SHORT)
+        router.push("/")
+        return true
+
     } catch (error) {
-        console.error("Register failed:", error);
+        ToastAndroid.show("Đăng kí thất bại, email đã được sử dụng trước", ToastAndroid.SHORT)
+        // console.error("Register failed:", );
         dispatch(registerFailed());
     }
 };
 
-export const logOut = async (dispatch, id, navigate, accessToken, axiosJWT) => {
+export const logOut = async (dispatch, user,router) => {
     dispatch(logOutStart());
+    const axiosJWT = createAxios(user)
     try {
-        await axiosJWT.post("/v1/auth/logout", id, {
-            headers: { token: `Bearer ${accessToken}` },
+        await axiosJWT.post("/v1/auth/logout", { id: user?.user?.id }, {
+            headers: { token: `Bearer ${user?.accessToken}` },
         });
         dispatch(logOutSuccess());
-        navigate("/login");
+        ToastAndroid.show("Đăng xuất thành công", ToastAndroid.SHORT)
+        router.push("/")
     } catch (error) {
         console.error("Logout failed:", error);
         dispatch(logOutSuccess());

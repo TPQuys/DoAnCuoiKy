@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
 const Event = require('../models/Event');
 
 const eventRepository = {
@@ -14,10 +14,18 @@ const eventRepository = {
         return await Event.findOne({
             where: {
                 RoomEventID,
-                EventDate,
-                [Op.or]: [
-                    { Time: 'ALLDAY' }, // Nếu đã có sự kiện ALLDAY
-                    { Time: Time === 'ALLDAY' ? { [Op.in]: ['MORNING', 'AFTERNOON'] } : Time } // Nếu sự kiện mới là ALLDAY, kiểm tra cả MORNING và AFTERNOON
+                [Op.and]: [
+                    Sequelize.where(Sequelize.fn('DATE', Sequelize.col('EventDate')), '=', Sequelize.fn('DATE', EventDate)),
+                    {
+                        [Op.or]: [
+                            { Time: 'ALLDAY' },
+                            { 
+                                Time: Time === 'ALLDAY' 
+                                    ? { [Op.in]: ['MORNING', 'AFTERNOON'] } 
+                                    : Time 
+                            }
+                        ]
+                    }
                 ]
             }
         });

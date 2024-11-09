@@ -51,7 +51,6 @@ const RoomPage = () => {
 
 const styles = StyleSheet.create({
     roomBody: {
-        margin: 0,
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
@@ -72,7 +71,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end', 
     },
     overlayContent: {
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Hiệu ứng nền mờ trên hình ảnh
+        backgroundColor: 'rgba(0, 0, 0, 0.2)', // Hiệu ứng nền mờ trên hình ảnh
         padding: 10,
     },
     roomContentTitle: {

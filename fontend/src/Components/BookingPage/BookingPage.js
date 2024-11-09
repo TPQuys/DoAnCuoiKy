@@ -96,7 +96,6 @@ const HomePage = () => {
                             console.log(newBooking)
                             setBookingSuccess(true)
                             sessionStorage.setItem("booking", JSON.stringify(newBooking))
-
                         }
                     }
                     else {

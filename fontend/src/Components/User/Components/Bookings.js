@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
-import { getBookingByUser } from "../../../redux/actions/bookingRequest";
+import { getBookingByUser, deleteBookingUser, getAllBooking } from "../../../redux/actions/bookingRequest";
 
 const formatDate = (date) => {
     if (date) {
@@ -64,6 +64,11 @@ const Bookings = ({ bookings }) => {
         sessionStorage.setItem("booking", JSON.stringify(booking))
         navigate("/payment")
     }
+    const handleDelete = async (bookingID) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa booking này?")) {
+        await deleteBookingUser(dispatch, bookingID);
+    }
+};
     useEffect(() => {
         if (bookings.length < 1)
             getBookingByUser(dispatch)
@@ -80,6 +85,7 @@ const Bookings = ({ bookings }) => {
                         <TableCell>Ghi chú</TableCell>
                         <TableCell>Tên nhà hàng</TableCell>
                         <TableCell>Phương thức thanh toán</TableCell>
+                        <TableCell>Hành động</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -97,6 +103,12 @@ const Bookings = ({ bookings }) => {
                                 ) : (
                                     <Button onClick={() => handleClick(booking)}>Thanh toán ngay</Button>
                                 )}
+                            </TableCell>
+                            <TableCell>
+                                {!booking.Payment &&
+                                    <Button variant="text" color="error" onClick={() => handleDelete(booking?.BookingID)}>
+                                    Xóa
+                                </Button>                                }
                             </TableCell>
                         </TableRow>
                     ))}

@@ -106,3 +106,17 @@ export const deleteBooking = async (dispatch, bookingId) => {
         dispatch(deleteBookingFailed());
     }
 };
+
+// Hàm xóa booking
+export const deleteBookingUser = async (dispatch, bookingId) => {
+    dispatch(deleteBookingStart());
+    let axiosJWT = createAxios();
+    try {
+        await axiosJWT.delete(`/v1/booking/${bookingId}/user`);
+        dispatch(deleteBookingSuccess(bookingId));
+    } catch (error) {
+        console.error("Xóa booking thất bại:", error);
+        toast.error("Không thể xóa booking!");
+        dispatch(deleteBookingFailed());
+    }
+};

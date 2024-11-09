@@ -5,6 +5,7 @@ import {
     updateEventFailed, deleteEventFailed
 } from "../reducers/eventSlice";
 import { createAxios } from '../../utils/createInstance'; // Import hàm createAxios
+import { ToastAndroid } from 'react-native';
 
 
 export const addEvent = async (dispatch, eventData,user) => {
@@ -15,7 +16,10 @@ export const addEvent = async (dispatch, eventData,user) => {
         dispatch(addEventSuccess(res.data));
         return res.data
     } catch (error) {
-        console.error("Thêm sự kiện thất bại:", error.response.data.message);
+        console.log("Thêm sự kiện thất bại:", error.response.data.message);
+        ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
+
+        // toast.error(error.response.data.message);
         dispatch(addEventFailed());
     }
 };

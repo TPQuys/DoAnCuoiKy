@@ -45,7 +45,7 @@ export const registerUser = async (user, dispatch, navigate) => {
         navigate("/login");
     } catch (error) {
         console.error("Register failed:", error);
-        toast.error("Đăng ký thất bại!"); // Thông báo lỗi
+        toast.error("Đăng ký thất bại! Email này đã được sử dụng trước"); // Thông báo lỗi
         dispatch(registerFailed());
     }
 };

@@ -47,7 +47,8 @@ const renderContentBox = (title, text, imageUrl) => {
 
 const styles = StyleSheet.create({
   homeBody: {
-    padding: 30,
+    paddingVertical: 40,
+    paddingHorizontal:20,
     backgroundColor: '#fff3d1',
   },
   contentCenter: {

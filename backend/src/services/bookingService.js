@@ -1,3 +1,6 @@
+const Booking = require('../models/Booking');
+const Event = require('../models/Event');
+const Payment = require('../models/Payment');
 const BookingRepository = require('../repositories/bookingRepository'); 
 
 class BookingService {
@@ -22,8 +25,48 @@ class BookingService {
     }
 
     async deleteBooking(bookingId) {
-        return await BookingRepository.deleteBooking(bookingId);
+        const booking = await Booking.findByPk(bookingId, {
+            include: [Event]  // Bao gồm thông tin event liên kết
+        });
+    
+        if (!booking) {
+            throw new Error("Booking không tồn tại");
+        }
+    
+        const eventId = booking.EventID;
+    
+        await booking.destroy();  // Xóa booking trước
+    
+        if (eventId) {
+            await Event.destroy({ where: { EventID: eventId } });  // Xóa event
+        }
+    
+        return { message: "Booking và event liên kết đã được xóa thành công" };
     }
+
+    async deleteBookingUser(bookingId) {
+        const booking = await Booking.findByPk(bookingId, {
+            include: [Event, Payment]  // Bao gồm thông tin event liên kết
+        });
+
+        if (!booking) {
+            throw new Error("Booking không tồn tại");
+        }
+    
+        if (booking.Payment){
+            throw new Error("Không thể xóa Booking đã thanh toán")
+        }
+        const eventId = booking.EventID;
+    
+        await booking.destroy();  // Xóa booking trước
+    
+        if (eventId) {
+            await Event.destroy({ where: { EventID: eventId } });  // Xóa event
+        }
+    
+        return { message: "Booking và event liên kết đã được xóa thành công" };
+    }
+    
 }
 
 module.exports = new BookingService();
