@@ -1,13 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
-import { getBookingByUser, deleteBookingUser, getAllBooking } from "../../../redux/actions/bookingRequest";
-
+import { getBookingByUser, deleteBookingUser } from "../../../redux/actions/bookingRequest";
+import MenuModal from "./MenuModal";
+import PaymentModal from "./PaymentModal";
 const formatDate = (date) => {
     if (date) {
         // Lấy ngày, tháng và năm
-        const day = String(date.getDate()).padStart(2, '0'); // thêm '0' nếu nhỏ hơn 10
+        const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0'); // tháng bắt đầu từ 0 nên +1
         const year = date.getFullYear();
 
@@ -16,6 +17,20 @@ const formatDate = (date) => {
         return formattedDate
     }
 }
+
+const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    if (date) {
+        return date.toLocaleString("vi-VN", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+        });
+    }
+};
 
 const getEventType = (type) => {
     if (type) {
@@ -46,29 +61,42 @@ const getTime = (time) => {
 }
 
 const getDecore = (Decore) => {
-    const lobby = Decore.LobbyDecore ? "sảnh" : "";
-    const stage = Decore.StageDecore ? "sân khấu" : "";
-    const table = Decore.TableDecore ? "bàn" : "";
+    const lobby = Decore?.LobbyDecore ? "sảnh" : "";
+    const stage = Decore?.StageDecore ? "sân khấu" : "";
+    const table = Decore?.TableDecore ? "bàn" : "";
 
-    const decoreArray = [lobby, stage, table].filter(item => item !== "");
+    // Tạo một mảng chỉ chứa các phần tử không rỗng
+    const decoreArray = [lobby, stage, table]?.filter(item => item !== "");
 
-    const formattedDecoreArray = decoreArray.map(item => item.charAt(0).toUpperCase() + item.slice(1));
+    // Chỉ viết hoa chữ cái đầu tiên của phần tử đầu tiên
+    if (decoreArray.length > 0) {
+        decoreArray[0] = decoreArray[0].charAt(0).toUpperCase() + decoreArray[0].slice(1);
+    }
 
-    return formattedDecoreArray.join(", ");
+    return decoreArray.join(", ");
 };
 
 const Bookings = ({ bookings }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch()
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+    const [menu, setMenu] = useState({});
+    const [payment, setPayment] = useState({});
     const handleClick = (booking) => {
         sessionStorage.setItem("booking", JSON.stringify(booking))
         navigate("/payment")
     }
+
+    const openMenu = (menu) => { setIsMenuOpen(true); setMenu(menu); };
+    const closeMenu = () => setIsMenuOpen(false);
+    const openPayment = (payment) => { setIsPaymentOpen(true); setPayment(payment); };
+    const closePayment = () => setIsPaymentOpen(false);
     const handleDelete = async (bookingID) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa booking này?")) {
-        await deleteBookingUser(dispatch, bookingID);
-    }
-};
+        if (window.confirm("Bạn có chắc chắn muốn xóa booking này?")) {
+            await deleteBookingUser(dispatch, bookingID);
+        }
+    };
     useEffect(() => {
         if (bookings.length < 1)
             getBookingByUser(dispatch)
@@ -78,12 +106,15 @@ const Bookings = ({ bookings }) => {
             <Table stickyHeader aria-label="simple table">
                 <TableHead>
                     <TableRow>
+                        <TableCell>Thời gian đặt</TableCell>
                         <TableCell>Loại sự kiện</TableCell>
                         <TableCell>Tổng số bàn</TableCell>
                         <TableCell>Tổ chức ngày</TableCell>
                         <TableCell>Thời gian</TableCell>
                         <TableCell>Ghi chú</TableCell>
                         <TableCell>Tên nhà hàng</TableCell>
+                        <TableCell>Trang trí</TableCell>
+                        <TableCell>Menu</TableCell>
                         <TableCell>Phương thức thanh toán</TableCell>
                         <TableCell>Hành động</TableCell>
                     </TableRow>
@@ -91,30 +122,34 @@ const Bookings = ({ bookings }) => {
                 <TableBody>
                     {bookings?.filter(booking => booking != null).map((booking) => (
                         <TableRow key={booking?.BookingID}>
+                            <TableCell>{formatDateTime(new Date(booking.BookingTime))}</TableCell>
                             <TableCell>{getEventType(booking.Event?.EventType)}</TableCell>
                             <TableCell>{booking.Event?.TotalTable}</TableCell>
                             <TableCell>{formatDate(new Date(booking.Event?.EventDate))}</TableCell>
                             <TableCell>{getTime(booking.Event?.Time)}</TableCell>
                             <TableCell>{booking.Event?.Note || "Không có"}</TableCell>
                             <TableCell>{booking.Event?.RoomEvent?.RoomName}</TableCell>
+                            <TableCell>{getDecore(booking.Event?.Decore)}</TableCell>
+                            <TableCell>{booking.Event?.Menu?.MenuID && <Button sx={{ padding: 0, margin: 0 }} variant="text" onClick={() => openMenu(booking.Event?.Menu)}>Chi tiết Menu</Button>}</TableCell>
                             <TableCell>
                                 {booking.Payment ? (
-                                    booking.Payment.PaymentMethod
-                                ) : (
-                                    <Button onClick={() => handleClick(booking)}>Thanh toán ngay</Button>
-                                )}
+                                    <Button variant="text" sx={{ padding: 0, margin: 0 }} onClick={() => openPayment(booking?.Payment)}>Chi tiết thanh toán</Button>
+                                ) : <Button onClick={() => handleClick(booking)}>Thanh toán ngay</Button>}
                             </TableCell>
                             <TableCell>
                                 {!booking.Payment &&
                                     <Button variant="text" color="error" onClick={() => handleDelete(booking?.BookingID)}>
-                                    Xóa
-                                </Button>                                }
+                                        Xóa
+                                    </Button>}
                             </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
 
             </Table>
+
+            <MenuModal menu={menu} onClose={closeMenu} open={isMenuOpen} />
+            <PaymentModal paymentData={payment} onClose={closePayment} open={isPaymentOpen} />
         </TableContainer>
     );
 };

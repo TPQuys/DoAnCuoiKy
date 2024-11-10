@@ -15,9 +15,9 @@ const HomePage = () => {
     const [isDisabled, setIsDisabled] = useState(false);
     const [bookingSuccess, setBookingSuccess] = useState(false)
     const [Decore, setDecore] = useState({
-        LobbyDecore: false,
-        StageDecore: false,
-        TableDecore: false,
+        LobbyDecore: true,
+        StageDecore: true,
+        TableDecore: true,
     });
 
     const formikRef = useRef(null);
@@ -50,7 +50,7 @@ const HomePage = () => {
                 Note: true,
             });
 
-            const decore = await addDecore(dispatch,Decore)
+            const decore = await addDecore(dispatch, Decore)
 
             if (isValid && Object.keys(isValid).length === 0) {
                 const formValues = formik.values;
@@ -89,7 +89,8 @@ const HomePage = () => {
                         const newBooking = await addBooking(dispatch,
                             {
                                 EventID: newEvent.EventID,
-                                UserID: user.user.id
+                                UserID: user.user.id,
+                                BookingTime: new Date()
                             }
                         )
                         if (newBooking) {
@@ -240,15 +241,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-};

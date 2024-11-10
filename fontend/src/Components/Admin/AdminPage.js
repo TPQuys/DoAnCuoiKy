@@ -4,17 +4,22 @@ import Room from "./component/Room/Room";
 import Bookings from "./component/Bookng/Booking";
 import User from "./component/User/UserManager";
 import UserProfile from "./component/Profile/UserProfile";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import { Box, Stack, } from '@mui/material';
 import TabPanel from '@mui/lab/TabPanel';
+import { getAllUsers } from "../../redux/actions/userRequest";
 const UserPage = () => {
     const [value, setValue] = useState('1');
+    const dispatch = useDispatch()
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+    useEffect(()=>{
+        getAllUsers(dispatch)
+    })
     const Booking = useSelector((state) => state.bookings.bookings)
     const rooms = useSelector((state) => state.rooms?.rooms);
 

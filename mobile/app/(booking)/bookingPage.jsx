@@ -13,9 +13,9 @@ const HomePage = () => {
     const [isDisabled, setIsDisabled] = useState(false);
     const [bookingSuccess, setBookingSuccess] = useState();
     const [decore, setDecore] = useState({
-        LobbyDecore: false,
-        StageDecore: false,
-        TableDecore: false,
+        LobbyDecore: true,
+        StageDecore: true,
+        TableDecore: true,
     });
     const formikRef = useRef(null);
     const router = useRouter();
@@ -77,7 +77,8 @@ const HomePage = () => {
                     if (newEvent && user) {
                         const newBooking = await addBooking(dispatch, {
                             EventID: newEvent.EventID,
-                            UserID: user.user.id
+                            UserID: user.user.id,
+                            BookingTime: new Date()
                         }, user);
                         if (newBooking) {
                             setBookingSuccess(newBooking.BookingID);

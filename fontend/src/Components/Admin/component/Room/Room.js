@@ -80,6 +80,7 @@ const Room = ({rooms}) => {
         const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa phòng này?");
         if (confirmDelete) {
             deleteRoom(dispatch, roomId);
+            handleCloseDialog();
         }
     };
 

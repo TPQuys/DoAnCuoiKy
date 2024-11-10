@@ -117,7 +117,7 @@ class BookingRepository {
     async getBookingsByUser(UserID) {
         try {
             const bookings = await Booking.findAll({
-                attributes: ["BookingID"],
+                attributes: ["BookingID","BookingTime"],
                 where: { UserID }, // Tìm tất cả booking của user
                 include: [
                     {
