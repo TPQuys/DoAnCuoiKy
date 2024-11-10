@@ -14,6 +14,20 @@ const formatDate = (date) => {
     }
 };
 
+const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    if (date) {
+        return date.toLocaleString("vi-VN", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+        });
+    }
+};
+
 const getEventType = (type) => {
     switch (type) {
         case "WEDDING": return "Đám cưới";
@@ -34,16 +48,21 @@ const getTime = (time) => {
 };
 
 const getDecore = (Decore) => {
-    const lobby = Decore.LobbyDecore ? "sảnh" : "";
-    const stage = Decore.StageDecore ? "sân khấu" : "";
-    const table = Decore.TableDecore ? "bàn" : "";
+    const lobby = Decore?.LobbyDecore ? "sảnh" : "";
+    const stage = Decore?.StageDecore ? "sân khấu" : "";
+    const table = Decore?.TableDecore ? "bàn" : "";
 
-    const decoreArray = [lobby, stage, table].filter(item => item !== "");
+    // Tạo một mảng chỉ chứa các phần tử không rỗng
+    const decoreArray = [lobby, stage, table]?.filter(item => item !== "");
 
-    const formattedDecoreArray = decoreArray.map(item => item.charAt(0).toUpperCase() + item.slice(1));
+    // Chỉ viết hoa chữ cái đầu tiên của phần tử đầu tiên
+    if (decoreArray.length > 0) {
+        decoreArray[0] = decoreArray[0].charAt(0).toUpperCase() + decoreArray[0].slice(1);
+    }
 
-    return formattedDecoreArray.join(", ");
+    return decoreArray.join(", ");
 };
+
 
 
 const Bookings = ({ bookings, rooms }) => {
@@ -70,25 +89,32 @@ const Bookings = ({ bookings, rooms }) => {
 
     const sortedBookings = React.useMemo(() => {
         let filteredBookings = bookings;
-
+    
         if (selectedRoom) {
             filteredBookings = filteredBookings.filter(booking => booking.Event.RoomEvent?.RoomName === selectedRoom);
         }
-
+    
         if (sortConfig.key) {
             const sorted = [...filteredBookings].sort((a, b) => {
                 let aValue = a[sortConfig.key];
                 let bValue = b[sortConfig.key];
+    
+                // Kiểm tra nếu đang sắp xếp theo 'EventDate' hoặc 'BookingTime'
                 if (sortConfig.key === 'EventDate') {
                     aValue = new Date(a.Event.EventDate);
                     bValue = new Date(b.Event.EventDate);
+                } else if (sortConfig.key === 'BookingTime') {
+                    aValue = new Date(a.BookingTime);  // Sử dụng 'BookingTime' ở đây
+                    bValue = new Date(b.BookingTime);
                 }
+    
                 return (aValue > bValue ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
             });
             return sorted;
         }
         return filteredBookings;
     }, [bookings, sortConfig, selectedRoom]);
+    
 
     const requestSort = (key) => {
         let direction = 'asc';
@@ -99,8 +125,9 @@ const Bookings = ({ bookings, rooms }) => {
     };
 
     useEffect(() => {
-        if (bookings.length < 1) getAllBooking(dispatch);
-    }, [bookings.length, dispatch]);
+        getAllBooking(dispatch);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <TableContainer component={Paper} title="Lịch sử đặt sự kiện">
@@ -124,6 +151,15 @@ const Bookings = ({ bookings, rooms }) => {
             <Table stickyHeader aria-label="simple table">
                 <TableHead>
                     <TableRow>
+                        <TableCell>
+                            <TableSortLabel
+                                active={sortConfig.key === 'BookingTime'}
+                                direction={sortConfig.direction}
+                                onClick={() => requestSort('BookingTime')}
+                            >
+                                Thời gian đặt
+                            </TableSortLabel>
+                        </TableCell>
                         <TableCell>Email</TableCell>
                         <TableCell>
                             <TableSortLabel
@@ -155,8 +191,8 @@ const Bookings = ({ bookings, rooms }) => {
                                 Tên nhà hàng
                             </TableSortLabel>
                         </TableCell>
-                        <TableCell>Menu</TableCell>
                         <TableCell>Trang trí</TableCell>
+                        <TableCell>Menu</TableCell>
                         <TableCell>Phương thức thanh toán</TableCell>
                         <TableCell>Hành động</TableCell>
                     </TableRow>
@@ -164,6 +200,7 @@ const Bookings = ({ bookings, rooms }) => {
                 <TableBody>
                     {sortedBookings.filter(booking => booking != null).map((booking) => (
                         <TableRow key={booking?.BookingID}>
+                            <TableCell>{formatDateTime(new Date(booking.BookingTime))}</TableCell>
                             <TableCell>{booking.User.email}</TableCell>
                             <TableCell>{getEventType(booking.Event?.EventType)}</TableCell>
                             <TableCell>{booking.Event?.TotalTable}</TableCell>

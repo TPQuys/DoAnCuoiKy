@@ -7,39 +7,23 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Provider } from 'react-redux';
 import store from '@/redux/store';
 
-export default function RootLayout() {
+export default function BookingLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <Provider store={store}>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
+      <Stack>
         <Stack.Screen
-          name="index"
+          name="bookingPage"
           options={{
-            title: 'Đăng nhập',
+            title: 'Đặt phòng',
           }}
         />
         <Stack.Screen
-          name="register"
+          name="payment"
           options={{
-            title: 'Đăng kí',
+            title: 'thanh toán',
           }}
-        />
-        <Stack.Screen
-          name="resetPasswordEmail"
-          options={{
-            title: 'Đặt lại mật khẩu',
-          }}
-        />
-        <Stack.Screen
-          name="(tabs)"
-        />
-        <Stack.Screen
-          name="(booking)"
         />
       </Stack>
     </Provider>

@@ -3,7 +3,7 @@ import { View, Text, Image, Button, StyleSheet, TouchableOpacity, ScrollView, Li
 import { useDispatch, useSelector } from "react-redux";
 import { getBookingById } from "../../redux/actions/bookingRequest";
 import { PostZaloApi } from '../../redux/actions/paymentRequest';
-import { useGlobalSearchParams } from "expo-router";
+import { Link, useGlobalSearchParams } from "expo-router";
 import { AppState } from 'react-native';
 const PaymentPage = () => {
     const [event, setEvent] = useState({});
@@ -14,7 +14,7 @@ const PaymentPage = () => {
     const user = useSelector((state) => state.auth.login.currentUser);
     const dispatch = useDispatch();
     const getBooking = async () => {
-        const responseBooking = await getBookingById(dispatch, bookingId,user);
+        const responseBooking = await getBookingById(dispatch, bookingId, user);
         if (responseBooking) {
             setNewBooking(responseBooking?.data);
             setEvent(responseBooking.data?.Event);
@@ -23,14 +23,14 @@ const PaymentPage = () => {
 
     useEffect(() => {
         const subscription = AppState.addEventListener('change', nextAppState => {
-          if (nextAppState === 'active') {
-            getBooking();
-          }
-          setAppState(nextAppState);
+            if (nextAppState === 'active') {
+                getBooking();
+            }
+            setAppState(nextAppState);
         });
         return () => subscription.remove();
-      }, []);
-      
+    }, []);
+
     useEffect(() => {
         getBooking();
         setIsDisable(false);
@@ -39,7 +39,7 @@ const PaymentPage = () => {
     const handlePayment = async () => {
         setIsDisable(true);
         if (newBooking) {
-            const zaloApi = await PostZaloApi(dispatch, newBooking,user);
+            const zaloApi = await PostZaloApi(dispatch, newBooking, user);
             if (zaloApi) {
                 // Mở liên kết thanh toán trong trình duyệt
                 Linking.openURL(zaloApi.data.order_url);
@@ -101,7 +101,21 @@ const PaymentPage = () => {
             }
         }
     };
-
+    const getDecore = (Decore) => {
+        const lobby = Decore?.LobbyDecore ? "sảnh" : "";
+        const stage = Decore?.StageDecore ? "sân khấu" : "";
+        const table = Decore?.TableDecore ? "bàn" : "";
+    
+        // Tạo một mảng chỉ chứa các phần tử không rỗng
+        const decoreArray = [lobby, stage, table]?.filter(item => item !== "");
+    
+        // Chỉ viết hoa chữ cái đầu tiên của phần tử đầu tiên
+        if (decoreArray.length > 0) {
+            decoreArray[0] = decoreArray[0].charAt(0).toUpperCase() + decoreArray[0].slice(1);
+        }
+    
+        return decoreArray.join(", ");
+    };
     const roomPriceByEvent = (event, roomPrice) => {
         if (event?.Time === "ALLDAY") {
             return roomPrice * 1.5;
@@ -127,6 +141,7 @@ const PaymentPage = () => {
                             <Text>Loại sự kiện: {getEventType(event?.EventType)}</Text>
                             <Text>Thời gian: {getTime(event?.Time)}</Text>
                             <Text>Tổng số bàn: {event?.TotalTable}</Text>
+                            <Text>Trang trí: {getDecore(event?.Decore)}</Text>
                             <Text>Ghi chú: {event?.Note}</Text>
                         </View>
                     </View>
@@ -135,20 +150,21 @@ const PaymentPage = () => {
                 <View style={styles.flex}>
                     <View style={styles.paymentMenu}>
                         <Text style={styles.menuTitle}>Menu</Text>
-                        <Text style={styles.menuPrice}>Tổng giá: {getMenuPrice(event.Menu)?.toLocaleString()} VND/Bàn</Text>
+                        <Text style={styles.menuPrice}>Tổng giá:</Text>
+                        <Text style={styles.menuPrice}>{getMenuPrice(event.Menu)?.toLocaleString()} VND/Bàn</Text>
                         <View>
-                            <Text>Món ăn</Text>
+                            <Text style={styles.itemTitle}>Món ăn</Text>
                             {event.Menu?.Food.map((food, idx) => (
                                 <View key={idx} style={styles.menuItem}>
-                                    <Text>{food.Name}</Text>
+                                    <Text style={styles.textItem}>{food.Name}</Text>
                                 </View>
                             ))}
                         </View>
                         <View>
-                            <Text>Đồ uống</Text>
+                            <Text style={styles.itemTitle}>Đồ uống</Text>
                             {event.Menu?.Drinks.map((drink, idx) => (
                                 <View key={idx} style={styles.menuItem}>
-                                    <Text>{drink.Name}</Text>
+                                    <Text style={styles.textItem}>{drink.Name}</Text>
                                 </View>
                             ))}
                         </View>
@@ -176,6 +192,7 @@ const PaymentPage = () => {
                             <Text style={styles.paymentButtonText}>Thanh toán</Text>
                         </TouchableOpacity>
                     )}
+                    <Link style={styles.link} href={'../(tabs)/home'}>Về trang chủ</Link>
                 </View>
             </View>
         </ScrollView>
@@ -188,7 +205,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#fafaeb",
     },
     paymentBody: {
-        margin: 30,
+        margin: 40,
+        marginHorizontal: 20,
     },
     flex: {
         flexDirection: 'row',
@@ -226,10 +244,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#64463c',
         borderRadius: 5,
         marginBottom: 10,
+        justifyContent: 'flex-end',
+        flex: 1
     },
     menuTitle: {
         color: 'white',
         fontWeight: '700',
+        textAlign: "center",
+        fontSize: 20
     },
     menuItem: {
         flexDirection: 'row',
@@ -237,6 +259,14 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: 'white',
         paddingVertical: 5,
+    },
+    itemTitle: {
+        textAlign: 'center',
+        fontWeight: "700",
+        color: 'white'
+    },
+    textItem: {
+        color: "white"
     },
     menuPrice: {
         color: 'white',
@@ -252,7 +282,7 @@ const styles = StyleSheet.create({
     },
     totalAmount: {
         color: '#fff',
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: '700',
     },
     paymentButtonContainer: {
@@ -269,6 +299,11 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
     },
+    link:{
+        margin:20,
+        fontSize:14,
+        fontWeight:"700"
+    }
 });
 
 export default PaymentPage;

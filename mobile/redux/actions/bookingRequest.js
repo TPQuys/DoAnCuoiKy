@@ -6,6 +6,7 @@ import {
     getBookingsStart,
     getBookingsFailed
 } from "../reducers/bookingSlice";
+import { ToastAndroid } from 'react-native';
 import { createAxios } from "../../utils/createInstance";
 
 
@@ -18,7 +19,7 @@ export const getBookingById = async (dispatch, bookingId,user) => {
             return res
         }
     } catch (error) {
-        console.error("lấy booking thất bại:", error);
+        console.log("lấy booking thất bại:", error);
     }
 };
 
@@ -26,12 +27,13 @@ export const getBookingById = async (dispatch, bookingId,user) => {
 export const getBookingByUser = async (dispatch,user) => {
     dispatch(getBookingsStart());
     if (user) {
-        let axiosJWT = createAxios();
+        let axiosJWT = createAxios(user);
         try {
             const res = await axiosJWT.get(`/v1/booking/user/${user.user.id}`);
             dispatch(getBookingsSuccess(res.data));
+            return res.data
         } catch (error) {
-            console.error("lấy booking thất bại:", error);
+            console.log("lấy booking thất bại:", error);
             dispatch(getBookingsFailed());
         }
     }
@@ -39,7 +41,7 @@ export const getBookingByUser = async (dispatch,user) => {
 
 // Hàm lấy booking theo user
 export const getAllBooking = async (dispatch,user) => {
-    dispatch(getBookingsStart());
+    dispatch(getBookingsStart(user));
     if (user) {
         let axiosJWT = createAxios();
         try {
@@ -61,6 +63,7 @@ export const addBooking = async (dispatch, bookingData,user) => {
     try {
         const res = await axiosJWT.post("/v1/booking", bookingData);
         getBookingByUser(dispatch)
+        ToastAndroid.show("Đặt sự kiện thành công", ToastAndroid.SHORT)
         return res.data
     } catch (error) {
         console.error("Thêm booking thất bại:", error);
@@ -90,6 +93,20 @@ export const deleteBooking = async (dispatch, bookingId) => {
         dispatch(deleteBookingSuccess(bookingId));
     } catch (error) {
         console.error("Xóa booking thất bại:", error);
+        dispatch(deleteBookingFailed());
+    }
+};
+
+// Hàm xóa booking
+export const deleteBookingUser = async (dispatch, bookingId, user) => {
+    dispatch(deleteBookingStart());
+    let axiosJWT = createAxios(user);
+    try {
+        await axiosJWT.delete(`/v1/booking/${bookingId}/user`);
+        dispatch(deleteBookingSuccess(bookingId));
+        ToastAndroid.show("Xoá thành công", ToastAndroid.SHORT)
+    } catch (error) {
+        // console.error("Xóa booking thất bại:", JSON.stringify(error));
         dispatch(deleteBookingFailed());
     }
 };

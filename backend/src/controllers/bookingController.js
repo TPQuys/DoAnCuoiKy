@@ -58,6 +58,15 @@ const deleteBooking = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 };
+// Xóa booking
+const deleteBookingUser = async (req, res) => {
+    try {
+        const result = await BookingService.deleteBookingUser(req.params.id);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
 
 module.exports = {
     createBooking,
@@ -65,5 +74,6 @@ module.exports = {
     getBookingById,
     updateBooking,
     deleteBooking,
-    getBookingByUser
+    getBookingByUser,
+    deleteBookingUser
 };

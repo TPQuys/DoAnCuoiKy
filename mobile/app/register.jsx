@@ -1,43 +1,46 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import { TextInput } from 'react-native-paper'
+import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { TextInput } from 'react-native-paper';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { Link, useRouter } from 'expo-router';
-
-import { loginUser } from '@/redux/actions/apiRequest'
 import { useDispatch } from 'react-redux';
+import { Link, useRouter } from 'expo-router';
+import { registerUser } from '@/redux/actions/apiRequest';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().email("Email không hợp lệ").required("Hãy nhập email"),
-    password: Yup.string().required("Hãy nhập mật khẩu"),
+    password: Yup.string()
+        .required("Hãy nhập mật khẩu")
+        .min(6, "Mật khẩu phải ít nhất 6 kí tự"),
+    confirmPassword: Yup.string()
+        .oneOf([Yup.ref('password'), null], "Mật khẩu không khớp")
+        .required("Hãy nhập xác nhận mật khẩu"),
 });
 
-const Login = () => {
+const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const dispatch = useDispatch();
     const router = useRouter();
-    const handleLogin = async (values) => {
+
+    const handleRegister = async (values) => {
         const newUser = {
             email: values.email,
             password: values.password,
         };
-        const success = await loginUser(newUser, dispatch, router)
-        if (success) {
-            router.push("")
-        }
+        const success = await registerUser(newUser, dispatch, router);
     };
 
     return (
-        <View style={styles.loginContainer}>
+        <View style={styles.registerContainer}>
             <Formik
-                initialValues={{ email: '', password: '' }}
+                initialValues={{ email: '', password: '', confirmPassword: '' }}
                 validationSchema={validationSchema}
-                onSubmit={handleLogin}
+                onSubmit={handleRegister}
             >
                 {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                     <View style={styles.form}>
-                        <Text style={styles.loginTitle}>Đăng nhập</Text>
+                        <Text style={styles.registerTitle}>Đăng ký</Text>
 
                         <View style={styles.inputWrap}>
                             <TextInput
@@ -56,17 +59,16 @@ const Login = () => {
                         <View style={styles.inputWrap}>
                             <TextInput
                                 label="Mật khẩu"
-                                style={styles.input}
                                 value={values.password}
                                 onChangeText={handleChange('password')}
-                                mode="outlined"
                                 onBlur={handleBlur('password')}
+                                mode="outlined"
                                 secureTextEntry={!showPassword}
+                                style={styles.input}
                                 right={
                                     <TextInput.Icon
                                         icon={showPassword ? 'eye-off' : 'eye'}
                                         onPress={() => setShowPassword(!showPassword)}
-                                        forceTextInput={false}
                                     />
                                 }
                             />
@@ -75,17 +77,35 @@ const Login = () => {
                             )}
                         </View>
 
-                        <View style={styles.buttonWrap}>
-                            <Button
-                                title="Đăng nhập"
-                                onPress={handleSubmit}
+                        <View style={styles.inputWrap}>
+                            <TextInput
+                                label="Xác nhận mật khẩu"
+                                value={values.confirmPassword}
+                                onChangeText={handleChange('confirmPassword')}
+                                onBlur={handleBlur('confirmPassword')}
+                                mode="outlined"
+                                secureTextEntry={!showConfirmPassword}
+                                style={styles.input}
+                                right={
+                                    <TextInput.Icon
+                                        icon={showConfirmPassword ? 'eye-off' : 'eye'}
+                                        onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    />
+                                }
                             />
+                            {touched.confirmPassword && errors.confirmPassword && (
+                                <Text style={styles.textDanger}>{errors.confirmPassword}</Text>
+                            )}
                         </View>
-                        <Text style={styles.loginRegister}>
-                            Chưa có tài khoản? <Link href="/register" style={styles.loginRegisterLink}>Đăng kí miễn phí ngay</Link>
-                        </Text>
-                        <Link href="/reset_password_email" style={styles.loginResetPasswordLink}>Quên mật khẩu?</Link>
 
+                        <View style={styles.buttonWrap}>
+                            <Button title="Tạo tài khoản" onPress={handleSubmit} color="#81695e" />
+                        </View>
+                        <Text style={styles.registerLogin}>
+                                Đã có tài khoản? {" "}
+                                <Link href={"/"} style={styles.registerLoginLink}>Đăng nhập ngay!</Link>
+
+                        </Text>
                     </View>
                 )}
             </Formik>
@@ -94,16 +114,14 @@ const Login = () => {
 };
 
 const styles = StyleSheet.create({
-    loginContainer: {
+    registerContainer: {
         height: "100%",
-        display: 'flex',
-        borderRadius: 5,
-        backgroundColor: 'rgba(255, 251, 243, 0.9)',
+        justifyContent: 'center',
         alignItems: 'center',
-        justifyContent: 'flex-end',
-        paddingVertical: 100
+        backgroundColor: 'rgba(255, 251, 243, 0.9)',
+        paddingVertical: 100,
     },
-    loginTitle: {
+    registerTitle: {
         fontWeight: '700',
         fontSize: 40,
         marginBottom: 10,
@@ -111,56 +129,41 @@ const styles = StyleSheet.create({
         color: '#81695e',
     },
     form: {
-        display: 'flex',
-        margin: 'auto',
-        fontSize: 10,
-        fontWeight: '600',
-        justifyContent: 'center',
         alignItems: 'center',
         gap: 20,
-        padding: 20
+        padding: 20,
     },
     inputWrap: {
         width: 270,
         height: 60,
+        marginBottom: 10,
     },
     input: {
         borderRadius: 5,
-        fontSize:18
+        fontSize: 18,
     },
     buttonWrap: {
         margin: 10,
-        backgroundColor: "red",
         width: 200,
         borderRadius: 10,
+        overflow: 'hidden',
     },
-    loginRegister: {
-        margin: '2rem 1rem 0 1rem',
-        fontSize: 10,
+    registerLogin: {
+        margin: 10,
+        fontSize:14,
         textAlign: 'center',
     },
-    loginRegisterLink: {
-        textDecoration: 'none',
-        cursor: 'pointer',
-        marginTop: 1,
+    registerLoginLink: {
         color: 'rgb(189, 0, 189)',
         fontWeight: '700',
-    },
-    loginResetPasswordLink: {
-        display: 'block',
-        textDecoration: 'none',
-        cursor: 'pointer',
-        marginTop: 1,
-        color: 'rgb(189, 154, 0)',
-        fontWeight: '700',
+        fontSize:14
     },
     textDanger: {
         color: 'red',
         fontSize: 14,
         textAlign: 'left',
-        marginLeft: 10,
-        marginTop: 0.5,
+        marginTop: 5,
     },
 });
 
-export default Login;
+export default Register;
