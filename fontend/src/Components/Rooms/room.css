@@ -5,6 +5,8 @@
     justify-content: center;
     align-items: flex-start; 
     flex-direction: column;
+    background: linear-gradient(135deg, #fff3d1 ,#e7f0ff);
+
 }
 
 .room-body {
@@ -12,7 +14,6 @@
     width: 100%;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #fff3d1 ,#e7f0ff);
     flex-wrap: wrap;
     padding: 20px 0;
 }

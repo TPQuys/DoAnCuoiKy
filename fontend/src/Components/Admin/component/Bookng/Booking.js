@@ -201,7 +201,7 @@ const Bookings = ({ bookings, rooms }) => {
                     {sortedBookings.filter(booking => booking != null).map((booking) => (
                         <TableRow key={booking?.BookingID}>
                             <TableCell>{formatDateTime(new Date(booking.BookingTime))}</TableCell>
-                            <TableCell>{booking.User.email}</TableCell>
+                            <TableCell>{booking?.User?.email}</TableCell>
                             <TableCell>{getEventType(booking.Event?.EventType)}</TableCell>
                             <TableCell>{booking.Event?.TotalTable}</TableCell>
                             <TableCell>{formatDate(new Date(booking.Event?.EventDate))}</TableCell>
