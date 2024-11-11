@@ -51,7 +51,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable }, ref) => {
                         <Picker.Item label="Đám Cưới" value="WEDDING" />
                         <Picker.Item label="Hội Nghị" value="CONFERENCE" />
                         <Picker.Item label="Sinh nhật" value="BIRTHDAY" />
-                        <Picker.Item label="Khác" value="OTHER" />
+                        <Picker.Item label="Khác" value="ORTHER" />
                     </Picker>
                     {touched.EventType && errors.EventType && (
                         <Text style={styles.errorText}>{errors.EventType}</Text>

@@ -27,9 +27,9 @@ const validationSchema = Yup.object({
     dayofbirth: Yup.date().nullable().max(new Date(), "Ngày sinh không hợp lệ"),
     address: Yup.string(),
     phone: Yup.string()
-        .matches(/^[0-9]+$/, "Must be only digits")
-        .min(10, 'Must be exactly 10 digits')
-        .max(10, 'Must be exactly 10 digits'),
+        .matches(/^[0-9]+$/, "Chỉ chứa chữ số")
+        .min(10, 'Gồm 10 chữ số')
+        .max(10, 'Gồm 10 chữ số'),
 });
 
 const MyForm = () => {

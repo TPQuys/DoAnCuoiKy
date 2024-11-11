@@ -22,7 +22,7 @@ const PaymentPage = () => {
     }
     useEffect(() => {
         getBooking()
-    },[])
+    }, [])
 
     const handlePayment = async () => {
         setIsDisable(true)
@@ -37,21 +37,21 @@ const PaymentPage = () => {
     }
 
     const getMenuPrice = (menu) => {
-       if(menu){
-        let totalMenuPrice = 0
-        // Tính toán giá của menu
-        const foodTotalPrice = menu?.Food.reduce((total, food) => {
-            return total + (food.UnitPrice * food.MenuFoods.Quantity);
-        }, 0);
+        if (menu) {
+            let totalMenuPrice = 0
+            // Tính toán giá của menu
+            const foodTotalPrice = menu?.Food.reduce((total, food) => {
+                return total + (food.UnitPrice * food.MenuFoods.Quantity);
+            }, 0);
 
-        const drinksTotalPrice = menu?.Drinks.reduce((total, drink) => {
-            return total + (drink.UnitPrice * drink.MenuDrinks.Quantity);
-        }, 0);
+            const drinksTotalPrice = menu?.Drinks.reduce((total, drink) => {
+                return total + (drink.UnitPrice * drink.MenuDrinks.Quantity);
+            }, 0);
 
-        totalMenuPrice = foodTotalPrice + drinksTotalPrice;
-        return totalMenuPrice
-       }
-       return 0;
+            totalMenuPrice = foodTotalPrice + drinksTotalPrice;
+            return totalMenuPrice
+        }
+        return 0;
     }
 
     const formatDate = (date) => {
@@ -99,24 +99,24 @@ const PaymentPage = () => {
         const lobby = Decore?.LobbyDecore ? "sảnh" : "";
         const stage = Decore?.StageDecore ? "sân khấu" : "";
         const table = Decore?.TableDecore ? "bàn" : "";
-    
+
         // Tạo một mảng chỉ chứa các phần tử không rỗng
         const decoreArray = [lobby, stage, table]?.filter(item => item !== "");
-    
+
         // Chỉ viết hoa chữ cái đầu tiên của phần tử đầu tiên
         if (decoreArray.length > 0) {
             decoreArray[0] = decoreArray[0].charAt(0).toUpperCase() + decoreArray[0].slice(1);
         }
-    
+
         return decoreArray.join(", ");
     };
-    
-    
 
-    const rommPriceByEvent = (event,roomPrice) =>{
-        if(event?.Time==="ALLDAY"){
-            console.log(roomPrice*1.5)
-            return roomPrice*1.5
+
+
+    const rommPriceByEvent = (event, roomPrice) => {
+        if (event?.Time === "ALLDAY") {
+            console.log(roomPrice * 1.5)
+            return roomPrice * 1.5
         }
         else {
             console.log(roomPrice)
