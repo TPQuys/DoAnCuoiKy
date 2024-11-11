@@ -43,7 +43,7 @@ const getDecore = (Decore) => {
     const decoreArray = [lobby, stage, table]?.filter(item => item !== "");
 
     // Chỉ viết hoa chữ cái đầu tiên của phần tử đầu tiên
-    if (decoreArray.length > 0) {
+    if (decoreArray?.length > 0) {
         decoreArray[0] = decoreArray[0].charAt(0).toUpperCase() + decoreArray[0].slice(1);
     }
 
@@ -60,7 +60,7 @@ const Bookings = ({ bookings, user }) => {
     };
 
     useEffect(() => {
-        if (bookings.length != bookingData.length) {
+        if (bookings?.length != bookingData?.length) {
             setBookingData(bookings)
         }
     }, [bookings])

@@ -119,8 +119,39 @@ class UserService {
     }
 
     async deleteUser(userId) {
-        return await UserRepository.deleteUser(userId);
+        // Bước 1: Lấy thông tin người dùng từ database
+        const user = await User.findByPk(userId);
+        if (!user) {
+            throw new Error("User not found in local database.");
+        }
+    
+        // Bước 2: Tìm người dùng trên Supabase bằng email
+        const { data: userList, error: fetchError } = await supabase.auth.admin.listUsers({
+            // Email: user.email
+        });
+
+        const users = userList.users
+    
+        if (fetchError || !users.length) {
+            console.error("Error finding user in Supabase:", fetchError ? fetchError.message : "User not found.");
+            throw new Error("Failed to find user in Supabase.");
+        }
+    
+        const supabaseUserId = users[0].id;
+    
+        // Bước 3: Xóa người dùng khỏi Supabase
+        const { error: deleteError } = await supabase.auth.admin.deleteUser(supabaseUserId);
+        if (deleteError) {
+            console.error("Error deleting user in Supabase:", deleteError.message);
+            throw new Error("Failed to delete user in Supabase.");
+        }
+    
+        // Xóa người dùng trong database (nếu cần)
+        await UserRepository.deleteUser(userId);
+    
+        return { message: "Successfully." };
     }
+    
 }
 
 module.exports = new UserService();

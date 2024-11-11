@@ -71,13 +71,13 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end', 
     },
     overlayContent: {
-        backgroundColor: 'rgba(0, 0, 0, 0.2)', // Hiệu ứng nền mờ trên hình ảnh
+        backgroundColor: 'rgba(0, 0, 0, 0.1)', // Hiệu ứng nền mờ trên hình ảnh
         padding: 10,
     },
     roomContentTitle: {
         fontSize: 24,
         color: '#fff',
-        fontWeight: '600',
+        fontWeight: '700',
         textAlign: 'center',
         marginBottom: 10,
     },
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     },
     roomContentText: {
         fontSize: 14,
-        color: '#fff',
+        color: '#81695e',
     },
     button: {
         backgroundColor: '#64463c',

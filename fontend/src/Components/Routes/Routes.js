@@ -12,6 +12,7 @@ import UserInfoPage from "../UserInfo/UserInfo";
 import DecorePage from "../Decore/DecorePage";
 import Footer from "../Footer/Footer"
 import AdminPage from "../Admin/AdminPage"
+import Verified from "../Verified/Verified"
 import { toast } from "react-toastify";
 import { getAllRooms } from "../../redux/actions/roomRequest";
 import { getAllMenus } from "../../redux/actions/menuRequest";
@@ -50,6 +51,7 @@ const AppRoutes = () => {
 
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sessionStorage, location.pathname, navigate, previousPath],user1);
 
     return (
@@ -69,9 +71,10 @@ const AppRoutes = () => {
                     <Route path="/decore" element={<DecorePage />} />
                     <Route path="/reset_password" element={<ResetPassword />} />
                     <Route path="/reset_password_email" element={<ResetPasswordEmail />} />
+                    <Route path="/verified" element={<Verified />} />
                 </Routes>
             </div>
-            {location.pathname !== "/login" && location.pathname !== "/register" && <Footer />}
+            {location.pathname !== "/login" && location.pathname !== "/register" && location.pathname !== "/verified" && <Footer />}
         </>
     );
 };
