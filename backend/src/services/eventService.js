@@ -1,9 +1,9 @@
 const eventRepository = require('../repositories/eventRository');
 
 const eventService = {
-    createEvent: async (eventData) => {
-        return await eventRepository.create(eventData);
-    },
+    // createEvent: async (eventData) => {
+    //     return await eventRepository.create(eventData);
+    // },
 
     createEvent: async (eventData) => {
         const { RoomEventID, EventDate, Time } = eventData;

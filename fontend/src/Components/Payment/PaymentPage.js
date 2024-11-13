@@ -10,6 +10,7 @@ const PaymentPage = () => {
     const [event, setEvent] = useState({});
     const [newBooking, setNewBooking] = useState({});
     const [isDisable, setIsDisable] = useState(false);
+    const [remainingTime, setRemainingTime] = useState(0);
     const dispatch = useDispatch();
 
     const getBooking = async () => {
@@ -20,6 +21,29 @@ const PaymentPage = () => {
             console.log(responseBooking?.data)
         }
     }
+
+    useEffect(() => {
+        // Tính toán thời điểm kết thúc (bookingTime + 15 phút)
+        const endTime = new Date(booking.BookingTime).getTime() + 15 * 60 * 1000;
+
+        // Cập nhật thời gian còn lại mỗi giây
+        const interval = setInterval(() => {
+            const currentTime = new Date().getTime();
+            const timeLeft = Math.max(0, Math.floor((endTime - currentTime) / 1000));
+            setRemainingTime(timeLeft);
+
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+            }
+        }, 1000);
+
+        // Dọn dẹp interval khi component bị huỷ
+        return () => clearInterval(interval);
+    }, [booking.BookingTime]);
+
+    const minutes = Math.floor(remainingTime / 60);
+    const seconds = remainingTime % 60;
+
     useEffect(() => {
         getBooking()
     }, [])
@@ -27,10 +51,10 @@ const PaymentPage = () => {
     const handlePayment = async () => {
         setIsDisable(true)
         if (newBooking) {
-            const zaloApi = await PostZaloApi(dispatch, newBooking)
-            console.log(zaloApi)
-            if (zaloApi) {
-                window.location.href = zaloApi.data.order_url;
+            // const zaloApi = await PostZaloApi(dispatch, newBooking)
+            // console.log(zaloApi)
+            if (newBooking.PaymentLink) {
+                window.location.href = newBooking.PaymentLink;
                 setIsDisable(false)
             }
         }
@@ -119,7 +143,6 @@ const PaymentPage = () => {
             return roomPrice * 1.5
         }
         else {
-            console.log(roomPrice)
             return roomPrice
         }
     }
@@ -184,7 +207,7 @@ const PaymentPage = () => {
                     </div>
                 </div>
                 <div className='payment-button-container'>
-                    {newBooking.Payment ? "Đã thanh toán" :
+                    {newBooking.Payment ? "Đã thanh toán" : remainingTime > 1 ? 
                         <Button
                             component="a"
                             variant="contained"
@@ -192,7 +215,8 @@ const PaymentPage = () => {
                             onClick={() => handlePayment()}
                             disabled={isDisable}
                         >
-                            Thanh toán</Button>
+                            Thanh toán ({minutes}:{seconds < 10 ? '0' : ''}{seconds})
+                        </Button> : "Lịch đặt đã hết hạn"
                     }
                 </div>
             </div>

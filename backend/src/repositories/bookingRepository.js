@@ -69,7 +69,7 @@ class BookingRepository {
     async getBookingById(bookingId) {
         try {
             const booking = await Booking.findByPk(bookingId, {
-                attributes:["BookingID","BookingTime"],
+                attributes:["BookingID","BookingTime","PaymentLink","LinkExpiry"],
                 include: [
                     {
                         model:Event,

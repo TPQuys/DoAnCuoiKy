@@ -7,6 +7,7 @@ import Form from "@/components/BookingForm";
 import { useGlobalSearchParams, useRouter } from "expo-router";
 import { addDecore } from "../../redux/actions/decoreRequest";
 import { ToastAndroid } from 'react-native';
+import { PostZaloApi } from "../../redux/actions/paymentRequest";
 
 const HomePage = () => {
     const [selected, setSelected] = useState(null);
@@ -81,6 +82,7 @@ const HomePage = () => {
                             BookingTime: new Date()
                         }, user);
                         if (newBooking) {
+                            await PostZaloApi(dispatch, newBooking,user);
                             setBookingSuccess(newBooking.BookingID);
                         }
                     } else {

@@ -58,7 +58,7 @@ const postZaloApi = async (req, res) => {
         // const url = new URL(referer);
         // console.log(url)
         const result = await PaymentService.postZaloApi(booking,fullUrl);
-        console.log(result)
+        // console.log(result)
         res.status(200).json(result);
     } catch (error) {
         console.log(error)

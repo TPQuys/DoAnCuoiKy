@@ -7,6 +7,8 @@ const CryptoJS = require('crypto-js'); // npm install crypto-js
 const moment = require('moment'); // npm install moment
 const ngrok = require('ngrok');
 const nodemailer = require('nodemailer');
+const Booking = require('../models/Booking');
+const { where } = require('sequelize');
 
 const config = {
     app_id: "2554",
@@ -48,7 +50,6 @@ class PaymentService {
         }
     }
 
-
     async createPayment(paymentData) {
         return await PaymentRepository.createPayment(paymentData);
     }
@@ -57,11 +58,15 @@ class PaymentService {
         return await PaymentRepository.getAllPayments();
     }
 
-    async postZaloApi(booking,backendURL ) {
-        ngrok.kill()
-        const url = backendURL.includes("8000") ? await ngrok.connect(8000) : backendURL
-        console.log(url)
+    async postZaloApi(booking, backendURL) {
+        // ngrok.kill()
+        // const url = backendURL.includes("8000") ? await ngrok.connect(8000) : backendURL
+        const url = "https://ab7c-27-65-230-251.ngrok-free.app"
+        // console.log(url)
         const findBooking = await bookingRepository.getBookingById(booking.BookingID)
+        if(findBooking.PaymentLink && (findBooking.LinkExpiry> new Date())){
+            return {order_url:findBooking.PaymentLink}
+        }
         if (!booking.Payment) {
             const eventData = findBooking?.Event || {};
             const roomEventData = eventData?.RoomEvent || {};
@@ -76,7 +81,7 @@ class PaymentService {
             const totalTable = eventData?.TotalTable || 1; // Tổng số bàn, mặc định là 1 nếu không có
             const Time = eventData?.Time; // Tổng số bàn, mặc định là 1 nếu không có
             const roomPrice = (Time === "ALLDAY" ? roomEventData?.Price * 1.5 : roomEventData?.Price) || 0; // Giá phòng
-            console.log(roomPrice)
+            // console.log(roomPrice)
             // Tính tổng tiền thanh toán
             const Amount = (totalPriceFoods + totalPriceDrinks) * totalTable + roomPrice;
             const BookingID = findBooking.BookingID
@@ -105,7 +110,20 @@ class PaymentService {
 
                 try {
                     const result = await axios.post(config.endpoint, null, { params: order })
+                    console.log(result.data)
+                    if (result?.data?.return_code == 1) {
+                        const linkExpiry = new Date();
+                        linkExpiry.setMinutes(linkExpiry.getMinutes() + 15);
+                        await Booking.update(
+                            {
+                                PaymentLink: result.data.order_url,
+                                LinkExpiry: linkExpiry
+                            },
+                            { where: { BookingID: findBooking.BookingID } }
+                        );
                     return result.data
+                    }
+
                 } catch (error) {
                     return error
                 }
@@ -114,63 +132,63 @@ class PaymentService {
             return "Sự kiện này đã được thanh toán trước"
     }
 
-    async postZaloApiMobile(booking,backendURL ) {
-        ngrok.kill()
-        const url = backendURL.includes("localhost") ? await ngrok.connect(8000) : backendURL
-        console.log(url)
-        const findBooking = await bookingRepository.getBookingById(booking.BookingID)
-        if (!booking.Payment) {
-            const eventData = findBooking?.Event || {};
-            const roomEventData = eventData?.RoomEvent || {};
-            const menuData = eventData?.Menu || {};
-            const foodData = menuData?.Food || [];
-            const drinkData = menuData?.Drinks || [];
+    // async postZaloApiMobile(booking,backendURL ) {
+    //     ngrok.kill()
+    //     const url = backendURL.includes("localhost") ? await ngrok.connect(8000) : backendURL
+    //     console.log(url)
+    //     const findBooking = await bookingRepository.getBookingById(booking.BookingID)
+    //     if (!booking.Payment) {
+    //         const eventData = findBooking?.Event || {};
+    //         const roomEventData = eventData?.RoomEvent || {};
+    //         const menuData = eventData?.Menu || {};
+    //         const foodData = menuData?.Food || [];
+    //         const drinkData = menuData?.Drinks || [];
 
-            // Tính tổng giá của thức ăn và đồ uống
-            const totalPriceFoods = this.calculateTotal(foodData, 'MenuFoods');
-            const totalPriceDrinks = this.calculateTotal(drinkData, 'MenuDrinks');
+    //         // Tính tổng giá của thức ăn và đồ uống
+    //         const totalPriceFoods = this.calculateTotal(foodData, 'MenuFoods');
+    //         const totalPriceDrinks = this.calculateTotal(drinkData, 'MenuDrinks');
 
-            const totalTable = eventData?.TotalTable || 1; // Tổng số bàn, mặc định là 1 nếu không có
-            const Time = eventData?.Time; // Tổng số bàn, mặc định là 1 nếu không có
-            const roomPrice = (Time === "ALLDAY" ? roomEventData?.Price * 1.5 : roomEventData?.Price) || 0; // Giá phòng
-            console.log(roomPrice)
-            // Tính tổng tiền thanh toán
-            const Amount = (totalPriceFoods + totalPriceDrinks) * totalTable + roomPrice;
-            const BookingID = findBooking.BookingID
-            const embed_data = {
-                redirecturl: `${process.env.FRONTEND_URL}/payment`
-            };
-            if (Amount && BookingID && url) {
-                const items = [BookingID, findBooking.User.email];
-                const transID = Math.floor(Math.random() * 1000000);
-                const order = {
-                    app_id: config.app_id,
-                    app_trans_id: `${moment().format('YYMMDD')}_${transID}`, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
-                    app_user: "user123",
-                    app_time: Date.now(), // miliseconds
-                    item: JSON.stringify(items),
-                    embed_data: JSON.stringify(embed_data),
-                    amount: Amount,
-                    description: `Lazada - Payment for the order #${transID}`,
-                    bank_code: "",
-                    callback_url: url + "/v1/payment/callback"
-                };
+    //         const totalTable = eventData?.TotalTable || 1; // Tổng số bàn, mặc định là 1 nếu không có
+    //         const Time = eventData?.Time; // Tổng số bàn, mặc định là 1 nếu không có
+    //         const roomPrice = (Time === "ALLDAY" ? roomEventData?.Price * 1.5 : roomEventData?.Price) || 0; // Giá phòng
+    //         console.log(roomPrice)
+    //         // Tính tổng tiền thanh toán
+    //         const Amount = (totalPriceFoods + totalPriceDrinks) * totalTable + roomPrice;
+    //         const BookingID = findBooking.BookingID
+    //         const embed_data = {
+    //             redirecturl: `${process.env.FRONTEND_URL}/payment`
+    //         };
+    //         if (Amount && BookingID && url) {
+    //             const items = [BookingID, findBooking.User.email];
+    //             const transID = Math.floor(Math.random() * 1000000);
+    //             const order = {
+    //                 app_id: config.app_id,
+    //                 app_trans_id: `${moment().format('YYMMDD')}_${transID}`, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
+    //                 app_user: "user123",
+    //                 app_time: Date.now(), // miliseconds
+    //                 item: JSON.stringify(items),
+    //                 embed_data: JSON.stringify(embed_data),
+    //                 amount: Amount,
+    //                 description: `Lazada - Payment for the order #${transID}`,
+    //                 bank_code: "",
+    //                 callback_url: url + "/v1/payment/callback"
+    //             };
 
-                // appid|app_trans_id|appuser|amount|apptime|embeddata|item
-                const data = config.app_id + "|" + order.app_trans_id + "|" + order.app_user + "|" + order.amount + "|" + order.app_time + "|" + order.embed_data + "|" + order.item;
-                order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
+    //             // appid|app_trans_id|appuser|amount|apptime|embeddata|item
+    //             const data = config.app_id + "|" + order.app_trans_id + "|" + order.app_user + "|" + order.amount + "|" + order.app_time + "|" + order.embed_data + "|" + order.item;
+    //             order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
 
-                try {
-                    const result = await axios.post(config.endpoint, null, { params: order })
-                    return result.data
-                } catch (error) {
-                    return error
-                }
-            }
-        } else
-            return "Sự kiện này đã được thanh toán trước"
-    }
-    
+    //             try {
+    //                 const result = await axios.post(config.endpoint, null, { params: order })
+    //                 return result.data
+    //             } catch (error) {
+    //                 return error
+    //             }
+    //         }
+    //     } else
+    //         return "Sự kiện này đã được thanh toán trước"
+    // }
+
     async callback(req) {
         let result = {};
 

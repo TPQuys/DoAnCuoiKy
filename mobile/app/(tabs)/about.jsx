@@ -54,7 +54,7 @@ const MyForm = () => {
     useEffect(() => {
         setUser(curentUser?.user)
         fetchBookings();
-    }, [curentUser,bookings])
+    }, [curentUser])
 
     const handleChoosePhoto = async () => {
         // Yêu cầu quyền truy cập ảnh
