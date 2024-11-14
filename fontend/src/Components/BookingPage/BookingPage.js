@@ -10,6 +10,7 @@ import { addEvent } from "../../redux/actions/eventRequest"; // Import hàm thê
 import { toast } from "react-toastify";
 import { addBooking } from "../../redux/actions/bookingRequest";
 import { addDecore } from "../../redux/actions/decoreRequest";
+import { PostZaloApi } from "../../redux/actions/paymentRequest";
 const HomePage = () => {
     const [selected, setSelected] = useState(null);
     const [isDisabled, setIsDisabled] = useState(false);
@@ -37,6 +38,7 @@ const HomePage = () => {
         });
     };
     const handleSubmitHomePage = async () => {
+        setIsDisabled(true);
         if (formikRef.current) {
             const formik = formikRef.current;
 
@@ -83,7 +85,6 @@ const HomePage = () => {
                 };
 
                 try {
-                    setIsDisabled(true);
                     const newEvent = await addEvent(dispatch, eventData);
                     if (newEvent && user) {
                         const newBooking = await addBooking(dispatch,
@@ -95,6 +96,7 @@ const HomePage = () => {
                         )
                         if (newBooking) {
                             console.log(newBooking)
+                            const zaloApi = await PostZaloApi(dispatch, newBooking)
                             setBookingSuccess(true)
                             sessionStorage.setItem("booking", JSON.stringify(newBooking))
                         }

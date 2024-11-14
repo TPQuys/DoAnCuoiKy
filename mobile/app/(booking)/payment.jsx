@@ -5,21 +5,122 @@ import { getBookingById } from "../../redux/actions/bookingRequest";
 import { PostZaloApi } from '../../redux/actions/paymentRequest';
 import { Link, useGlobalSearchParams } from "expo-router";
 import { AppState } from 'react-native';
+
+const getMenuPrice = (menu) => {
+    if (menu) {
+        let totalMenuPrice = 0;
+        const foodTotalPrice = menu?.Food.reduce((total, food) => {
+            return total + food.UnitPrice * food.MenuFoods.Quantity;
+        }, 0);
+        const drinksTotalPrice = menu?.Drinks.reduce((total, drink) => {
+            return total + drink.UnitPrice * drink.MenuDrinks.Quantity;
+        }, 0);
+        totalMenuPrice = foodTotalPrice + drinksTotalPrice;
+        return totalMenuPrice;
+    }
+    return 0;
+};
+
+const formatDate = (date) => {
+    if (date) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+};
+
+const getEventType = (type) => {
+    if (type) {
+        if (type === "WEDDING") {
+            return "Đám cưới";
+        } else if (type === "CONFERENCE") {
+            return "Hội nghị";
+        } else if (type === "BIRTHDAY") {
+            return "Sinh nhật";
+        } else if (type === "ORTHER") {
+            return "Khác";
+        }
+    }
+};
+
+const getTime = (time) => {
+    if (time) {
+        if (time === "MORNING") {
+            return "Buổi sáng";
+        }
+        if (time === "AFTERNOON") {
+            return "Buổi chiều";
+        }
+        if (time === "ALLDAY") {
+            return "Cả ngày";
+        }
+    }
+};
+const getDecore = (Decore) => {
+    const lobby = Decore?.LobbyDecore ? "sảnh" : "";
+    const stage = Decore?.StageDecore ? "sân khấu" : "";
+    const table = Decore?.TableDecore ? "bàn" : "";
+
+    // Tạo một mảng chỉ chứa các phần tử không rỗng
+    const decoreArray = [lobby, stage, table]?.filter(item => item !== "");
+
+    // Chỉ viết hoa chữ cái đầu tiên của phần tử đầu tiên
+    if (decoreArray.length > 0) {
+        decoreArray[0] = decoreArray[0].charAt(0).toUpperCase() + decoreArray[0].slice(1);
+    }
+
+    return decoreArray.join(", ");
+};
+const roomPriceByEvent = (event, roomPrice) => {
+    if (event?.Time === "ALLDAY") {
+        return roomPrice * 1.5;
+    } else {
+        return roomPrice;
+    }
+};
+
 const PaymentPage = () => {
     const [event, setEvent] = useState({});
     const [newBooking, setNewBooking] = useState({});
     const [isDisable, setIsDisable] = useState(false);
+    const [remainingTime, setRemainingTime] = useState(900);
     const { bookingId } = useGlobalSearchParams();
     const [appState, setAppState] = useState(AppState.currentState);
     const user = useSelector((state) => state.auth.login.currentUser);
     const dispatch = useDispatch();
+
     const getBooking = async () => {
         const responseBooking = await getBookingById(dispatch, bookingId, user);
         if (responseBooking) {
+            // console.log(responseBooking)
             setNewBooking(responseBooking?.data);
             setEvent(responseBooking.data?.Event);
         }
     };
+
+    useEffect(() => {
+        // Tính toán thời điểm kết thúc (bookingTime + 15 phút)
+        const endTime = new Date(newBooking.BookingTime).getTime() + 15 * 60 * 1000;
+
+        // Cập nhật thời gian còn lại mỗi giây
+        const interval = setInterval(() => {
+            const currentTime = new Date().getTime();
+            const timeLeft = Math.max(0, Math.floor((endTime - currentTime) / 1000));
+            setRemainingTime(timeLeft);
+
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+            }
+        }, 1000);
+
+        // Dọn dẹp interval khi component bị huỷ
+        return () => clearInterval(interval);
+    }, [newBooking.BookingTime]);
+
+    const minutes = Math.floor(remainingTime / 60);
+    const seconds = remainingTime % 60;
+
 
     useEffect(() => {
         const subscription = AppState.addEventListener('change', nextAppState => {
@@ -39,90 +140,16 @@ const PaymentPage = () => {
     const handlePayment = async () => {
         setIsDisable(true);
         if (newBooking) {
-            const zaloApi = await PostZaloApi(dispatch, newBooking, user);
-            if (zaloApi) {
-                // Mở liên kết thanh toán trong trình duyệt
-                Linking.openURL(zaloApi.data.order_url);
-                setIsDisable(false);
+            if (newBooking.PaymentLink) {
+                Linking.openURL(newBooking.PaymentLink);
+                setIsDisable(false)
             }
         }
         setIsDisable(false);
 
     };
 
-    const getMenuPrice = (menu) => {
-        if (menu) {
-            let totalMenuPrice = 0;
-            const foodTotalPrice = menu?.Food.reduce((total, food) => {
-                return total + food.UnitPrice * food.MenuFoods.Quantity;
-            }, 0);
-            const drinksTotalPrice = menu?.Drinks.reduce((total, drink) => {
-                return total + drink.UnitPrice * drink.MenuDrinks.Quantity;
-            }, 0);
-            totalMenuPrice = foodTotalPrice + drinksTotalPrice;
-            return totalMenuPrice;
-        }
-        return 0;
-    };
 
-    const formatDate = (date) => {
-        if (date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
-    };
-
-    const getEventType = (type) => {
-        if (type) {
-            if (type === "WEDDING") {
-                return "Đám cưới";
-            } else if (type === "CONFERENCE") {
-                return "Hội nghị";
-            } else if (type === "BIRTHDAY") {
-                return "Sinh nhật";
-            } else if (type === "ORTHER") {
-                return "Khác";
-            }
-        }
-    };
-
-    const getTime = (time) => {
-        if (time) {
-            if (time === "MORNING") {
-                return "Buổi sáng";
-            }
-            if (time === "AFTERNOON") {
-                return "Buổi chiều";
-            }
-            if (time === "ALLDAY") {
-                return "Cả ngày";
-            }
-        }
-    };
-    const getDecore = (Decore) => {
-        const lobby = Decore?.LobbyDecore ? "sảnh" : "";
-        const stage = Decore?.StageDecore ? "sân khấu" : "";
-        const table = Decore?.TableDecore ? "bàn" : "";
-    
-        // Tạo một mảng chỉ chứa các phần tử không rỗng
-        const decoreArray = [lobby, stage, table]?.filter(item => item !== "");
-    
-        // Chỉ viết hoa chữ cái đầu tiên của phần tử đầu tiên
-        if (decoreArray.length > 0) {
-            decoreArray[0] = decoreArray[0].charAt(0).toUpperCase() + decoreArray[0].slice(1);
-        }
-    
-        return decoreArray.join(", ");
-    };
-    const roomPriceByEvent = (event, roomPrice) => {
-        if (event?.Time === "ALLDAY") {
-            return roomPrice * 1.5;
-        } else {
-            return roomPrice;
-        }
-    };
 
     return (
         <ScrollView style={styles.container}>
@@ -181,17 +208,16 @@ const PaymentPage = () => {
                 </View>
 
                 <View style={styles.paymentButtonContainer}>
-                    {newBooking.Payment ? (
-                        <Text>Đã thanh toán</Text>
-                    ) : (
+                    {newBooking.Payment ? <Text>Đã thanh toán</Text> : remainingTime >1 ? (
                         <TouchableOpacity
                             style={styles.paymentButton}
                             onPress={handlePayment}
                             disabled={isDisable}
                         >
-                            <Text style={styles.paymentButtonText}>Thanh toán</Text>
+                            <Text style={styles.paymentButtonText}>Thanh toán({minutes}:{seconds < 10 ? '0' : ''}{seconds})</Text>
                         </TouchableOpacity>
-                    )}
+                    ) : <Text>Lịch đặt đã hết hạn</Text>
+                    }
                     <Link style={styles.link} href={'../(tabs)/home'}>Về trang chủ</Link>
                 </View>
             </View>
@@ -299,10 +325,10 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
     },
-    link:{
-        margin:20,
-        fontSize:14,
-        fontWeight:"700"
+    link: {
+        margin: 20,
+        fontSize: 14,
+        fontWeight: "700"
     }
 });
 

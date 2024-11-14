@@ -4,7 +4,7 @@ import { Container, Typography, Button } from '@mui/material'; // Sử dụng Ma
 
 const VerifySuccess = () => {
     return (
-        <Container maxWidth="sm" style={{ textAlign: 'center', marginTop: '50%' }}>
+        <Container maxWidth="sm" style={{ textAlign: 'center', marginTop: '200px' }}>
             <Typography variant="h4" gutterBottom>
                 Xác minh thành công!
             </Typography>

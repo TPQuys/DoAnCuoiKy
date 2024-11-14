@@ -17,7 +17,7 @@ export const addEvent = async (dispatch, eventData) => {
         const res = await axiosJWT.post("/v1/event", eventData);
         dispatch(addEventSuccess(res.data));
         console.log("Thêm sự kiện thành công" + JSON.stringify(res.data))
-        toast.success("Thêm sự kiện thành công!");
+        toast.success("Thêm sự kiện thành công. Hãy thanh toán trước khi hết hạn!");
         return res.data
     } catch (error) {
         console.error("Thêm sự kiện thất bại:", error.response.data.message);

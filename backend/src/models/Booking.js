@@ -18,6 +18,14 @@ const Booking = sequelize.define('Booking', {
         defaultValue: new Date(),
         allowNull: false
     },
+    PaymentLink: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    LinkExpiry: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    }
 });
 
 User.hasMany(Booking, { foreignKey: 'UserID' });
