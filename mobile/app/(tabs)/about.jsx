@@ -126,10 +126,11 @@ const MyForm = () => {
                 validationSchema={validationSchema}
                 onSubmit={async (values) => {
                     setIsDisable(true)
-                    const res = await updateUser(dispatch, values, user, curentUser)
-                        .then(() => {
+                    await updateUser(dispatch, values, user, curentUser)
+                        .then((res) => {
                             setIsDisable(false)
                             setEdit(false)
+                            setUser(res.user)
                         })
                         .catch(() => Alert.alert("Cập nhập thất bại"))
                 }}
