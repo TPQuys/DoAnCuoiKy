@@ -91,9 +91,13 @@ const MyForm = () => {
     const handleUploadAvatar = async () => {
         if (selectedFile) {
             setIsDisable(true);
-            const res = await uploadAvatar(dispatch, selectedFile, curentUser).then(() => setIsDisable(false));
-            setUser(res)
-            handleClose();
+            await uploadAvatar(dispatch, selectedFile, curentUser)
+                .then((res) => {
+                    setIsDisable(false)
+                    setUser(res)
+                    handleClose();
+                });
+
         } else {
             Alert.alert("Vui lòng chọn một tệp hình ảnh.");
         }

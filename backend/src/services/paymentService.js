@@ -59,9 +59,9 @@ class PaymentService {
     }
 
     async postZaloApi(booking, backendURL) {
-        ngrok.kill()
-        const url = backendURL.includes("8000") ? await ngrok.connect(8000) : backendURL
-        // const url = "https://7ded-27-65-230-251.ngrok-free.app"
+        // ngrok.kill()
+        // const url = backendURL.includes("8000") ? await ngrok.connect(8000) : backendURL
+        const url = "https://7ded-27-65-230-251.ngrok-free.app"
         // console.log(url)
         const findBooking = await bookingRepository.getBookingById(booking.BookingID)
         if(findBooking.PaymentLink && (findBooking.LinkExpiry> new Date())){
