@@ -84,7 +84,7 @@ const PaymentPage = () => {
     const [event, setEvent] = useState({});
     const [newBooking, setNewBooking] = useState({});
     const [isDisable, setIsDisable] = useState(false);
-    const [remainingTime, setRemainingTime] = useState(0);
+    const [remainingTime, setRemainingTime] = useState(900);
     const { bookingId } = useGlobalSearchParams();
     const [appState, setAppState] = useState(AppState.currentState);
     const user = useSelector((state) => state.auth.login.currentUser);
@@ -93,7 +93,7 @@ const PaymentPage = () => {
     const getBooking = async () => {
         const responseBooking = await getBookingById(dispatch, bookingId, user);
         if (responseBooking) {
-            console.log(responseBooking)
+            // console.log(responseBooking)
             setNewBooking(responseBooking?.data);
             setEvent(responseBooking.data?.Event);
         }
@@ -208,15 +208,13 @@ const PaymentPage = () => {
                 </View>
 
                 <View style={styles.paymentButtonContainer}>
-                    {newBooking.Payment ? "Đã thanh toán" : remainingTime > 1 ? (
-                        <Text>Đã thanh toán</Text>
-                    ) : remainingTime > 1 ? (
+                    {newBooking.Payment ? <Text>Đã thanh toán</Text> : remainingTime >1 ? (
                         <TouchableOpacity
                             style={styles.paymentButton}
                             onPress={handlePayment}
                             disabled={isDisable}
                         >
-                            <Text style={styles.paymentButtonText}>Thanh toán ({minutes}:{seconds < 10 ? '0' : ''}{seconds})</Text>
+                            <Text style={styles.paymentButtonText}>Thanh toán({minutes}:{seconds < 10 ? '0' : ''}{seconds})</Text>
                         </TouchableOpacity>
                     ) : <Text>Lịch đặt đã hết hạn</Text>
                     }

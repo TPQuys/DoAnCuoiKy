@@ -20,6 +20,7 @@ const Register = () => {
     const navigate = useNavigate();
 
     const [showPassword, setShowPassword] = useState(false);
+    const [isDisable, setIsDisable] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const validationSchema = Yup.object().shape({
@@ -32,12 +33,13 @@ const Register = () => {
             .required("Hãy nhập xác nhận mật khẩu"),
     });
 
-    const handleRegister = (values) => {
+    const handleRegister = async (values) => {
+        setIsDisable(true)
         const newUser = {
             email: values.email,
             password: values.password,
         };
-        registerUser(newUser, dispatch, navigate);
+         await registerUser(newUser, dispatch, navigate).then(()=>setIsDisable(false));
     };
 
     const handleClickShowPassword = () => {
@@ -141,7 +143,7 @@ const Register = () => {
                                     </FormControl>
                                 </div>
 
-                                <Button variant="contained" type="submit" fullWidth sx={{background:"#81695e"}}>
+                                <Button disabled={isDisable} variant="contained" type="submit" fullWidth sx={{background:"#81695e"}}>
                                     Tạo tài khoản
                                 </Button>
                             </Form>

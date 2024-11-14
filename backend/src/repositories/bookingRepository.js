@@ -23,7 +23,7 @@ class BookingRepository {
     async getAllBookings() {
         try {
             const bookings = await Booking.findAll({
-                attributes:["BookingID","BookingTime"],
+                attributes:["BookingID","BookingTime","LinkExpiry"],
                 include: [
                     {
                         model:Event,
@@ -117,7 +117,7 @@ class BookingRepository {
     async getBookingsByUser(UserID) {
         try {
             const bookings = await Booking.findAll({
-                attributes: ["BookingID","BookingTime"],
+                attributes: ["BookingID","BookingTime","LinkExpiry"],
                 where: { UserID }, // Tìm tất cả booking của user
                 include: [
                     {

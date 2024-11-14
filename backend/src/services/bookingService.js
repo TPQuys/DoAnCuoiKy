@@ -6,7 +6,6 @@ const { Op } = require('sequelize');
 
 class BookingService {
 
-
     async createBooking(bookingData) {
         return await BookingRepository.createBooking(bookingData);
     }

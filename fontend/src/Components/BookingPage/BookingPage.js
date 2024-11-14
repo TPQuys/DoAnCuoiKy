@@ -38,6 +38,7 @@ const HomePage = () => {
         });
     };
     const handleSubmitHomePage = async () => {
+        setIsDisabled(true);
         if (formikRef.current) {
             const formik = formikRef.current;
 
@@ -84,7 +85,6 @@ const HomePage = () => {
                 };
 
                 try {
-                    setIsDisabled(true);
                     const newEvent = await addEvent(dispatch, eventData);
                     if (newEvent && user) {
                         const newBooking = await addBooking(dispatch,

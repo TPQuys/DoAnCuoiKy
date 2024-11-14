@@ -40,8 +40,6 @@ const MyForm = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [isDisable, setIsDisable] = useState(false);
 
-    console.log(user)
-
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -65,6 +63,7 @@ const MyForm = () => {
 
 
     const handleResetPassword = async (user) => {
+        setIsDisable(true)
         const confirmReset = window.confirm("Bạn có chắc chắn muốn đổi mật khẩu?");
         if (confirmReset) {
             await sendResetPassword(user, console.log);
@@ -82,9 +81,11 @@ const MyForm = () => {
             }}
             validationSchema={validationSchema}
             onSubmit={async (values) => {
+                setIsDisable(true)
                 const res = await updateUser(dispatch, values);
                 setUser(res.user);
                 setEdit(false);
+                setIsDisable(false)
             }}
         >
             {({ errors, touched, handleChange, values, setFieldValue, resetForm }) => (
@@ -96,8 +97,8 @@ const MyForm = () => {
                                 <Button
                                     sx={{
                                         position: "relative",
-                                        bottom: "40px",
-                                        left: "60px",
+                                        bottom: "33px",
+                                        left: "70px",
                                         color: "black",
                                         fontSize: "30px",
                                         padding: 0,
@@ -236,6 +237,7 @@ const MyForm = () => {
                                 ) : (
                                     <Grid item>
                                         <Button
+                                            disabled={isDisable}
                                             title="Lưu"
                                             type="submit"
                                             sx={{ background: "#81695e", marginRight: "10px" }}

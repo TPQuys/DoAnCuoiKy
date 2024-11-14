@@ -63,12 +63,21 @@ const formatDateTime = (dateString) => {
     }
 };
 
+const isExpiry = (LinkExpiry) => {
+    const experi = new Date(LinkExpiry)
+    const curent = new Date()
+    if (experi < curent) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 const Bookings = ({ bookings, user }) => {
     const [bookingData, setBookingData] = useState(bookings);
     const [expandedBooking, setExpandedBooking] = useState(null); // State để quản lý booking đang mở rộng
     const router = useRouter();
     const dispatch = useDispatch();
-
     const handlePaymentClick = (booking) => {
         router.push(`../(booking)/payment?bookingId=${booking.BookingID}`);
     };
@@ -149,46 +158,55 @@ const Bookings = ({ bookings, user }) => {
         <View style={styles.container}>
             <Title>Lịch sử đặt</Title>
             <ScrollView>
-                {bookingData?.filter(booking => booking != null).map((booking) => (
-                    <TouchableOpacity onPress={() => toggleBookingDetail(booking.BookingID)} key={booking.BookingID.toString()}>
-                        <Card style={styles.card}>
-                            <Card.Content>
-                                <Title>{getEventType(booking.Event?.EventType)}</Title>
-                                <Paragraph>Nhà hàng: {booking.Event?.RoomEvent?.RoomName}</Paragraph>
-                                <Paragraph>Tổng số bàn: {booking.Event?.TotalTable}</Paragraph>
-                                <Paragraph>Ngày tổ chức: {formatDate(new Date(booking.Event?.EventDate))}</Paragraph>
-                                <Paragraph>Thời gian: {getTime(booking.Event?.Time)}</Paragraph>
-                                <Paragraph>Trang trí: {getDecore(booking?.Event?.Decore)}</Paragraph>
-                                <Paragraph>Ghi chú: {booking.Event?.Note || 'Không có'}</Paragraph>
-                                <Paragraph>
-                                    Thanh toán: {booking?.Payment ? booking?.Payment.PaymentMethod : 'Chưa thanh toán'}
-                                </Paragraph>
-                            </Card.Content>
-
-                            {/* Hiển thị chi tiết thanh toán và menu nếu booking được mở rộng */}
-                            {expandedBooking === booking?.BookingID && (
+                {bookingData
+                    ?.filter(booking => booking != null)
+                    .sort((a, b) => new Date(b.BookingTime) - new Date(a.BookingTime)) // Sắp xếp theo BookingTime
+                    .map((booking) => (
+                        <TouchableOpacity
+                            onPress={() => toggleBookingDetail(booking.BookingID)}
+                            key={booking.BookingID.toString()}
+                        >
+                            <Card style={styles.card}>
                                 <Card.Content>
-                                    <Title>Chi tiết menu</Title>
-                                    {/* Hiển thị chi tiết menu tại đây */}
-                                    {showMenu(booking?.Event?.Menu) || 'Không có menu'}
-
-                                    <Title>Chi tiết thanh toán</Title>
-                                    {/* Hiển thị chi tiết thanh toán tại đây */}
-                                    {showPayment(booking?.Payment) || 'Chưa thanh toán'}
+                                    <Title>{getEventType(booking.Event?.EventType)}</Title>
+                                    <Paragraph>Đặt lúc: {formatDateTime(new Date(booking?.BookingTime))}</Paragraph>
+                                    <Paragraph>Nhà hàng: {booking.Event?.RoomEvent?.RoomName}</Paragraph>
+                                    <Paragraph>Tổng số bàn: {booking.Event?.TotalTable}</Paragraph>
+                                    <Paragraph>Ngày tổ chức: {formatDate(new Date(booking.Event?.EventDate))}</Paragraph>
+                                    <Paragraph>Thời gian: {getTime(booking.Event?.Time)}</Paragraph>
+                                    <Paragraph>Trang trí: {getDecore(booking?.Event?.Decore)}</Paragraph>
+                                    <Paragraph>Ghi chú: {booking.Event?.Note || 'Không có'}</Paragraph>
+                                    <Paragraph>
+                                        Thanh toán: {booking?.Payment ? booking?.Payment.PaymentMethod : 'Chưa thanh toán'}
+                                    </Paragraph>
                                 </Card.Content>
-                            )}
 
-                            <Card.Actions style={styles.buttonContainer}>
-                                {!booking.Payment && (
-                                    <>
-                                        <Button title="Thanh toán ngay" onPress={() => handlePaymentClick(booking)} />
-                                        <Button title="Xóa" color="red" onPress={() => handleDelete(booking)} />
-                                    </>
+                                {expandedBooking === booking?.BookingID && (
+                                    <Card.Content>
+                                        <Title>Chi tiết menu</Title>
+                                        {showMenu(booking?.Event?.Menu) || 'Không có menu'}
+
+                                        <Title>Chi tiết thanh toán</Title>
+                                        {showPayment(booking?.Payment) || 'Chưa thanh toán'}
+                                    </Card.Content>
                                 )}
-                            </Card.Actions>
-                        </Card>
-                    </TouchableOpacity>
-                ))}
+
+                                <Card.Actions style={styles.buttonContainer}>
+                                    {!booking.Payment && (
+                                        <>
+                                            {isExpiry(booking.LinkExpiry) ? (
+                                                <Button color="grey" title="Đã hết hạn" />
+                                            ) : (
+                                                <Button title="Thanh toán ngay" onPress={() => handlePaymentClick(booking)} />
+                                            )}
+                                            <Button title="Xóa" color="red" onPress={() => handleDelete(booking)} />
+                                        </>
+                                    )}
+                                </Card.Actions>
+                            </Card>
+                        </TouchableOpacity>
+                    ))}
+
             </ScrollView>
         </View>
     );

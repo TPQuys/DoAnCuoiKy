@@ -34,8 +34,8 @@ export const updateUser = async (dispatch, userData,user,curentUser) => {
         ToastAndroid.show("Cập nhập thành công", ToastAndroid.SHORT)
         return editedUser
     } catch (error) {
-        console.error("Update user failed:", error);
         dispatch(updateUserFailed());
+        throw new error("Update user failed:", error)
     }
 };
 

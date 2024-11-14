@@ -10,7 +10,7 @@ const PaymentPage = () => {
     const [event, setEvent] = useState({});
     const [newBooking, setNewBooking] = useState({});
     const [isDisable, setIsDisable] = useState(false);
-    const [remainingTime, setRemainingTime] = useState(0);
+    const [remainingTime, setRemainingTime] = useState(900);
     const dispatch = useDispatch();
 
     const getBooking = async () => {

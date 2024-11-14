@@ -20,15 +20,17 @@ const validationSchema = Yup.object().shape({
 const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [isDisable, setIsDisable] = useState(false)
     const dispatch = useDispatch();
     const router = useRouter();
 
     const handleRegister = async (values) => {
+        setIsDisable(true)
         const newUser = {
             email: values.email,
             password: values.password,
         };
-        const success = await registerUser(newUser, dispatch, router);
+        const success = await registerUser(newUser, dispatch, router).then(()=>setIsDisable(false))
     };
 
     return (
@@ -99,7 +101,7 @@ const Register = () => {
                         </View>
 
                         <View style={styles.buttonWrap}>
-                            <Button title="Tạo tài khoản" onPress={handleSubmit} color="#81695e" />
+                            <Button title="Tạo tài khoản" disabled={isDisable} onPress={handleSubmit} color="#81695e" />
                         </View>
                         <Text style={styles.registerLogin}>
                                 Đã có tài khoản? {" "}
