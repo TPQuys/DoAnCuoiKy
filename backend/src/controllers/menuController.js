@@ -10,6 +10,22 @@ const menuController = {
             return res.status(500).json({ message: error.message });
         }
     },
+    getAllFood: async (req, res) => {
+        try {
+            const foods = await menuService.getAllFood();
+            return res.status(200).json(foods);
+        } catch (error) {
+            return res.status(500).json({ message: error.message });
+        }
+    },
+    getAllDrink: async (req, res) => {
+        try {
+            const drinks = await menuService.getAllDrink();
+            return res.status(200).json(drinks);
+        } catch (error) {
+            return res.status(500).json({ message: error.message });
+        }
+    },
     getMenuById: async (req, res) => {
         const { id } = req.params;
         try {

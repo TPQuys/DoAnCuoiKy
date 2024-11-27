@@ -4,24 +4,29 @@ import Room from "./component/Room/Room";
 import Bookings from "./component/Bookng/Booking";
 import User from "./component/User/UserManager";
 import UserProfile from "./component/Profile/UserProfile";
+import PaymentSuccessChart from "./component/Charts/PaymentSuccesChart";
+import RoomChart from "./component/Charts/RoomChart";
+import PaymentChart from "./component/Charts/PaymentChart";
 import { useDispatch, useSelector } from "react-redux";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
-import { Box, Stack, } from '@mui/material';
+import { Box, Grid2, Stack, } from '@mui/material';
 import TabPanel from '@mui/lab/TabPanel';
 import { getAllUsers } from "../../redux/actions/userRequest";
+import { getAllBooking } from "../../redux/actions/bookingRequest";
 const UserPage = () => {
     const [value, setValue] = useState('1');
+    const Booking = useSelector((state) => state.bookings.bookings)
+    const rooms = useSelector((state) => state.rooms?.rooms);
     const dispatch = useDispatch()
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
-    useEffect(()=>{
+    useEffect(() => {
         getAllUsers(dispatch)
-    })
-    const Booking = useSelector((state) => state.bookings.bookings)
-    const rooms = useSelector((state) => state.rooms?.rooms);
+        getAllBooking(dispatch)
+    }, [])
 
     return (
         <main className='room-container'>
@@ -29,19 +34,28 @@ const UserPage = () => {
             <div className="room-body">
                 <div className="booking-center">
                     <TabContext value={value}>
-                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <Box sx={{ borderBottom: 1, borderColor: 'divider',backgroundColor:"#fafaeb" }}>
                             <TabList onChange={handleChange} aria-label="lab API tabs example">
                                 <Tab label="Cá nhân" value="1" />
                                 <Tab label="Phòng" value="2" />
                                 <Tab label="Lịch sử đặt" value="3" />
                                 <Tab label="Người dùng" value="4" />
+                                <Tab label="Biểu đồ" value="5" />
                             </TabList>
                         </Box>
-                        <TabPanel value="1"><UserProfile/></TabPanel>
-                        <TabPanel value="2"><Room rooms={rooms}/></TabPanel>
-                        <TabPanel value="3"><Bookings bookings={Booking} rooms={rooms}/></TabPanel>
-                        <TabPanel value="4"><User/></TabPanel>
-                   
+                        <TabPanel value="1"><UserProfile /></TabPanel>
+                        <TabPanel value="2"><Room rooms={rooms} /></TabPanel>
+                        <TabPanel value="3"><Bookings bookings={Booking} rooms={rooms} /></TabPanel>
+                        <TabPanel value="4"><User /></TabPanel>
+                        <TabPanel value="5">
+                            <PaymentChart bookings={Booking} />
+                            <Grid2 container sx={{ gap: "20px" }}>
+                                <RoomChart bookings={Booking} />
+                                <PaymentSuccessChart bookings={Booking} />
+                            </Grid2>
+
+                        </TabPanel>
+
                     </TabContext>
                     <Stack direction="row" >
                     </Stack>

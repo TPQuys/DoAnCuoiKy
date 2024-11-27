@@ -13,6 +13,10 @@ const Menu = sequelize.define('Menu', {
     Name: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    Image: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     timestamps: false, // Xóa các trường createdAt và updatedAt
