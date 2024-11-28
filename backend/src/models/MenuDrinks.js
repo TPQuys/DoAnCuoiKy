@@ -20,6 +20,7 @@ const MenuDrinks = sequelize.define('MenuDrinks', {
     },
     Quantity: {
         type: DataTypes.INTEGER,
+        defaultValue:1,
         allowNull: false
     }
 }, {

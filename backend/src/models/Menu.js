@@ -12,10 +12,11 @@ const Menu = sequelize.define('Menu', {
     },
     Name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     Image: {
         type: DataTypes.STRING,
+        defaultValue:'https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/public/Event/home_menu.jpeg',
         allowNull: true
     }
 }, {

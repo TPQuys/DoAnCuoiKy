@@ -21,6 +21,7 @@ const MenuFoods = sequelize.define('MenuFoods', {
     },
     Quantity: {
         type: DataTypes.INTEGER,
+        defaultValue:1,
         allowNull: false
     }
 }, {

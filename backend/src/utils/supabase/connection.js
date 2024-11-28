@@ -4,7 +4,11 @@ const sequelize = new Sequelize(process.env.PGDATABASE, process.env.PGUSER, proc
   host: process.env.PGHOST,
   dialect: 'postgres',
   port: process.env.PGPORT,
-  logging: false
+  logging: false,
+  define: {
+    timestamps: false
+  }
+
 });
 
 sequelize.sync({ alter: true });

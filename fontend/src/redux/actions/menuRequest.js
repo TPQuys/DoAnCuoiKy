@@ -67,8 +67,9 @@ export const addMenu = async (dispatch, menu) => {
     dispatch(addMenuStart());
     try {
         const res = await axios.post("/v1/menu", menu);
-        dispatch(addMenuSuccess(res.data)); 
+        dispatch(addMenuSuccess({...res.data,Name:"Menu mới"})); 
         toast.success("Thêm menu thành công!");
+        return res.data
     } catch (error) {
         console.error("Add menu failed:", error);
         toast.error("Không thể thêm menu!");

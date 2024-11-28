@@ -13,7 +13,7 @@ const DecoreSelection = ({ Decore, onDecoreChange }) => {
     };
 
     return (
-        <Grid container spacing={3} justifyContent="center" alignItems="center" margin="auto" >
+        <Grid container spacing={2} justifyContent="center" marginTop={2} >
             {decoreOptions.map((option) => (
                 <Grid item xs={12} sm={6} md={4} key={option.name}>
                     <Card
