@@ -13,9 +13,10 @@ import DecorePage from "../Decore/DecorePage";
 import Footer from "../Footer/Footer"
 import AdminPage from "../Admin/AdminPage"
 import Verified from "../Verified/Verified"
+import Menu from "../Menu/Menu"
 import { toast } from "react-toastify";
 import { getAllRooms } from "../../redux/actions/roomRequest";
-import { getAllMenus } from "../../redux/actions/menuRequest";
+import { getAllDrink, getAllFood, getAllMenus } from "../../redux/actions/menuRequest";
 import { useDispatch } from "react-redux";
 import ResetPassword from "../ResetPassword/ResetPassword"
 import ResetPasswordEmail from "../ResetPassword/ResetPasswordEmail"
@@ -30,6 +31,8 @@ const AppRoutes = () => {
     useEffect(() => {
         getAllRooms(dispatch);
         getAllMenus(dispatch);
+        getAllFood(dispatch)
+        getAllDrink(dispatch)
         if(user1){
             if (user1?.user?.admin) {
                 getAllUsers(dispatch)
@@ -58,7 +61,7 @@ const AppRoutes = () => {
         <>
             <div className="App">
                 <Routes>
-                    <Route path="/" element={<HomePage />} />
+                    <Route path="/" element={<EventPage />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/room" element={<Room />} />
@@ -66,12 +69,13 @@ const AppRoutes = () => {
                     <Route path="/payment" element={<PaymentPage />} />
                     <Route path="/user" element={<UserPage />} />
                     <Route path="/user/info" element={<UserInfoPage />} />
-                    <Route path="/event" element={<EventPage />} />
+                    {/* <Route path="/event" element={<EventPage />} /> */}
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/decore" element={<DecorePage />} />
                     <Route path="/reset_password" element={<ResetPassword />} />
                     <Route path="/reset_password_email" element={<ResetPasswordEmail />} />
                     <Route path="/verified" element={<Verified />} />
+                    <Route path="/menu" element={<Menu />} />
                 </Routes>
             </div>
             {location.pathname !== "/login" && location.pathname !== "/register" && location.pathname !== "/verified" && <Footer />}

@@ -13,6 +13,16 @@ import {
     deleteMenuSuccess,
     deleteMenuFailed
 } from "../reducers/menuSlice";
+import {
+    getFoodsStart,
+    getFoodsFailed,
+    getFoodsSuccess
+} from "../reducers/foodSilce"
+import {
+    getDrinksFailed,
+    getDrinksStart,
+    getDrinksSuccess
+} from "../reducers/drinkSlice"
 import { toast } from "react-toastify";
 
 // Lấy tất cả menu
@@ -21,11 +31,34 @@ export const getAllMenus = async (dispatch) => {
     try {
         const res = await axios.get("/v1/menu");
         dispatch(getMenusSuccess(res.data)); 
-        console.log(res.data);
     } catch (error) {
         console.error("Get menus failed:", error);
         toast.error("Không thể lấy danh sách menu!");
         dispatch(getMenusFailed()); 
+    }
+};
+
+export const getAllFood = async (dispatch) => {
+    dispatch(getFoodsStart());
+    try {
+        const res = await axios.get("/v1/menu/foods");
+        dispatch(getFoodsSuccess(res.data)); 
+    } catch (error) {
+        console.error("Get menus failed:", error);
+        toast.error("Không thể lấy danh sách món ăn!");
+        dispatch(getFoodsFailed()); 
+    }
+};
+
+export const getAllDrink = async (dispatch) => {
+    dispatch(getDrinksStart());
+    try {
+        const res = await axios.get("/v1/menu/drinks");
+        dispatch(getDrinksSuccess(res.data)); 
+    } catch (error) {
+        console.error("Get menus failed:", error);
+        toast.error("Không thể lấy danh sách đồ uống!");
+        dispatch(getDrinksFailed()); 
     }
 };
 
@@ -34,8 +67,9 @@ export const addMenu = async (dispatch, menu) => {
     dispatch(addMenuStart());
     try {
         const res = await axios.post("/v1/menu", menu);
-        dispatch(addMenuSuccess(res.data)); 
+        dispatch(addMenuSuccess({...res.data,Name:"Menu mới"})); 
         toast.success("Thêm menu thành công!");
+        return res.data
     } catch (error) {
         console.error("Add menu failed:", error);
         toast.error("Không thể thêm menu!");

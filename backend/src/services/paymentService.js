@@ -21,7 +21,7 @@ class PaymentService {
     calculateTotal(items, throughField) {
         return items.reduce((total, item) => {
             const unitPrice = item?.dataValues?.UnitPrice || 0; // Giá của từng món
-            const quantity = item?.[throughField]?.dataValues?.Quantity || 0; // Số lượng từ bảng through
+            const quantity = 1
             return total + (unitPrice * quantity);
         }, 0); // Bắt đầu từ 0
     }

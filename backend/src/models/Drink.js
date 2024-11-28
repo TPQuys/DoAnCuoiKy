@@ -15,10 +15,6 @@ const Drink = sequelize.define('Drink', {
         type: DataTypes.DOUBLE,
         allowNull: false
     },
-    Unit: { // Thêm trường đơn vị đo lường
-        type: DataTypes.ENUM("BOTTLE","CARTON"),
-        allowNull: false
-    }
 },{
     timestamps: false 
 });

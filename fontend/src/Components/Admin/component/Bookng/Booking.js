@@ -124,11 +124,6 @@ const Bookings = ({ bookings, rooms }) => {
         setSortConfig({ key, direction });
     };
 
-    useEffect(() => {
-        getAllBooking(dispatch);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
     return (
         <TableContainer component={Paper} title="Lịch sử đặt sự kiện">
             <FormControl fullWidth variant="outlined" margin="normal">

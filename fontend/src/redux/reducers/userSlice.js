@@ -38,6 +38,7 @@ const userSlice = createSlice({
         },
         updateUserSuccess: (state, action) => {
             state.isUpdating = false;
+            state.users = action.payload;
             sessionStorage.setItem("user",JSON.stringify(action.payload))
         },
         updateUserFailed: (state, action) => {

@@ -2,6 +2,8 @@ import {configureStore} from "@reduxjs/toolkit";
 import authReducer from "./reducers/authSlice";
 import userReducer from "./reducers/userSlice"
 import roomReducer from "./reducers/roomSlice"
+import foodReducer from "./reducers/foodSilce"
+import drinkReducer from "./reducers/drinkSlice"
 import eventReducer from "./reducers/eventSlice"
 import menuReducer from "./reducers/menuSlice"
 import bookingReducer from "./reducers/bookingSlice"
@@ -17,5 +19,7 @@ export default configureStore({
         menus: menuReducer,
         bookings: bookingReducer,
         payment: paymentReducer,
+        foods: foodReducer,
+        drinks: drinkReducer,
     },
 });

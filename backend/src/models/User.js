@@ -61,7 +61,17 @@ User.init(
         avatar:{
             type: DataTypes.STRING,
             allowNull: true,
-        }
+        },
+        createdAt: {
+            type: DataTypes.DATE,
+            defaultValue: new Date(),
+            allowNull: true
+        },
+        updatedAt: {
+            type: DataTypes.DATE,
+            defaultValue: new Date(),
+            allowNull: true
+        },
     },
     {
         sequelize,

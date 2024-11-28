@@ -49,11 +49,11 @@ const NavBar = () => {
     <nav className={`navbar-container ${isScrolled ? 'navbar-scrolled' : ''}`}>
       <Link to="/" className="navbar-home"><FaHome /> Trang chủ </Link>
       <div className="navbar-dropdown">
-        <Link to="/event" className="navbar-home"> <FaCalendarAlt /> Sự kiện </Link>
+        <Link className="navbar-home"> <FaCalendarAlt /> Thêm </Link>
         <div className="dropdown-menu">
-          <Link to="/event/wedding">Tiệc cưới</Link>
-          <Link to="/event/conference">Hội nghị</Link>
-          <Link to="/event/other">Sự kiện khác</Link>
+          <Link to="/menu">Menu</Link>
+          {/* <Link to="/event/conference">Hội nghị</Link>
+          <Link to="/event/other">Sự kiện khác</Link> */}
         </div>
       </div>
       {/* <div className="navbar-dropdown">
