@@ -24,13 +24,15 @@ const MenuPage = () => {
             />
             <div className="menu-container">
                 <Grid container spacing={3} justifyContent='center'>
-                    {menus.map((menu, index) => {
+                    {menus
+                    .filter((item)=>item.Name!=null)
+                    .map((menu, index) => {
                         const foodTotalPrice = menu.Food.reduce((total, food) => {
-                            return total + (food.UnitPrice * food.MenuFoods.Quantity);
+                            return total + (food.UnitPrice );
                         }, 0);
 
                         const drinksTotalPrice = menu.Drinks.reduce((total, drink) => {
-                            return total + (drink.UnitPrice * drink.MenuDrinks.Quantity);
+                            return total + (drink.UnitPrice );
                         }, 0);
 
                         const totalMenuPrice = foodTotalPrice + drinksTotalPrice;

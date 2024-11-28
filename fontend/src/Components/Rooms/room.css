@@ -44,9 +44,8 @@
 .room-content-title {
     text-decoration: none;
     font-size: 40px;
-    color: #81695e !important;
+    color: #e5cc5f !important;
     font-weight: 600;
-    margin: auto;
 }
 .room-content-title:hover {
     color: #edde97;

@@ -65,11 +65,11 @@ const PaymentPage = () => {
             let totalMenuPrice = 0
             // Tính toán giá của menu
             const foodTotalPrice = menu?.Food.reduce((total, food) => {
-                return total + (food.UnitPrice * food.MenuFoods.Quantity);
+                return total + (food.UnitPrice );
             }, 0);
 
             const drinksTotalPrice = menu?.Drinks.reduce((total, drink) => {
-                return total + (drink.UnitPrice * drink.MenuDrinks.Quantity);
+                return total + (drink.UnitPrice );
             }, 0);
 
             totalMenuPrice = foodTotalPrice + drinksTotalPrice;

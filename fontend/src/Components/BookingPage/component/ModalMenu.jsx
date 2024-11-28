@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Box, Button, Grid, Typography, Checkbox, List, ListItem, ListItemText, Card, Divider } from '@mui/material';
 import { addMenu } from "../../../redux/actions/menuRequest";
 import { useDispatch, useSelector } from 'react-redux';
 import { Padding } from '@mui/icons-material';
+import { toast } from 'react-toastify';
 
 // Style for the modal
 const modalStyle = {
@@ -17,27 +18,28 @@ const modalStyle = {
 };
 
 const selectedStyle = {
-    padding:2,
-    background:"#fdeacd",
+    padding: 2,
+    background: "#fafaeb",
     borderRadius: 4,
 }
 
 const listWrap = {
-    padding:2,
-    background:"#fafaeb",
+    padding: 2,
+    background: "#f5f5f5",
     borderRadius: 4,
 }
 
 const listStyle = {
-    height: 300,
-    maxHeight: 300,  
-    overflowY: 'auto',  
-    padding:1,
+    height: 200,
+    maxHeight: 200,
+    overflowY: 'auto',
+    padding: 1,
 };
 
-const CreateMenuModal = ({ open, handleClose, setNewMenu }) => {
+const CreateMenuModal = ({ open, handleClose, setSelected }) => {
     const [selectedFood, setSelectedFood] = useState([]);
     const [selectedDrinks, setSelectedDrinks] = useState([]);
+    const [totalPrice, setTotolPrice] = useState(0)
     const foods = useSelector((state) => state.foods?.foods);
     const drinks = useSelector((state) => state.drinks?.drinks);
     const dispatch = useDispatch()
@@ -59,21 +61,44 @@ const CreateMenuModal = ({ open, handleClose, setNewMenu }) => {
         );
     };
 
+    useEffect(() => {
+        const totalFood = selectedFood.reduce((total, foodId) => {
+            const food = foods.find(item => item.FoodID === foodId);
+            return total + (food?.UnitPrice || 0); 
+        }, 0);
+    
+        const totalDrink = selectedDrinks.reduce((total, drinkId) => {
+            const drink = drinks.find(item => item.DrinkID === drinkId);
+            return total + (drink?.UnitPrice || 0);
+        }, 0);
+    
+        setTotolPrice(totalFood + totalDrink);
+    }, [selectedDrinks, selectedFood, foods, drinks]);
+    
+
     const handleSubmit = async () => {
         const menuData = {
             Food: selectedFood,
             Drinks: selectedDrinks,
         };
-
-        try {
-            const newMenu = await addMenu(dispatch, menuData);
-            console.log(newMenu)
-            setNewMenu(newMenu)
-            handleClose(); // Close the modal
-        } catch (error) {
-            console.error('Error creating menu:', error);
-            alert('Error creating menu');
+        if(selectedFood.length>=4 && selectedDrinks.length>=2){
+            try {
+                const newMenu = await addMenu(dispatch, menuData);
+                console.log(newMenu)
+                setSelected(newMenu.MenuID)
+                handleClose(); // Close the modal
+            } catch (error) {
+                console.error('Error creating menu:', error);
+                alert('Error creating menu');
+            }
+        }else{
+            if(selectedFood.length<4){
+                toast.info("Số lượng món ăn tối thiểu là 4")
+            }else if(selectedDrinks.length<2){
+                toast.info("Số lượng đồ uống tối thiểu là 2")
+            }
         }
+       
     };
 
     return (
@@ -83,7 +108,7 @@ const CreateMenuModal = ({ open, handleClose, setNewMenu }) => {
 
                 <Grid  >
                     {/* Left side: Display selected food and drinks */}
-                    <Grid container sx={{marginBottom:2}}>
+                    <Grid container sx={{ marginBottom: 2 }}>
                         <Grid sx={selectedStyle} xs={5}>
                             <Typography variant="h6" gutterBottom>Món ăn đã chọn</Typography>
                             <List sx={listStyle}>
@@ -91,7 +116,7 @@ const CreateMenuModal = ({ open, handleClose, setNewMenu }) => {
                                     const food = foods.find(item => item.FoodID === foodId);
                                     return (
                                         <ListItem key={foodId}>
-                                            <ListItemText primary={food?.Name} />
+                                            <ListItemText primary={food.Name} />
                                         </ListItem>
                                     );
                                 })}
@@ -100,21 +125,20 @@ const CreateMenuModal = ({ open, handleClose, setNewMenu }) => {
                         <Grid sx={listWrap} xs={7}>
                             <Typography variant="h6" gutterBottom>Danh sách món ăn</Typography>
                             <List sx={listStyle}>
-                                <Grid container spacing={1}>
+                                <Grid container >
                                     {foods.map((food) => (
-                                        <Grid item xs={6} key={food.FoodID}>  {/* Set 2 items per row */}
+                                        <Grid item xs={6} key={food.FoodID}>
                                             <ListItem>
                                                 <Checkbox
                                                     checked={selectedFood.includes(food.FoodID)}
                                                     onChange={() => handleFoodChange(food.FoodID)}
                                                 />
-                                                <ListItemText primary={food.Name} />
+                                                <ListItemText primary={`${food.Name}/${food.UnitPrice}`} />
                                             </ListItem>
                                         </Grid>
                                     ))}
                                 </Grid>
                             </List>
-
                         </Grid>
                     </Grid>
                     <Grid container>
@@ -134,15 +158,15 @@ const CreateMenuModal = ({ open, handleClose, setNewMenu }) => {
                         <Grid sx={listWrap} xs={7}>
                             <Typography variant="h6" gutterBottom>Danh sách đồ uống</Typography>
                             <List sx={listStyle}>
-                                <Grid container spacing={1}>
+                                <Grid container>
                                     {drinks.map((drink) => (
-                                        <Grid item xs={6} key={drink.DrinkID}>  {/* Set 2 items per row */}
+                                        <Grid item xs={6} key={drink.DrinkID}>
                                             <ListItem>
                                                 <Checkbox
                                                     checked={selectedDrinks.includes(drink.DrinkID)}
                                                     onChange={() => handleDrinkChange(drink.DrinkID)}
                                                 />
-                                                <ListItemText primary={`${drink.Name}`} />
+                                                <ListItemText primary={`${drink.Name}/${drink.UnitPrice}`} />
                                             </ListItem>
                                         </Grid>
                                     ))}
@@ -151,7 +175,12 @@ const CreateMenuModal = ({ open, handleClose, setNewMenu }) => {
                         </Grid>
                     </Grid>
                 </Grid>
+                <Grid container justifyContent="center" marginTop={2}>
+                    <Grid item>
+                        <Typography variant="h5" gutterBottom>Tổng giá: {totalPrice.toLocaleString()} VND/bàn</Typography>
 
+                    </Grid>
+                </Grid>
                 <Grid container spacing={2} justifyContent="center" marginTop={2}>
                     <Grid item>
                         <Button variant="contained" onClick={handleSubmit}>
