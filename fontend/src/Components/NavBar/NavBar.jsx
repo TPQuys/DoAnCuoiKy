@@ -52,8 +52,8 @@ const NavBar = () => {
         <Link className="navbar-home"> <FaCalendarAlt /> Thêm </Link>
         <div className="dropdown-menu">
           <Link to="/menu">Menu</Link>
-          <Link to="/event/conference">Hội nghị</Link>
-          <Link to="/event/other">Sự kiện khác</Link>
+          {/* <Link to="/event/conference">Hội nghị</Link>
+          <Link to="/event/other">Sự kiện khác</Link> */}
         </div>
       </div>
       {/* <div className="navbar-dropdown">

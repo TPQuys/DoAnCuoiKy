@@ -11,7 +11,7 @@ const Booking = sequelize.define('Booking', {
     PaymentStatus: {
         type: DataTypes.ENUM('PENDING', 'PAID', 'CANCELLED'),
         allowNull: false,
-        defaultValue: 'Pending' 
+        defaultValue: 'PENDING' 
     },
     BookingTime: {
         type: DataTypes.DATE,
