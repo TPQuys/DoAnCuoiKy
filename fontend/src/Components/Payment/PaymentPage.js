@@ -139,8 +139,7 @@ const PaymentPage = () => {
 
     const rommPriceByEvent = (event, roomPrice) => {
         if (event?.Time === "ALLDAY") {
-            console.log(roomPrice * 1.5)
-            return roomPrice * 1.5
+            return roomPrice * 2
         }
         else {
             return roomPrice
