@@ -8,7 +8,9 @@ const Footer = () => {
         <main className="footer-container">
             <div className="footer-content">
                 <div className="footer-info-box">
-                    <h1 className="footer-logo">Logo</h1>
+                    {/* <h1 className="footer-logo">Logo</h1> */}
+                    <img src="./whiteLogo.png" className="footer-logo" alt="IUH logo"></img>
+
                     <div className="icon-box">
                         <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
                             <FacebookIcon />
