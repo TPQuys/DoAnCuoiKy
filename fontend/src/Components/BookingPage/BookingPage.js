@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import Header from "../Header/Header";
 import Form from "./component/BookingForm"
 import DecoreSelection from "./component/DecoreSelection";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Card, CardContent, Checkbox, FormControlLabel, FormGroup, Grid, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch
 import { addEvent } from "../../redux/actions/eventRequest"; // Import hàm thêm sự kiện từ API
@@ -35,7 +35,14 @@ const HomePage = () => {
     const menus = useSelector((state) => state.menus?.menus);
     const rooms = useSelector((state) => state.rooms?.rooms)
     const room = rooms.find(item => item.RoomEventID === roomId)
-    const user = useSelector((state) => state.auth.login.currentUser)
+    const user = useSelector((state) => state.auth.login.currentUser);
+    const deocrePrice = useSelector((state) => state.roomPrices?.roomPrices)
+    const [selectedPrice,setSelectedPrice] = useState()
+
+    useEffect(()=>{
+        setSelectedPrice(deocrePrice[0])
+    },[deocrePrice])
+
     const handleSubmit = (values) => {
     }
     const handleChangeCheckbox = (event) => {
@@ -60,7 +67,7 @@ const HomePage = () => {
                 Note: true,
             });
 
-            const decore = await addDecore(dispatch, Decore)
+            const decore = await addDecore(dispatch, {...Decore, DecorePriceID:selectedPrice.DecorePriceID})
 
             if (isValid && Object.keys(isValid).length === 0) {
                 const formValues = formik.values;
@@ -281,8 +288,11 @@ const HomePage = () => {
                     <div className="booking-center">
 
                         <DecoreSelection
+                            price={deocrePrice}
                             Decore={Decore}
                             onDecoreChange={(name, value) => setDecore({ ...Decore, [name]: value })}
+                            setSelectedPrice={setSelectedPrice}
+                            selectedPrice={selectedPrice}
                         />
                     </div>
                 </div>

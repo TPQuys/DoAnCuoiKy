@@ -63,7 +63,17 @@ const getDecore = (Decore) => {
     return decoreArray.join(", ");
 };
 
-
+const getDecoreType = (decore)=>{
+    if(decore){
+        if(decore?.DecorePrice?.Type==='BASIC'){
+            return "(Cơ bản)"
+        }else   if(decore?.DecorePrice?.Type==='ADVANCED'){
+            return "(Nâng cao)"
+        } else   if(decore?.DecorePrice?.Type==='PREMIUM'){
+            return "(Cao cấp)"
+        } 
+    }
+}
 
 const Bookings = ({ bookings, rooms }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -203,7 +213,7 @@ const Bookings = ({ bookings, rooms }) => {
                             <TableCell>{getTime(booking.Event?.Time)}</TableCell>
                             <TableCell>{booking.Event?.Note || "Không có"}</TableCell>
                             <TableCell>{booking.Event?.RoomEvent?.RoomName}</TableCell>
-                            <TableCell>{getDecore(booking.Event?.Decore)}</TableCell>
+                            <TableCell>{getDecore(booking.Event?.Decore)} {getDecoreType(booking.Event?.Decore)}</TableCell>
                             <TableCell>{booking.Event?.Menu?.MenuID && <Button sx={{ padding: 0, margin: 0 }} variant="text" onClick={() => openMenu(booking.Event?.Menu)}>Chi tiết Menu</Button>}</TableCell>
                             <TableCell>
                                 {booking.Payment ? (

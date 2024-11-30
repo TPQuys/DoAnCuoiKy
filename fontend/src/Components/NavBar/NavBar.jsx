@@ -13,6 +13,7 @@ import {
 } from 'react-icons/fa';
 import { CiLogin } from "react-icons/ci";
 import { IoCloseCircle } from "react-icons/io5";
+import TawkToChat from "./Components/TawkToChat";
 // import { GiFlowers } from "react-icons/gi";
 
 const NavBar = () => {
@@ -98,7 +99,7 @@ const NavBar = () => {
           <Link to="/register" className="navbar-register"><FaUserCircle /> Đăng ký</Link>
         </>
       )}
-
+      <TawkToChat/>
     </nav>
   );
 };

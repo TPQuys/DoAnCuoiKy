@@ -3,7 +3,7 @@ const router = express.Router();
 const {
     addDecore,
     getAllDecores,
-    getDecoreById,
+    getDecorePrice,
     updateDecore,
     deleteDecore
 } = require('../controllers/decoreController');
@@ -14,8 +14,10 @@ router.post('/', addDecore);
 // Route lấy tất cả Decore
 router.get('/', getAllDecores);
 
-// Route lấy Decore theo ID
-router.get('/:decoreId', getDecoreById);
+router.get('/decore_price', getDecorePrice);
+
+// // Route lấy Decore theo ID
+// router.get('/:decoreId', getDecoreById);
 
 // Route cập nhật Decore theo ID
 router.put('/:decoreId', updateDecore);

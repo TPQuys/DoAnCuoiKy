@@ -8,6 +8,7 @@ import eventReducer from "./reducers/eventSlice"
 import menuReducer from "./reducers/menuSlice"
 import bookingReducer from "./reducers/bookingSlice"
 import paymentReducer from "./reducers/paymentSlice"
+import decorePriceReducer from "./reducers/decorePriceSlice"
 
 
 export default configureStore({
@@ -21,5 +22,6 @@ export default configureStore({
         payment: paymentReducer,
         foods: foodReducer,
         drinks: drinkReducer,
+        roomPrices: decorePriceReducer,
     },
 });

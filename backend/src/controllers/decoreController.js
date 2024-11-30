@@ -1,16 +1,17 @@
 const Decore = require('../models/Decore');
 const { Op } = require('sequelize');
+const DecorePrice = require('../models/DecorePrice');
 
 // Hàm thêm mới Decore
 const addDecore = async (req, res) => {
     try {
-        const { LobbyDecore, StageDecore, TableDecore } = req.body;
+        const { LobbyDecore, StageDecore, TableDecore, DecorePriceID } = req.body;
 
         const newDecore = await Decore.create({
             LobbyDecore,
             StageDecore,
-            TableDecore
-            
+            TableDecore,
+            DecorePriceID
         });
 
         res.status(201).json(newDecore);
@@ -40,6 +41,20 @@ const getDecoreById = async (req, res) => {
         if (!decore) {
             return res.status(404).json({ message: "Decore not found" });
         }
+        res.status(200).json(decore);
+    } catch (error) {
+        console.error("Error fetching decore:", error);
+        res.status(500).json({ message: "Error fetching decore" });
+    }
+};
+
+const getDecorePrice = async (req, res) => {
+    try {
+        const decore = await DecorePrice.findAll();
+        if (!decore) {
+            return res.status(404).json({ message: "Decore price not found" });
+        }
+        console.log(decore)
         res.status(200).json(decore);
     } catch (error) {
         console.error("Error fetching decore:", error);
@@ -94,5 +109,6 @@ module.exports = {
     getAllDecores,
     getDecoreById,
     updateDecore,
-    deleteDecore
+    deleteDecore,
+    getDecorePrice
 };

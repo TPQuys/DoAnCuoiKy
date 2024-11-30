@@ -7,6 +7,7 @@ const RoomEvent = require('../models/RoomEvent');
 const Payment = require('../models/Payment');
 const User = require('../models/User');
 const Decore = require('../models/Decore');
+const DecorePrice = require('../models/DecorePrice');
 class BookingRepository {
     // Tạo một booking mới
     async createBooking(bookingData) {
@@ -43,6 +44,11 @@ class BookingRepository {
                             },
                             {
                                 model:Decore,
+                                include: [
+                                    {
+                                        model: DecorePrice,
+                                    }
+                                ]
                             },
                             {
                                 model:RoomEvent,
@@ -89,6 +95,11 @@ class BookingRepository {
                             },
                             {
                                 model:Decore,
+                                include: [
+                                    {
+                                        model: DecorePrice,
+                                    }
+                                ]
                             },
                             {
                                 model:RoomEvent,
@@ -138,6 +149,11 @@ class BookingRepository {
                             },
                             {
                                 model:Decore,
+                                include: [
+                                    {
+                                        model: DecorePrice,
+                                    }
+                                ]
                             },
                             {
                                 model: RoomEvent, // Bao gồm thông tin phòng sự kiện

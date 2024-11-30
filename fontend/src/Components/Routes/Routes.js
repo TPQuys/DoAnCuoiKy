@@ -21,6 +21,7 @@ import { useDispatch } from "react-redux";
 import ResetPassword from "../ResetPassword/ResetPassword"
 import ResetPasswordEmail from "../ResetPassword/ResetPasswordEmail"
 import { getAllUsers } from "../../redux/actions/userRequest";
+import { getDecorePrice } from "../../redux/actions/decoreRequest";
 const AppRoutes = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -33,6 +34,7 @@ const AppRoutes = () => {
         getAllMenus(dispatch);
         getAllFood(dispatch)
         getAllDrink(dispatch)
+        getDecorePrice(dispatch)
         if(user1){
             if (user1?.user?.admin) {
                 getAllUsers(dispatch)

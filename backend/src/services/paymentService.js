@@ -26,6 +26,20 @@ class PaymentService {
         }, 0); // Bắt đầu từ 0
     }
 
+    getDecorePrice (event,decore) {
+        let total = 0;
+        if (decore?.LobbyDecore) {
+            total += decore?.DecorePrice?.LobbyDecorePrice; // Sử dụng += để cộng dồn
+        }
+        if (decore?.StageDecore) {
+            total += decore?.DecorePrice?.StageDecorePrice; // Sử dụng += để cộng dồn
+        }
+        if (decore?.TableDecore) {
+            total += (decore?.DecorePrice?.TableDecorePrice)*event?.TotalTable; // Sử dụng += để cộng dồn
+        }
+        return total; // Trả về tổng giá trị
+    };
+
     async sendSuccessEmail(email, payment) {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -83,7 +97,7 @@ class PaymentService {
             const roomPrice = (Time === "ALLDAY" ? roomEventData?.Price * 2 : roomEventData?.Price) || 0; // Giá phòng
             // console.log(roomPrice)
             // Tính tổng tiền thanh toán
-            const Amount = (totalPriceFoods + totalPriceDrinks) * totalTable + roomPrice;
+            const Amount = (totalPriceFoods + totalPriceDrinks) * totalTable + this.getDecorePrice(eventData,eventData.Decore) + roomPrice;
             const BookingID = findBooking.BookingID
             const embed_data = {
                 redirecturl: `${process.env.FRONTEND_URL}/payment`
