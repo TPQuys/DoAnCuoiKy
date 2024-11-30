@@ -9,7 +9,8 @@ import {
     Avatar,
     Dialog,
     DialogTitle,
-    DialogContent
+    DialogContent,
+    Card
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -90,179 +91,183 @@ const MyForm = () => {
         >
             {({ errors, touched, handleChange, values, setFieldValue, resetForm }) => (
                 <Form>
-                    <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={12} sm={4} alignItems="center">
-                            <Grid>
-                                <Avatar sx={{ width: "200px", height: "200px", margin: "auto" }} src={user.avatar} />
+                    <Card sx={{margin:3}}>
+                        <Grid container spacing={2} alignItems="center" padding={3}>
+
+                            <Grid item xs={12} sm={4} alignItems="center">
+                                <Grid>
+                                    <Avatar sx={{ width: "200px", height: "200px", margin: "auto" }} src={user.avatar} />
+                                    <Button
+                                        sx={{
+                                            position: "relative",
+                                            bottom: "33px",
+                                            left: "70px",
+                                            color: "black",
+                                            fontSize: "30px",
+                                            padding: 0,
+                                        }}
+                                        onClick={handleOpen} // Open modal on click
+                                    >
+                                        <FaEdit />
+                                    </Button>
+                                </Grid>
+
                                 <Button
-                                    sx={{
-                                        position: "relative",
-                                        bottom: "33px",
-                                        left: "70px",
-                                        color: "black",
-                                        fontSize: "30px",
-                                        padding: 0,
-                                    }}
-                                    onClick={handleOpen} // Open modal on click
+                                    sx={{ color: 'red' }}
+                                    onClick={() => handleResetPassword(user)}
                                 >
-                                    <FaEdit />
+                                    Đổi mật khẩu
                                 </Button>
                             </Grid>
 
-                            <Button
-                                sx={{ color: 'red' }}
-                                onClick={() => handleResetPassword(user)}
-                            >
-                                Đổi mật khẩu
-                            </Button>
-                        </Grid>
-
-                        <Grid item xs={12} sm={8} container spacing={5}>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    sx={{
-                                        '& .MuiInputBase-input.Mui-disabled': {
-                                            WebkitTextFillColor: 'black',
-                                        },
-                                    }}
-                                    name="fullname"
-                                    label="Họ tên"
-                                    fullWidth
-                                    disabled={!edit}
-                                    value={values.fullname}
-                                    onChange={handleChange}
-                                    error={touched.fullname && Boolean(errors.fullname)}
-                                    helperText={touched.fullname && errors.fullname}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    sx={{
-                                        '& .MuiInputBase-input.Mui-disabled': {
-                                            WebkitTextFillColor: 'black',
-                                        },
-                                    }}
-                                    name="gender"
-                                    select
-                                    label="Giới tính"
-                                    disabled={!edit}
-                                    fullWidth
-                                    value={values.gender}
-                                    onChange={handleChange}
-                                    error={touched.gender && Boolean(errors.gender)}
-                                    helperText={touched.gender && errors.gender}
-                                >
-                                    <MenuItem value=""></MenuItem>
-                                    <MenuItem value="male">Nam</MenuItem>
-                                    <MenuItem value="female">Nữ</MenuItem>
-                                    <MenuItem value="orther">Khác</MenuItem>
-                                </TextField>
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <Field name="dayofbirth">
-                                        {({ field }) => (
-                                            <DatePicker
-                                                sx={{
-                                                    width: "100%",
-                                                    '& .MuiInputBase-input': {
-                                                        color: 'black',
-                                                    },
-                                                    '& .MuiInputBase-input.Mui-disabled': {
-                                                        WebkitTextFillColor: 'black',
-                                                    },
-                                                }}
-                                                label="Ngày sinh"
-                                                disabled={!edit}
-                                                value={field.value}
-                                                onChange={(newValue) => setFieldValue(field.name, newValue)}
-                                                slotProps={{
-                                                    textField: {
-                                                        error: touched.dayofbirth && Boolean(errors.dayofbirth),
-                                                        helperText: touched.dayofbirth && errors.dayofbirth,
-                                                    },
-                                                }}
-                                                format='DD/MM/YYYY'
-                                            />
-                                        )}
-                                    </Field>
-                                </LocalizationProvider>
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    name="phone"
-                                    label="Số điện thoại"
-                                    disabled={!edit}
-                                    fullWidth
-                                    sx={{
-                                        '& .MuiInputBase-input.Mui-disabled': {
-                                            WebkitTextFillColor: 'black',
-                                        },
-                                    }}
-                                    value={values.phone}
-                                    onChange={handleChange}
-                                    error={touched.phone && Boolean(errors.phone)}
-                                    helperText={touched.phone && errors.phone}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    name="address"
-                                    disabled={!edit}
-                                    label="Địa chỉ"
-                                    fullWidth
-                                    sx={{
-                                        '& .MuiInputBase-input.Mui-disabled': {
-                                            WebkitTextFillColor: 'black',
-                                        },
-                                    }}
-                                    value={values.address}
-                                    onChange={handleChange}
-                                    error={touched.address && Boolean(errors.address)}
-                                    helperText={touched.address && errors.address}
-                                />
-                            </Grid>
-                            <Grid xs={12} sm={12} sx={{ marginTop: "20px" }}>
-                                {!edit ? (
-                                    <Button
-                                        variant='contained'
-                                        type='button'
-                                        title="Sửa"
-                                        sx={{ background: "#81695e" }}
-                                        onClick={() => setEdit(true)}
+                            <Grid item xs={12} sm={8} container spacing={5}>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        sx={{
+                                            '& .MuiInputBase-input.Mui-disabled': {
+                                                WebkitTextFillColor: 'black',
+                                            },
+                                        }}
+                                        name="fullname"
+                                        label="Họ tên"
+                                        fullWidth
+                                        disabled={!edit}
+                                        value={values.fullname}
+                                        onChange={handleChange}
+                                        error={touched.fullname && Boolean(errors.fullname)}
+                                        helperText={touched.fullname && errors.fullname}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        sx={{
+                                            '& .MuiInputBase-input.Mui-disabled': {
+                                                WebkitTextFillColor: 'black',
+                                            },
+                                        }}
+                                        name="gender"
+                                        select
+                                        label="Giới tính"
+                                        disabled={!edit}
+                                        fullWidth
+                                        value={values.gender}
+                                        onChange={handleChange}
+                                        error={touched.gender && Boolean(errors.gender)}
+                                        helperText={touched.gender && errors.gender}
                                     >
-                                        Sửa
-                                    </Button>
-                                ) : (
-                                    <Grid item>
-                                        <Button
-                                            disabled={isDisable}
-                                            title="Lưu"
-                                            type="submit"
-                                            sx={{ background: "#81695e", marginRight: "10px" }}
-                                            variant='contained'
-                                        >
-                                            Lưu
-                                        </Button>
-                                        <Button
-                                            title="Hủy"
-                                            sx={{ background: "lightgrey", color: "black" }}
-                                            variant='contained'
-                                            onClick={() => {
-                                                setEdit(false);
-                                                resetForm({ values: { ...user, dayofbirth: dayjs(user.dayofbirth) } });
-                                            }}
-                                        >
-                                            Hủy
-                                        </Button>
+                                        <MenuItem value=""></MenuItem>
+                                        <MenuItem value="male">Nam</MenuItem>
+                                        <MenuItem value="female">Nữ</MenuItem>
+                                        <MenuItem value="orther">Khác</MenuItem>
+                                    </TextField>
+                                </Grid>
 
-                                    </Grid>
-                                )}
+                                <Grid item xs={12} sm={6}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <Field name="dayofbirth">
+                                            {({ field }) => (
+                                                <DatePicker
+                                                    sx={{
+                                                        width: "100%",
+                                                        '& .MuiInputBase-input': {
+                                                            color: 'black',
+                                                        },
+                                                        '& .MuiInputBase-input.Mui-disabled': {
+                                                            WebkitTextFillColor: 'black',
+                                                        },
+                                                    }}
+                                                    label="Ngày sinh"
+                                                    disabled={!edit}
+                                                    value={field.value}
+                                                    onChange={(newValue) => setFieldValue(field.name, newValue)}
+                                                    slotProps={{
+                                                        textField: {
+                                                            error: touched.dayofbirth && Boolean(errors.dayofbirth),
+                                                            helperText: touched.dayofbirth && errors.dayofbirth,
+                                                        },
+                                                    }}
+                                                    format='DD/MM/YYYY'
+                                                />
+                                            )}
+                                        </Field>
+                                    </LocalizationProvider>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        name="phone"
+                                        label="Số điện thoại"
+                                        disabled={!edit}
+                                        fullWidth
+                                        sx={{
+                                            '& .MuiInputBase-input.Mui-disabled': {
+                                                WebkitTextFillColor: 'black',
+                                            },
+                                        }}
+                                        value={values.phone}
+                                        onChange={handleChange}
+                                        error={touched.phone && Boolean(errors.phone)}
+                                        helperText={touched.phone && errors.phone}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        name="address"
+                                        disabled={!edit}
+                                        label="Địa chỉ"
+                                        fullWidth
+                                        sx={{
+                                            '& .MuiInputBase-input.Mui-disabled': {
+                                                WebkitTextFillColor: 'black',
+                                            },
+                                        }}
+                                        value={values.address}
+                                        onChange={handleChange}
+                                        error={touched.address && Boolean(errors.address)}
+                                        helperText={touched.address && errors.address}
+                                    />
+                                </Grid>
+                                <Grid xs={12} sm={12} sx={{ marginTop: "20px" }}>
+                                    {!edit ? (
+                                        <Button
+                                            variant='contained'
+                                            type='button'
+                                            title="Sửa"
+                                            sx={{ background: "#81695e" }}
+                                            onClick={() => setEdit(true)}
+                                        >
+                                            Sửa
+                                        </Button>
+                                    ) : (
+                                        <Grid item>
+                                            <Button
+                                                disabled={isDisable}
+                                                title="Lưu"
+                                                type="submit"
+                                                sx={{ background: "#81695e", marginRight: "10px" }}
+                                                variant='contained'
+                                            >
+                                                Lưu
+                                            </Button>
+                                            <Button
+                                                title="Hủy"
+                                                sx={{ background: "lightgrey", color: "black" }}
+                                                variant='contained'
+                                                onClick={() => {
+                                                    setEdit(false);
+                                                    resetForm({ values: { ...user, dayofbirth: dayjs(user.dayofbirth) } });
+                                                }}
+                                            >
+                                                Hủy
+                                            </Button>
+
+                                        </Grid>
+                                    )}
+                                </Grid>
                             </Grid>
-                        </Grid>
 
-                    </Grid>
+                        </Grid>
+                    </Card>
+
 
                     {/* Modal for Image Picker */}
                     <Dialog open={open} onClose={handleClose}>

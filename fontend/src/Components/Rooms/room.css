@@ -1,4 +1,6 @@
 .room-container {
+    min-height: 750px;
+    height: 100%;
     display: flex;
     width: 100%;
     align-items: center;
@@ -6,7 +8,6 @@
     align-items: flex-start; 
     flex-direction: column;
     background: linear-gradient(135deg, #fff3d1 ,#e7f0ff);
-
 }
 
 .room-body {
