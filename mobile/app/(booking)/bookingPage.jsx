@@ -8,7 +8,7 @@ import { useGlobalSearchParams, useRouter } from "expo-router";
 import { addDecore } from "../../redux/actions/decoreRequest";
 import { ToastAndroid } from 'react-native';
 import { PostZaloApi } from "../../redux/actions/paymentRequest";
-
+import MenuModal from "@/components/MenuModal"
 const HomePage = () => {
     const [selected, setSelected] = useState(null);
     const [isDisabled, setIsDisabled] = useState(false);
@@ -18,6 +18,10 @@ const HomePage = () => {
         StageDecore: true,
         TableDecore: true,
     });
+    const [openModal, setOpenModal] = useState(false);
+
+    const handleOpenModal = () => setOpenModal(true);
+    const handleCloseModal = () => setOpenModal(false);
     const formikRef = useRef(null);
     const router = useRouter();
     const { roomId } = useGlobalSearchParams();
@@ -99,92 +103,100 @@ const HomePage = () => {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <View style={styles.roomInfo}>
-                <Text style={styles.roomName}>{room?.RoomName}</Text>
-                <ImageBackground source={{ uri: room?.RoomImage }} style={styles.roomImage}>
-                    <View style={styles.roomDetails}>
-                        <View>
-                            <Text style={styles.roomDetail}>Chiều dài: {room?.HeightRoom}</Text>
-                            <Text style={styles.roomDetail}>Số bàn: {room?.MaxTable}</Text>
+        <>
+            <ScrollView nestedScrollEnabled contentContainerStyle={styles.container}>
+                <View style={styles.roomInfo}>
+                    <Text style={styles.roomName}>{room?.RoomName}</Text>
+                    <ImageBackground source={{ uri: room?.RoomImage }} style={styles.roomImage}>
+                        <View style={styles.roomDetails}>
+                            <View>
+                                <Text style={styles.roomDetail}>Chiều dài: {room?.HeightRoom}</Text>
+                                <Text style={styles.roomDetail}>Số bàn: {room?.MaxTable}</Text>
+                            </View>
+                            <View>
+                                <Text style={styles.roomDetail}>Chiều rộng: {room?.WidthRoom}</Text>
+                                <Text style={styles.roomDetail}>Giá: {room?.Price}</Text>
+                            </View>
                         </View>
-                        <View>
-                            <Text style={styles.roomDetail}>Chiều rộng: {room?.WidthRoom}</Text>
-                            <Text style={styles.roomDetail}>Giá: {room?.Price}</Text>
-                        </View>
-                    </View>
-                </ImageBackground>
-            </View>
+                    </ImageBackground>
+                </View>
 
-            <Text style={styles.sectionTitle}>Nhập Thông Tin Sự Kiện</Text>
-            <Form ref={formikRef} handleSubmit={() => { }} maxTable={room?.MaxTable} />
+                <Text style={styles.sectionTitle}>Nhập Thông Tin Sự Kiện</Text>
+                <Form ref={formikRef} handleSubmit={() => { }} maxTable={room?.MaxTable} />
 
-            <Text style={styles.sectionTitle}>Chọn Menu</Text>
-            <View style={styles.menuContainer}>
-                {menus?.map((menu, index) => {
-                    const foodTotalPrice = menu.Food.reduce((total, food) => {
-                        return total + (food.UnitPrice * food.MenuFoods.Quantity);
-                    }, 0);
-                    const drinksTotalPrice = menu.Drinks.reduce((total, drink) => {
-                        return total + (drink.UnitPrice * drink.MenuDrinks.Quantity);
-                    }, 0);
-                    const totalMenuPrice = foodTotalPrice + drinksTotalPrice;
+                <Text style={styles.sectionTitle}>Chọn Menu</Text>
+                <View style={styles.menuContainer}>
+                    {menus?.filter((item)=>item.Name!=null)
+                    .map((menu, index) => {
+                        const foodTotalPrice = menu.Food.reduce((total, food) => {
+                            return total + (food.UnitPrice * 1);
+                        }, 0);
+                        const drinksTotalPrice = menu.Drinks.reduce((total, drink) => {
+                            return total + (drink.UnitPrice * 1);
+                        }, 0);
+                        const totalMenuPrice = foodTotalPrice + drinksTotalPrice;
 
-                    return (
-                        <View key={index}>
-                            <TouchableOpacity
-                                style={[styles.menuItem, selected === menu?.MenuID && styles.selectedMenu]}
-                                onPress={() => setSelected(menu?.MenuID)}
-                            >
-                                <Text style={styles.menuTitle}>{menu.Name}</Text>
-                                <Text style={styles.menuPrice}>{`Giá: ${totalMenuPrice.toLocaleString()} VND/bàn`}</Text>
-                            </TouchableOpacity>
-                            {selected === menu?.MenuID && (
-                                <View style={styles.dishesContainer}>
-                                    <Text style={styles.dishesTitle}>Danh sách món ăn:</Text>
-                                    {menu.Food.map((food, i) => (
-                                        <Text key={i} style={styles.dishText}>{`${food.Name} - ${food.UnitPrice.toLocaleString()} VND (${food.MenuFoods.Quantity} phần)`}</Text>
-                                    ))}
-                                    <Text style={styles.dishesTitle}>Danh sách thức uống:</Text>
-                                    {menu.Drinks.map((drink, i) => (
-                                        <Text key={i} style={styles.dishText}>{`${drink.Name} - ${drink.UnitPrice.toLocaleString()} VND (${drink.MenuDrinks.Quantity} phần)`}</Text>
-                                    ))}
-                                </View>
-                            )}
-                        </View>
-                    );
-                })}
-            </View>
-            <Text style={styles.sectionTitle}>Chọn Trang Trí</Text>
-            <View style={styles.decoreContainer}>
-                {['LobbyDecore', 'StageDecore', 'TableDecore'].map((type) => (
-                    <TouchableOpacity
-                        key={type}
-                        style={[
-                            styles.decoreItem,
-                            decore[type] && styles.selectedDecore
-                        ]}
-                        onPress={() => handleDecoreSelect(type)}
-                    >
-                        <Text style={styles.decoreText}>{type === 'LobbyDecore' ? 'Sảnh' : type === 'StageDecore' ? 'Sân khấu' : 'Bàn'}</Text>
-                    </TouchableOpacity>
-                ))}
-            </View>
-
-            {bookingSuccess ? (
+                        return (
+                            <View key={index}>
+                                <TouchableOpacity
+                                    style={[styles.menuItem, selected === menu?.MenuID && styles.selectedMenu]}
+                                    onPress={() => setSelected(menu?.MenuID)}
+                                >
+                                    <Text style={styles.menuTitle}>{menu.Name}</Text>
+                                    <Text style={styles.menuPrice}>{`Giá: ${totalMenuPrice.toLocaleString()} VND/bàn`}</Text>
+                                </TouchableOpacity>
+                                {selected === menu?.MenuID && (
+                                    <View style={styles.dishesContainer}>
+                                        <Text style={styles.dishesTitle}>Danh sách món ăn:</Text>
+                                        {menu.Food.map((food, i) => (
+                                            <Text key={i} style={styles.dishText}>{`${food.Name} - ${food.UnitPrice.toLocaleString()} VND `}</Text>
+                                        ))}
+                                        <Text style={styles.dishesTitle}>Danh sách thức uống:</Text>
+                                        {menu.Drinks.map((drink, i) => (
+                                            <Text key={i} style={styles.dishText}>{`${drink.Name} - ${drink.UnitPrice.toLocaleString()} VND`}</Text>
+                                        ))}
+                                    </View>
+                                )}
+                            </View>
+                        );
+                    })}
+                </View>
                 <Button
-                    title="Đặt thành công, đến trang thanh toán"
-                    onPress={() => router.push(`./payment?bookingId=${bookingSuccess}`)}
+                    title="Tự chọn menu"
+                    onPress={handleOpenModal}
                 />
-            ) : (
-                <Button
-                    title="Đặt ngay"
-                    onPress={handleSubmitHomePage}
-                    disabled={isDisabled}
-                    color="#64463c"
-                />
-            )}
-        </ScrollView>
+                <Text style={styles.sectionTitle}>Chọn Trang Trí</Text>
+                <View style={styles.decoreContainer}>
+                    {['LobbyDecore', 'StageDecore', 'TableDecore'].map((type) => (
+                        <TouchableOpacity
+                            key={type}
+                            style={[
+                                styles.decoreItem,
+                                decore[type] && styles.selectedDecore
+                            ]}
+                            onPress={() => handleDecoreSelect(type)}
+                        >
+                            <Text style={styles.decoreText}>{type === 'LobbyDecore' ? 'Sảnh' : type === 'StageDecore' ? 'Sân khấu' : 'Bàn'}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+
+                {bookingSuccess ? (
+                    <Button
+                        title="Đặt thành công, đến trang thanh toán"
+                        onPress={() => router.push(`./payment?bookingId=${bookingSuccess}`)}
+                    />
+                ) : (
+                    <Button
+                        title="Đặt ngay"
+                        onPress={handleSubmitHomePage}
+                        disabled={isDisabled}
+                        color="#64463c"
+                    />
+                )}
+            </ScrollView>
+            <MenuModal open={openModal} handleClose={handleCloseModal} setSelected={setSelected} />
+        </>
     );
 };
 
