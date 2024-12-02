@@ -6,6 +6,11 @@ import { createAxios } from "../../utils/createInstance";
 //          deleteDecoreStart, deleteDecoreSuccess, deleteDecoreFailed } from "../reducers/decoreSlice";
 
 // Thêm mới Decore
+import {
+    getRoomPricesStart, getRoomPricesFailed, getRoomPricesSuccess,
+    updateRoomPriceFailed, updateRoomPriceStart, updateRoomPriceSuccess
+
+} from '../reducers/decorePriceSlice'
 export const addDecore = async (dispatch, decoreData) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     let axiosJWT = createAxios(user);
@@ -17,21 +22,20 @@ export const addDecore = async (dispatch, decoreData) => {
     }
 };
 
-// // Lấy tất cả Decores
-// export const getDecores = async (dispatch) => {
-//     dispatch(getDecoresStart());
-//     const user = JSON.parse(sessionStorage.getItem("user"));
-//     let axiosJWT = createAxios(user);
+// // Lấy tất cả Decore price
+export const getDecorePrice = async (dispatch) => {
+    dispatch(getRoomPricesStart());
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    let axiosJWT = createAxios(user);
 
-//     try {
-//         const res = await axiosJWT.get("/api/decores");
-//         dispatch(getDecoresSuccess(res.data));
-//     } catch (error) {
-//         console.error("Lấy danh sách trang trí thất bại:", error);
-//         toast.error("Lấy danh sách trang trí thất bại!");
-//         dispatch(getDecoresFailed());
-//     }
-// };
+    try {
+        const res = await axiosJWT.get("/v1/decore/decore_price");
+        dispatch(getRoomPricesSuccess(res.data));
+    } catch (error) {
+        toast.error("Lấy danh sách giá trang trí thất bại!");
+        dispatch(getRoomPricesFailed());
+    }
+};
 
 // // Cập nhật Decore
 // export const updateDecore = async (dispatch, decoreId, decoreData) => {

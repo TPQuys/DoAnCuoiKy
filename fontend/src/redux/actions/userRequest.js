@@ -7,12 +7,10 @@ import axios from "../../utils/axiosConfig";
 export const getAllUsers = async (dispatch) => {
     dispatch(getUsersStart());
     const user = JSON.parse(sessionStorage.getItem("user"));
-    console.log(user)
     const axiosJWT = createAxios(user);
     try {
         const res = await axiosJWT.get("/v1/user")
         dispatch(getUsersSuccess(res.data)); 
-        console.log(res.data)
     } catch (error) {
         console.error("Get users failed:", error);
         toast.error("Không thể lấy danh sách người dùng!");

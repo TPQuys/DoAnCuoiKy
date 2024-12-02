@@ -10,6 +10,7 @@ const PaymentPage = () => {
     const [event, setEvent] = useState({});
     const [newBooking, setNewBooking] = useState({});
     const [isDisable, setIsDisable] = useState(false);
+    const [remainingTime, setRemainingTime] = useState(900);
     const dispatch = useDispatch();
 
     const getBooking = async () => {
@@ -20,17 +21,42 @@ const PaymentPage = () => {
             console.log(responseBooking?.data)
         }
     }
+
     useEffect(() => {
         getBooking()
     }, [])
 
+    useEffect(() => {
+        // Tính toán thời điểm kết thúc (bookingTime + 15 phút)
+        const endTime = new Date(booking.BookingTime).getTime() + 15 * 60 * 1000;
+
+        // Cập nhật thời gian còn lại mỗi giây
+        const interval = setInterval(() => {
+            const currentTime = new Date().getTime();
+            const timeLeft = Math.max(0, Math.floor((endTime - currentTime) / 1000));
+            setRemainingTime(timeLeft);
+
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+            }
+        }, 1000);
+
+        // Dọn dẹp interval khi component bị huỷ
+        return () => clearInterval(interval);
+    }, [booking.BookingTime]);
+
+    const minutes = Math.floor(remainingTime / 60);
+    const seconds = remainingTime % 60;
+
+  
+
     const handlePayment = async () => {
         setIsDisable(true)
         if (newBooking) {
-            const zaloApi = await PostZaloApi(dispatch, newBooking)
-            console.log(zaloApi)
-            if (zaloApi) {
-                window.location.href = zaloApi.data.order_url;
+            // const zaloApi = await PostZaloApi(dispatch, newBooking)
+            // console.log(zaloApi)
+            if (newBooking.PaymentLink) {
+                window.location.href = newBooking.PaymentLink;
                 setIsDisable(false)
             }
         }
@@ -41,11 +67,11 @@ const PaymentPage = () => {
             let totalMenuPrice = 0
             // Tính toán giá của menu
             const foodTotalPrice = menu?.Food.reduce((total, food) => {
-                return total + (food.UnitPrice * food.MenuFoods.Quantity);
+                return total + (food.UnitPrice );
             }, 0);
 
             const drinksTotalPrice = menu?.Drinks.reduce((total, drink) => {
-                return total + (drink.UnitPrice * drink.MenuDrinks.Quantity);
+                return total + (drink.UnitPrice );
             }, 0);
 
             totalMenuPrice = foodTotalPrice + drinksTotalPrice;
@@ -115,14 +141,39 @@ const PaymentPage = () => {
 
     const rommPriceByEvent = (event, roomPrice) => {
         if (event?.Time === "ALLDAY") {
-            console.log(roomPrice * 1.5)
-            return roomPrice * 1.5
+            return roomPrice * 2
         }
         else {
-            console.log(roomPrice)
             return roomPrice
         }
     }
+    const getDecorePrice = (event,decore) => {
+        if(decore){
+            let total = 0;
+            if (decore?.LobbyDecore) {
+                total += decore?.DecorePrice?.LobbyDecorePrice; // Sử dụng += để cộng dồn
+            }
+            if (decore?.StageDecore) {
+                total += decore?.DecorePrice?.StageDecorePrice; // Sử dụng += để cộng dồn
+            }
+            if (decore?.TableDecore) {
+                total += (decore?.DecorePrice?.TableDecorePrice)*event?.TotalTable; // Sử dụng += để cộng dồn
+            }
+            return total; // Trả về tổng giá trị
+        }
+    };
+    const getDecoreType = (decore)=>{
+        if(decore){
+            if(decore?.DecorePrice?.Type==='BASIC'){
+                return "Cơ bản"
+            }else   if(decore?.DecorePrice?.Type==='ADVANCED'){
+                return "Nâng cao"
+            } else   if(decore?.DecorePrice?.Type==='PREMIUM'){
+                return "Cao cấp"
+            }
+        }
+    }
+
     return (
         <main className='room-container'>
             <Header background="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/homeheader.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21laGVhZGVyLmpwZyIsImlhdCI6MTcyNzYxODE4OSwiZXhwIjoxNzU5MTU0MTg5fQ.QU5J1wJV043dbnA6WzcnrIvAVUFGtf3Xc7QCsdIPvR8&t=2024-09-29T13%3A56%3A29.431Z" title="Thanh toán" />
@@ -141,7 +192,7 @@ const PaymentPage = () => {
                             <p>Loại sự kiện: {getEventType(event?.EventType)}</p>
                             <p>Thời gian: {getTime(event?.Time)}</p>
                             <p>Tống số bàn: {event?.TotalTable}</p>
-                            <p>Trang trí: {getDecore(event?.Decore)}</p>
+                            <p>Trang trí: {getDecore(event?.Decore)} ({getDecoreType(event?.Decore)})</p>
                             <p>Ghi chú: {event?.Note}</p>
                         </div>
                     </div>
@@ -179,12 +230,12 @@ const PaymentPage = () => {
                     <div className='payment-menu'>
                         <div className="payment-price">
                             <h3>TỔNG GIÁ</h3>
-                            <h1>{(getMenuPrice(event.Menu) * event.TotalTable + rommPriceByEvent(event, event.RoomEvent?.Price))?.toLocaleString()} VND</h1>
+                            <h1>{(getMenuPrice(event.Menu) * event.TotalTable + getDecorePrice(event,event.Decore)+ rommPriceByEvent(event, event.RoomEvent?.Price))?.toLocaleString()} VND</h1>
                         </div>
                     </div>
                 </div>
                 <div className='payment-button-container'>
-                    {newBooking.Payment ? "Đã thanh toán" :
+                    {newBooking.Payment ? "Đã thanh toán" : remainingTime > 1 ? 
                         <Button
                             component="a"
                             variant="contained"
@@ -192,7 +243,8 @@ const PaymentPage = () => {
                             onClick={() => handlePayment()}
                             disabled={isDisable}
                         >
-                            Thanh toán</Button>
+                            Thanh toán ({minutes}:{seconds < 10 ? '0' : ''}{seconds})
+                        </Button> : "Lịch đặt đã hết hạn"
                     }
                 </div>
             </div>

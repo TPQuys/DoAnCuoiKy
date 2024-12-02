@@ -3,13 +3,18 @@ import { Link, useParams } from "react-router-dom";
 import Button from '@mui/material/Button';
 import Header from "../Header/Header";
 import Form from "./component/BookingForm"
-import React, { useRef, useState } from "react";
-import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
+import DecoreSelection from "./component/DecoreSelection";
+import React, { useEffect, useRef, useState } from "react";
+import { Card, CardContent, Checkbox, FormControlLabel, FormGroup, Grid, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch
 import { addEvent } from "../../redux/actions/eventRequest"; // Import hàm thêm sự kiện từ API
 import { toast } from "react-toastify";
+
 import { addBooking } from "../../redux/actions/bookingRequest";
 import { addDecore } from "../../redux/actions/decoreRequest";
+import { PostZaloApi } from "../../redux/actions/paymentRequest";
+
+import CreateMenuModal from "./component/ModalMenu";
 const HomePage = () => {
     const [selected, setSelected] = useState(null);
     const [isDisabled, setIsDisabled] = useState(false);
@@ -19,6 +24,10 @@ const HomePage = () => {
         StageDecore: true,
         TableDecore: true,
     });
+    const [openModal, setOpenModal] = useState(false);
+
+    const handleOpenModal = () => setOpenModal(true);
+    const handleCloseModal = () => setOpenModal(false);
 
     const formikRef = useRef(null);
     const { roomId } = useParams();
@@ -26,7 +35,14 @@ const HomePage = () => {
     const menus = useSelector((state) => state.menus?.menus);
     const rooms = useSelector((state) => state.rooms?.rooms)
     const room = rooms.find(item => item.RoomEventID === roomId)
-    const user = useSelector((state) => state.auth.login.currentUser)
+    const user = useSelector((state) => state.auth.login.currentUser);
+    const deocrePrice = useSelector((state) => state.roomPrices?.roomPrices)
+    const [selectedPrice,setSelectedPrice] = useState()
+
+    useEffect(()=>{
+        setSelectedPrice(deocrePrice[0])
+    },[deocrePrice])
+
     const handleSubmit = (values) => {
     }
     const handleChangeCheckbox = (event) => {
@@ -37,6 +53,7 @@ const HomePage = () => {
         });
     };
     const handleSubmitHomePage = async () => {
+        setIsDisabled(true);
         if (formikRef.current) {
             const formik = formikRef.current;
 
@@ -50,7 +67,7 @@ const HomePage = () => {
                 Note: true,
             });
 
-            const decore = await addDecore(dispatch, Decore)
+            const decore = await addDecore(dispatch, {...Decore, DecorePriceID:selectedPrice.DecorePriceID})
 
             if (isValid && Object.keys(isValid).length === 0) {
                 const formValues = formik.values;
@@ -83,7 +100,6 @@ const HomePage = () => {
                 };
 
                 try {
-                    setIsDisabled(true);
                     const newEvent = await addEvent(dispatch, eventData);
                     if (newEvent && user) {
                         const newBooking = await addBooking(dispatch,
@@ -95,6 +111,7 @@ const HomePage = () => {
                         )
                         if (newBooking) {
                             console.log(newBooking)
+                            const zaloApi = await PostZaloApi(dispatch, newBooking)
                             setBookingSuccess(true)
                             sessionStorage.setItem("booking", JSON.stringify(newBooking))
                         }
@@ -154,72 +171,130 @@ const HomePage = () => {
 
                 <div className="booking-center">
                     <div className="menu-container">
-                        {menus.map((menu, index) => {
-                            // Tính toán giá của menu
-                            const foodTotalPrice = menu.Food.reduce((total, food) => {
-                                return total + (food.UnitPrice * food.MenuFoods.Quantity);
-                            }, 0);
+                        <Grid container spacing={3} justifyContent='center'>
+                            {menus
+                                .filter((item) => item.Name !== null)
+                                .map((menu, index) => {
+                                    const foodTotalPrice = menu.Food?.reduce((total, food) => {
+                                        return total + (food.UnitPrice * 1);
+                                        {/* return total + (food.UnitPrice * food.MenuFoods.Quantity); */ }
+                                    }, 0);
 
-                            const drinksTotalPrice = menu.Drinks.reduce((total, drink) => {
-                                return total + (drink.UnitPrice * drink.MenuDrinks.Quantity);
-                            }, 0);
+                                    const drinksTotalPrice = menu.Drinks?.reduce((total, drink) => {
+                                        return total + (drink.UnitPrice * 1);
+                                        {/* return total + (drink.UnitPrice * drink.MenuDrinks.Quantity); */ }
+                                    }, 0);
 
-                            const totalMenuPrice = foodTotalPrice + drinksTotalPrice;
+                                    const totalMenuPrice = foodTotalPrice + drinksTotalPrice;
 
-                            return (
-                                <div
-                                    key={index}
-                                    className={`radio-div ${selected === menu?.MenuID ? 'selected' : ''}`}
-                                    onClick={() => handleSelect(menu?.MenuID)}
-                                >
-                                    <h1>{menu.Name}</h1>
-                                    <h3>{`Giá: ${totalMenuPrice.toLocaleString()} VND/bàn`}</h3> {/* Hiển thị giá của menu */}
-                                    <div>
-                                        <strong>Foods:</strong>
-                                        {menu.Food.map((food, idx) => (
-                                            <div key={idx} className='menu-item'>
-                                                <span >{food.Name}</span>
-                                                {/* <span >{food.UnitPrice}</span> */}
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div>
-                                        <strong>Drinks:</strong>
-                                        {menu.Drinks.map((drink, idx) => (
-                                            <div key={idx} className='menu-item'>
-                                                <span >{drink.Name}</span>
-                                                {/* <span >{drink.UnitPrice}</span> */}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            );
-                        })}
+                                    return (
 
+                                        <Grid item xs={8} sm={6} md={4} key={index} >
+                                            <Card variant="outlined"
+                                                sx={{
+                                                    backgroundColor: selected === menu?.MenuID ? '#fff4d0' : 'white',
+                                                    cursor: 'pointer',
+                                                }}
+                                                onClick={() => handleSelect(menu?.MenuID)}
+                                            >
+                                                <Typography
+                                                    variant="h5"
+                                                    sx={{
+                                                        backgroundColor: '#fdeacd',
+                                                        fontSize: 25,
+                                                        fontWeight: 600,
+                                                        color: '#81695e',
+                                                        padding: '10px', // Đảm bảo có khoảng cách xung quanh
+                                                    }}
+                                                >
+                                                    {menu.Name}
+                                                </Typography>
+                                                <Typography
+                                                    variant="h6"
+                                                    color="textSecondary"
+                                                    sx={{
+                                                        fontSize: '1.2rem',
+                                                        textAlign: 'left', // Căn trái giá
+                                                        paddingX: '10px' // Khoảng cách từ hai bên
+                                                    }}
+                                                >
+                                                    {`Giá: ${totalMenuPrice.toLocaleString()} VND/bàn`}
+                                                </Typography>
+                                                <CardContent>
+                                                    <img
+                                                        src={menu.Image}
+                                                        height={200}
+                                                        width={300}
+                                                    />
+                                                    <div>
+                                                        <Typography>
+                                                            <strong>Món ăn:</strong>
+                                                        </Typography>
+                                                        {menu?.Food?.map((food, idx) => (
+                                                            <Typography
+                                                                key={idx}
+                                                                variant="body2"
+                                                                sx={{
+                                                                    fontSize: '1rem',
+                                                                    textAlign: 'left',
+                                                                    borderBottom: '1px solid #ddd', // Đường viền nhạt
+                                                                    paddingBottom: '5px' // Khoảng cách dưới dòng
+                                                                }}
+                                                            >
+                                                                {food.Name}
+                                                            </Typography>
+                                                        ))}
+                                                    </div>
+                                                    <div>
+                                                        <Typography>
+                                                            <strong>Đồ uống:</strong>
+                                                        </Typography>
+                                                        {menu?.Drinks?.map((drink, idx) => (
+                                                            <Typography
+                                                                key={idx}
+                                                                variant="body2"
+                                                                sx={{
+                                                                    fontSize: '1rem',
+                                                                    textAlign: 'left',
+                                                                    borderBottom: '1px solid #ddd', // Đường viền nhạt
+                                                                    paddingBottom: '5px' // Khoảng cách dưới dòng
+                                                                }}
+                                                            >
+                                                                {drink.Name}
+                                                            </Typography>
+                                                        ))}
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+
+                                        </Grid>
+                                    );
+                                })}
+                        </Grid>
                     </div>
+                    <Button
+                        variant="text"
+                        sx={{ fontWeight: 600, color: "#64463c", textDecoration: "underline" }}
+                        onClick={handleOpenModal}
+                    >
+                        Tự chọn menu
+                    </Button>
+
 
                 </div>
 
                 <div>
                     <div className="booking-room-name">Trang trí</div>
-                    <FormGroup sx={{ flexDirection: "row", justifyContent: "center", padding: 5, gap: 5 }}>
-                        <FormControlLabel
-                            control={<Checkbox checked={Decore.LobbyDecore} onChange={handleChangeCheckbox} name="LobbyDecore" />}
-                            label="Sảnh"
-                            labelPlacement="top"
-                        />
-                        <FormControlLabel
-                            control={<Checkbox checked={Decore.StageDecore} onChange={handleChangeCheckbox} name="StageDecore" />}
-                            label="Sân khấu"
-                            labelPlacement="top"
-                        />
-                        <FormControlLabel
-                            control={<Checkbox checked={Decore.TableDecore} onChange={handleChangeCheckbox} name="TableDecore" />}
-                            label="Bàn"
-                            labelPlacement="top"
-                        />
-                    </FormGroup>
+                    <div className="booking-center">
 
+                        <DecoreSelection
+                            price={deocrePrice}
+                            Decore={Decore}
+                            onDecoreChange={(name, value) => setDecore({ ...Decore, [name]: value })}
+                            setSelectedPrice={setSelectedPrice}
+                            selectedPrice={selectedPrice}
+                        />
+                    </div>
                 </div>
                 <div>
                     {bookingSuccess ?
@@ -236,6 +311,7 @@ const HomePage = () => {
                     }
                 </div>
             </div>
+            <CreateMenuModal open={openModal} handleClose={handleCloseModal} setSelected={setSelected} />
         </main>
     );
 };

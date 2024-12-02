@@ -7,6 +7,7 @@ const RoomEvent = require('../models/RoomEvent');
 const Payment = require('../models/Payment');
 const User = require('../models/User');
 const Decore = require('../models/Decore');
+const DecorePrice = require('../models/DecorePrice');
 class BookingRepository {
     // Tạo một booking mới
     async createBooking(bookingData) {
@@ -23,7 +24,7 @@ class BookingRepository {
     async getAllBookings() {
         try {
             const bookings = await Booking.findAll({
-                attributes:["BookingID","BookingTime"],
+                attributes:["BookingID","BookingTime","LinkExpiry"],
                 include: [
                     {
                         model:Event,
@@ -43,6 +44,11 @@ class BookingRepository {
                             },
                             {
                                 model:Decore,
+                                include: [
+                                    {
+                                        model: DecorePrice,
+                                    }
+                                ]
                             },
                             {
                                 model:RoomEvent,
@@ -69,7 +75,7 @@ class BookingRepository {
     async getBookingById(bookingId) {
         try {
             const booking = await Booking.findByPk(bookingId, {
-                attributes:["BookingID","BookingTime"],
+                attributes:["BookingID","BookingTime","PaymentLink","LinkExpiry"],
                 include: [
                     {
                         model:Event,
@@ -89,6 +95,11 @@ class BookingRepository {
                             },
                             {
                                 model:Decore,
+                                include: [
+                                    {
+                                        model: DecorePrice,
+                                    }
+                                ]
                             },
                             {
                                 model:RoomEvent,
@@ -117,7 +128,7 @@ class BookingRepository {
     async getBookingsByUser(UserID) {
         try {
             const bookings = await Booking.findAll({
-                attributes: ["BookingID","BookingTime"],
+                attributes: ["BookingID","BookingTime","LinkExpiry"],
                 where: { UserID }, // Tìm tất cả booking của user
                 include: [
                     {
@@ -138,6 +149,11 @@ class BookingRepository {
                             },
                             {
                                 model:Decore,
+                                include: [
+                                    {
+                                        model: DecorePrice,
+                                    }
+                                ]
                             },
                             {
                                 model: RoomEvent, // Bao gồm thông tin phòng sự kiện

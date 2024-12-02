@@ -38,7 +38,6 @@ const MyForm = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [isDisable, setIsDisable] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false);
-
     const handleOpen = () => {
         setOpen(true);
         setSelectedFile(null)
@@ -54,7 +53,7 @@ const MyForm = () => {
     useEffect(() => {
         setUser(curentUser?.user)
         fetchBookings();
-    }, [curentUser,bookings])
+    }, [curentUser])
 
     const handleChoosePhoto = async () => {
         // Yêu cầu quyền truy cập ảnh
@@ -92,10 +91,13 @@ const MyForm = () => {
     const handleUploadAvatar = async () => {
         if (selectedFile) {
             setIsDisable(true);
-            const res = await uploadAvatar(dispatch, selectedFile, curentUser);
-            setIsDisable(false);
-            setUser(res)
-            handleClose();
+            await uploadAvatar(dispatch, selectedFile, curentUser)
+                .then((res) => {
+                    setIsDisable(false)
+                    setUser(res)
+                    handleClose();
+                });
+
         } else {
             Alert.alert("Vui lòng chọn một tệp hình ảnh.");
         }
@@ -123,12 +125,14 @@ const MyForm = () => {
                 enableReinitialize
                 validationSchema={validationSchema}
                 onSubmit={async (values) => {
-                    const res = await updateUser(dispatch, values, user, curentUser);
-                    if (res) {
-                        setEdit(false);
-                    } else {
-                        Alert.alert("Cập nhập thất bại")
-                    }
+                    setIsDisable(true)
+                    await updateUser(dispatch, values, user, curentUser)
+                        .then((res) => {
+                            setIsDisable(false)
+                            setEdit(false)
+                            setUser(res.user)
+                        })
+                        .catch(() => Alert.alert("Cập nhập thất bại"))
                 }}
             >
                 {({ errors, touched, handleChange, values, setFieldValue, resetForm, handleSubmit }) => (
@@ -153,24 +157,26 @@ const MyForm = () => {
                             />
                             {touched.fullname && errors.fullname && <Text style={styles.errorText}>{errors.fullname}</Text>}
 
-                            <Picker
-                                selectedValue={values.gender}
-                                onValueChange={(itemValue) => handleChange('gender')(itemValue)}
-                                enabled={edit}
-                                style={edit ? styles.input : styles.inputDisabled}
-                            >
-                                <Picker.Item label="" value="" />
-                                <Picker.Item label="Nam" value="male" />
-                                <Picker.Item label="Nữ" value="female" />
-                                <Picker.Item label="Khác" value="orther" />
-                            </Picker>
+                            <View style={edit ? styles.input : styles.inputDisabled}>
+                                <Picker
+                                    selectedValue={values.gender}
+                                    onValueChange={(itemValue) => handleChange('gender')(itemValue)}
+                                    enabled={edit}
+                                >
+                                    <Picker.Item label="" value="" />
+                                    <Picker.Item color={edit ? 'black' : 'grey'} label="Nam" value="male" />
+                                    <Picker.Item color={edit ? 'black' : 'grey'} label="Nữ" value="female" />
+                                    <Picker.Item color={edit ? 'black' : 'grey'} label="Khác" value="orther" />
+                                </Picker>
+                            </View>
                             {touched.gender && errors.gender && <Text style={styles.errorText}>{errors.gender}</Text>}
 
                             <TouchableOpacity
+                                disabled={!edit}
                                 style={edit ? styles.input : styles.inputDisabled}
                                 onPress={() => edit && setShowDatePicker(true)}
                             >
-                                <Text style={{ color: values.dayofbirth ? 'black' : 'grey' }}>
+                                <Text style={{ color: edit ? 'black' : 'grey' }}>
                                     {values.dayofbirth ? dayjs(values.dayofbirth).format('DD/MM/YYYY') : 'Chọn ngày sinh'}
                                 </Text>
                             </TouchableOpacity>
@@ -218,7 +224,7 @@ const MyForm = () => {
                             ) : (
                                 <>
                                     <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                                        <Text style={styles.buttonText}>Lưu</Text>
+                                        <Text style={styles.buttonText} disabled={isDisable}>Lưu</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={[styles.button, { backgroundColor: 'lightgray' }]}
@@ -314,6 +320,7 @@ const styles = StyleSheet.create({
     },
     input: {
         borderBottomWidth: 1,
+        margin: 0,
         borderColor: '#ccc',
         padding: 10,
         marginVertical: 10,

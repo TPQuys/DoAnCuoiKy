@@ -7,6 +7,7 @@ import Form from "@/components/BookingForm";
 import { useGlobalSearchParams, useRouter } from "expo-router";
 import { addDecore } from "../../redux/actions/decoreRequest";
 import { ToastAndroid } from 'react-native';
+import { PostZaloApi } from "../../redux/actions/paymentRequest";
 
 const HomePage = () => {
     const [selected, setSelected] = useState(null);
@@ -35,6 +36,7 @@ const HomePage = () => {
     };
 
     const handleSubmitHomePage = async () => {
+        setIsDisabled(true);
         if (formikRef.current) {
             const formik = formikRef.current;
             const isValid = await formik.validateForm();
@@ -46,8 +48,7 @@ const HomePage = () => {
                 Note: true,
             });
 
-            const newDecore = await addDecore(dispatch,decore,user)
-            console.log(newDecore)
+            const newDecore = await addDecore(dispatch, decore, user)
             if (isValid && Object.keys(isValid).length === 0) {
                 const formValues = formik.values;
                 const selectedMenu = menus.find(menu => menu.MenuID === selected);
@@ -72,7 +73,6 @@ const HomePage = () => {
                 };
 
                 try {
-                    setIsDisabled(true);
                     const newEvent = await addEvent(dispatch, eventData, user);
                     if (newEvent && user) {
                         const newBooking = await addBooking(dispatch, {
@@ -81,6 +81,7 @@ const HomePage = () => {
                             BookingTime: new Date()
                         }, user);
                         if (newBooking) {
+                            await PostZaloApi(dispatch, newBooking, user);
                             setBookingSuccess(newBooking.BookingID);
                         }
                     } else {
@@ -91,8 +92,8 @@ const HomePage = () => {
                 }
             }
             else {
-        ToastAndroid.show("Form chưa hợp lệ", ToastAndroid.SHORT)
-    }
+                ToastAndroid.show("Form chưa hợp lệ", ToastAndroid.SHORT)
+            }
         }
         setIsDisabled(false);
     };
@@ -103,10 +104,14 @@ const HomePage = () => {
                 <Text style={styles.roomName}>{room?.RoomName}</Text>
                 <ImageBackground source={{ uri: room?.RoomImage }} style={styles.roomImage}>
                     <View style={styles.roomDetails}>
-                        <Text style={styles.roomDetail}>Chiều dài: {room?.HeightRoom}</Text>
-                        <Text style={styles.roomDetail}>Chiều rộng: {room?.WidthRoom}</Text>
-                        <Text style={styles.roomDetail}>Số bàn: {room?.MaxTable}</Text>
-                        <Text style={styles.roomDetail}>Giá: {room?.Price}</Text>
+                        <View>
+                            <Text style={styles.roomDetail}>Chiều dài: {room?.HeightRoom}</Text>
+                            <Text style={styles.roomDetail}>Số bàn: {room?.MaxTable}</Text>
+                        </View>
+                        <View>
+                            <Text style={styles.roomDetail}>Chiều rộng: {room?.WidthRoom}</Text>
+                            <Text style={styles.roomDetail}>Giá: {room?.Price}</Text>
+                        </View>
                     </View>
                 </ImageBackground>
             </View>
@@ -186,7 +191,7 @@ const HomePage = () => {
 export default HomePage;
 
 const styles = StyleSheet.create({
-    
+
     container: {
         flexGrow: 1,
         padding: 20,
@@ -202,12 +207,15 @@ const styles = StyleSheet.create({
     },
     roomImage: {
         height: 200,
-        justifyContent: "center",
-        alignItems: "center",
+        // justifyContent: "center",
+        // alignItems: "center",
     },
     roomDetails: {
-        backgroundColor: "rgba(0,0,0,0.5)",
+        backgroundColor: "rgba(0,0,0,0.3)",
+        paddingHorizontal: 50,
         padding: 10,
+        justifyContent: 'space-between',
+        flexDirection: 'row',
     },
     roomDetail: {
         color: "#fff",

@@ -11,13 +11,21 @@ const Booking = sequelize.define('Booking', {
     PaymentStatus: {
         type: DataTypes.ENUM('PENDING', 'PAID', 'CANCELLED'),
         allowNull: false,
-        defaultValue: 'Pending' 
+        defaultValue: 'PENDING' 
     },
     BookingTime: {
         type: DataTypes.DATE,
         defaultValue: new Date(),
         allowNull: false
     },
+    PaymentLink: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    LinkExpiry: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    }
 });
 
 User.hasMany(Booking, { foreignKey: 'UserID' });

@@ -1,6 +1,5 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../utils/supabase/connection");
-const DecorePrice = require("./DecorePrice");
 
 const Decore = sequelize.define('Decore', {
     DecoreID: {

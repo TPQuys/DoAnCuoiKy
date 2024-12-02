@@ -17,6 +17,7 @@ const ResetPassword = () => {
     const navigate = useNavigate();
     const [token, setToken] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [isDisable,setIsDisable] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     useEffect(() => {
@@ -43,7 +44,8 @@ const ResetPassword = () => {
     });
 
     const handleRegister = (values) => {
-        updatePassword(token,values.password,navigate).then(()=>{})
+        setIsDisable(true)
+        updatePassword(token,values.password,navigate).then(()=>{setIsDisable(false)})
     };
 
     const handleClickShowPassword = () => {
@@ -132,7 +134,7 @@ const ResetPassword = () => {
                                     </FormControl>
                                 </div>
 
-                                <Button variant="contained" type="submit" fullWidth sx={{background:"#81695e"}}>
+                                <Button disabled={isDisable} variant="contained" type="submit" fullWidth sx={{background:"#81695e"}}>
                                     xác nhận
                                 </Button>
                             </Form>

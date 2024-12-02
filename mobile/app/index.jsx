@@ -15,17 +15,16 @@ const validationSchema = Yup.object().shape({
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const [isDisable, setIsDisable] = useState(false)
     const dispatch = useDispatch();
     const router = useRouter();
     const handleLogin = async (values) => {
+        setIsDisable(true)
         const newUser = {
             email: values.email,
             password: values.password,
         };
-        const success = await loginUser(newUser, dispatch, router)
-        if (success) {
-            // router.push("")
-        }
+        const success = await loginUser(newUser, dispatch, router).then(()=> setIsDisable(false))
     };
 
     return (
@@ -77,6 +76,7 @@ const Login = () => {
 
                         <View style={styles.buttonWrap}>
                             <Button
+                                disabled={isDisable}
                                 title="Đăng nhập"
                                 onPress={handleSubmit}
                             />
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     },
     input: {
         borderRadius: 5,
-        fontSize:18
+        fontSize: 18
     },
     buttonWrap: {
         margin: 10,
