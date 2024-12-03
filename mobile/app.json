@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "HQ Palace",
+    "name": "QH Palace",
     "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -18,7 +18,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo.png",
-        "backgroundColor": "transparent"
+        "backgroundColor": "#ffffff"
       },
       "package": "com.tpquy.mobile"
     },
