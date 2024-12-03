@@ -5,7 +5,7 @@ import { getBookingById } from "../../redux/actions/bookingRequest";
 import { PostZaloApi } from '../../redux/actions/paymentRequest';
 import { Link, useGlobalSearchParams } from "expo-router";
 import { AppState } from 'react-native';
-
+import { MaterialIcons } from '@expo/vector-icons';
 const getMenuPrice = (menu) => {
     if (menu) {
         let totalMenuPrice = 0;
@@ -44,6 +44,22 @@ const getEventType = (type) => {
     }
 };
 
+const getDecorePrice = (event, decore) => {
+    if (decore) {
+        let total = 0;
+        if (decore?.LobbyDecore) {
+            total += decore?.DecorePrice?.LobbyDecorePrice; // Sử dụng += để cộng dồn
+        }
+        if (decore?.StageDecore) {
+            total += decore?.DecorePrice?.StageDecorePrice; // Sử dụng += để cộng dồn
+        }
+        if (decore?.TableDecore) {
+            total += (decore?.DecorePrice?.TableDecorePrice) * event?.TotalTable; // Sử dụng += để cộng dồn
+        }
+        return total; // Trả về tổng giá trị
+    }
+};
+
 const getTime = (time) => {
     if (time) {
         if (time === "MORNING") {
@@ -57,6 +73,17 @@ const getTime = (time) => {
         }
     }
 };
+const getDecoreType = (decore) => {
+    if (decore) {
+        if (decore?.DecorePrice?.Type === 'BASIC') {
+            return "Cơ bản"
+        } else if (decore?.DecorePrice?.Type === 'ADVANCED') {
+            return "Nâng cao"
+        } else if (decore?.DecorePrice?.Type === 'PREMIUM') {
+            return "Cao cấp"
+        }
+    }
+}
 const getDecore = (Decore) => {
     const lobby = Decore?.LobbyDecore ? "sảnh" : "";
     const stage = Decore?.StageDecore ? "sân khấu" : "";
@@ -70,7 +97,7 @@ const getDecore = (Decore) => {
         decoreArray[0] = decoreArray[0].charAt(0).toUpperCase() + decoreArray[0].slice(1);
     }
 
-    return decoreArray.join(", ");
+    return decoreArray.join(", ") + " ("+getDecoreType(Decore)+")";
 };
 const roomPriceByEvent = (event, roomPrice) => {
     if (event?.Time === "ALLDAY") {
@@ -98,6 +125,18 @@ const PaymentPage = () => {
             setEvent(responseBooking.data?.Event);
         }
     };
+
+    const resetLinkPayment = async () => {
+        if (newBooking) {
+            const zaloApi = await PostZaloApi(dispatch, newBooking, user);
+            console.log(zaloApi.data)
+            if (zaloApi?.data?.order_url) {
+                console.log(zaloApi?.data?.order_url)
+                setNewBooking({ ...newBooking, PaymentLink: zaloApi.data.order_url })
+                setIsDisable(false)
+            }
+        }
+    }
 
     useEffect(() => {
         // Tính toán thời điểm kết thúc (bookingTime + 15 phút)
@@ -138,18 +177,20 @@ const PaymentPage = () => {
     }, []);
 
     const handlePayment = async () => {
+        console.log(1)
         setIsDisable(true);
         if (newBooking) {
+            console.log(newBooking)
             if (newBooking.PaymentLink) {
+                console.log(3)
                 Linking.openURL(newBooking.PaymentLink);
                 setIsDisable(false)
+                console.log(4)
             }
         }
         setIsDisable(false);
 
     };
-
-
 
     return (
         <ScrollView style={styles.container}>
@@ -201,21 +242,29 @@ const PaymentPage = () => {
                         <View style={styles.paymentPrice}>
                             <Text style={styles.totalPrice}>TỔNG GIÁ</Text>
                             <Text style={styles.totalAmount}>
-                                {(getMenuPrice(event.Menu) * event.TotalTable + roomPriceByEvent(event, event.RoomEvent?.Price))?.toLocaleString()} VND
+                                {(getMenuPrice(event.Menu) * event.TotalTable +getDecorePrice(event,event.Decore) + roomPriceByEvent(event, event.RoomEvent?.Price))?.toLocaleString()} VND
                             </Text>
                         </View>
                     </View>
                 </View>
 
                 <View style={styles.paymentButtonContainer}>
-                    {newBooking.Payment ? <Text>Đã thanh toán</Text> : remainingTime >1 ? (
-                        <TouchableOpacity
-                            style={styles.paymentButton}
-                            onPress={handlePayment}
-                            disabled={isDisable}
-                        >
-                            <Text style={styles.paymentButtonText}>Thanh toán({minutes}:{seconds < 10 ? '0' : ''}{seconds})</Text>
-                        </TouchableOpacity>
+                    {newBooking.Payment ? <Text>Đã thanh toán</Text> : remainingTime > 1 ? (
+                        <View>
+                            <TouchableOpacity
+                                style={styles.paymentButton}
+                                onPress={handlePayment}
+                                disabled={isDisable}
+                            >
+                                <Text style={styles.paymentButtonText}>Thanh toán({minutes}:{seconds < 10 ? '0' : ''}{seconds})</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.resetButton}
+                                onPress={() => resetLinkPayment()}
+                            >
+                                 <MaterialIcons name="refresh" size={32}/>
+                            </TouchableOpacity>
+                        </View>
                     ) : <Text>Lịch đặt đã hết hạn</Text>
                     }
                     <Link style={styles.link} href={'../(tabs)/home'}>Về trang chủ</Link>
@@ -329,6 +378,10 @@ const styles = StyleSheet.create({
         margin: 20,
         fontSize: 14,
         fontWeight: "700"
+    },
+    resetButton:{
+        marginTop:10,
+        alignItems:"center"
     }
 });
 

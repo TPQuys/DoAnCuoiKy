@@ -68,7 +68,7 @@ export const PostZaloApi = async (dispatch, booking) => {
         return res;
     } catch (error) {
         console.error("Xóa thanh toán thất bại:", error);
-        toast.error("Không thể xóa thanh toán!");
+        toast.error("Không thể lấy link thanh toán!");
         dispatch(addPaymentFailed());
     }
 };

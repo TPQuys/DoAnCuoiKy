@@ -78,9 +78,9 @@ class PaymentService {
         // const url = "https://7ded-27-65-230-251.ngrok-free.app"
         // console.log(url)
         const findBooking = await bookingRepository.getBookingById(booking.BookingID)
-        if(findBooking.PaymentLink && (findBooking.LinkExpiry> new Date())){
-            return {order_url:findBooking.PaymentLink}
-        }
+        // if(findBooking.PaymentLink && (findBooking.LinkExpiry> new Date())){
+        //     return {order_url:findBooking.PaymentLink}
+        // }
         if (!booking.Payment) {
             const eventData = findBooking?.Event || {};
             const roomEventData = eventData?.RoomEvent || {};
@@ -113,7 +113,7 @@ class PaymentService {
                     item: JSON.stringify(items),
                     embed_data: JSON.stringify(embed_data),
                     amount: Amount,
-                    description: `Lazada - Payment for the order #${transID}`,
+                    description: `Thanh toán đơn đặt #${transID}`,
                     bank_code: "",
                     callback_url: url + "/v1/payment/callback"
                 };

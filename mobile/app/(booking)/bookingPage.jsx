@@ -9,7 +9,9 @@ import { addDecore } from "../../redux/actions/decoreRequest";
 import { ToastAndroid } from 'react-native';
 import { PostZaloApi } from "../../redux/actions/paymentRequest";
 import MenuModal from "@/components/MenuModal"
+import { Picker } from "@react-native-picker/picker";
 const HomePage = () => {
+    const deocrePrice = useSelector((state) => state.roomPrices?.roomPrices)
     const [selected, setSelected] = useState(null);
     const [isDisabled, setIsDisabled] = useState(false);
     const [bookingSuccess, setBookingSuccess] = useState();
@@ -18,6 +20,7 @@ const HomePage = () => {
         StageDecore: true,
         TableDecore: true,
     });
+    const [selectedType, setSelectedType] = useState(deocrePrice[0]);
     const [openModal, setOpenModal] = useState(false);
 
     const handleOpenModal = () => setOpenModal(true);
@@ -32,12 +35,21 @@ const HomePage = () => {
     const room = rooms.find(item => item.RoomEventID === roomId);
     const user = useSelector((state) => state.auth.login.currentUser);
 
+    
     const handleDecoreSelect = (type) => {
         setDecore(prev => ({
             ...prev,
             [type]: !prev[type],
         }));
     };
+
+    const handleSelectType = (value) => {
+        const type = deocrePrice.find((item) => item.Type === value)
+        if (type) {
+            setSelectedType(type)
+
+        }
+    }
 
     const handleSubmitHomePage = async () => {
         setIsDisabled(true);
@@ -52,7 +64,7 @@ const HomePage = () => {
                 Note: true,
             });
 
-            const newDecore = await addDecore(dispatch, decore, user)
+            const newDecore = await addDecore(dispatch, {...decore, DecorePriceID:selectedType.DecorePriceID}, user)
             if (isValid && Object.keys(isValid).length === 0) {
                 const formValues = formik.values;
                 const selectedMenu = menus.find(menu => menu.MenuID === selected);
@@ -102,6 +114,13 @@ const HomePage = () => {
         setIsDisabled(false);
     };
 
+
+    const decoreOptions = [
+        { name: "LobbyDecore", price: selectedType?.LobbyDecorePrice?.toLocaleString() + " VND", label: "Sảnh" },
+        { name: "StageDecore", price: selectedType?.StageDecorePrice?.toLocaleString() + " VND", label: "Sân khấu" },
+        { name: "TableDecore", price: selectedType?.TableDecorePrice?.toLocaleString() + " VND/bàn", label: "Bàn" },
+    ];
+
     return (
         <>
             <ScrollView nestedScrollEnabled contentContainerStyle={styles.container}>
@@ -126,57 +145,85 @@ const HomePage = () => {
 
                 <Text style={styles.sectionTitle}>Chọn Menu</Text>
                 <View style={styles.menuContainer}>
-                    {menus?.filter((item)=>item.Name!=null)
-                    .map((menu, index) => {
-                        const foodTotalPrice = menu.Food.reduce((total, food) => {
-                            return total + (food.UnitPrice * 1);
-                        }, 0);
-                        const drinksTotalPrice = menu.Drinks.reduce((total, drink) => {
-                            return total + (drink.UnitPrice * 1);
-                        }, 0);
-                        const totalMenuPrice = foodTotalPrice + drinksTotalPrice;
+                    {menus?.filter((item) => item.Name != null)
+                        .map((menu, index) => {
+                            const foodTotalPrice = menu.Food.reduce((total, food) => {
+                                return total + (food.UnitPrice * 1);
+                            }, 0);
+                            const drinksTotalPrice = menu.Drinks.reduce((total, drink) => {
+                                return total + (drink.UnitPrice * 1);
+                            }, 0);
+                            const totalMenuPrice = foodTotalPrice + drinksTotalPrice;
 
-                        return (
-                            <View key={index}>
-                                <TouchableOpacity
-                                    style={[styles.menuItem, selected === menu?.MenuID && styles.selectedMenu]}
-                                    onPress={() => setSelected(menu?.MenuID)}
-                                >
-                                    <Text style={styles.menuTitle}>{menu.Name}</Text>
-                                    <Text style={styles.menuPrice}>{`Giá: ${totalMenuPrice.toLocaleString()} VND/bàn`}</Text>
-                                </TouchableOpacity>
-                                {selected === menu?.MenuID && (
-                                    <View style={styles.dishesContainer}>
-                                        <Text style={styles.dishesTitle}>Danh sách món ăn:</Text>
-                                        {menu.Food.map((food, i) => (
-                                            <Text key={i} style={styles.dishText}>{`${food.Name} - ${food.UnitPrice.toLocaleString()} VND `}</Text>
-                                        ))}
-                                        <Text style={styles.dishesTitle}>Danh sách thức uống:</Text>
-                                        {menu.Drinks.map((drink, i) => (
-                                            <Text key={i} style={styles.dishText}>{`${drink.Name} - ${drink.UnitPrice.toLocaleString()} VND`}</Text>
-                                        ))}
-                                    </View>
-                                )}
-                            </View>
-                        );
-                    })}
+                            return (
+                                <View key={index}>
+                                    <TouchableOpacity
+                                        style={[styles.menuItem, selected === menu?.MenuID && styles.selectedMenu]}
+                                        onPress={() => setSelected(menu?.MenuID)}
+                                    >
+                                        <Text style={styles.menuTitle}>{menu.Name}</Text>
+                                        <Text style={styles.menuPrice}>{`Giá: ${totalMenuPrice.toLocaleString()} VND/bàn`}</Text>
+                                    </TouchableOpacity>
+                                    {selected === menu?.MenuID && (
+                                        <View style={styles.dishesContainer}>
+                                            <Text style={styles.dishesTitle}>Danh sách món ăn:</Text>
+                                            {menu.Food.map((food, i) => (
+                                                <Text key={i} style={styles.dishText}>{`${food.Name} - ${food.UnitPrice.toLocaleString()} VND `}</Text>
+                                            ))}
+                                            <Text style={styles.dishesTitle}>Danh sách thức uống:</Text>
+                                            {menu.Drinks.map((drink, i) => (
+                                                <Text key={i} style={styles.dishText}>{`${drink.Name} - ${drink.UnitPrice.toLocaleString()} VND`}</Text>
+                                            ))}
+                                        </View>
+                                    )}
+                                </View>
+                            );
+                        })}
                 </View>
                 <Button
                     title="Tự chọn menu"
                     onPress={handleOpenModal}
                 />
                 <Text style={styles.sectionTitle}>Chọn Trang Trí</Text>
+                <View>
+                    <Text style={styles.label}>Loại trang trí</Text>
+                    <Picker
+                        selectedValue={selectedType.Type}
+                        onValueChange={(itemValue) => handleSelectType(itemValue)}
+                        style={styles.input}
+                    >
+                        <Picker.Item label="Cơ bản" value="BASIC" />
+                        <Picker.Item label="Nâng cao" value="ADVANCED" />
+                        <Picker.Item label="Cao cấp" value="PREMIUM" />
+                    </Picker>
+                </View>
+
                 <View style={styles.decoreContainer}>
-                    {['LobbyDecore', 'StageDecore', 'TableDecore'].map((type) => (
+
+                    {decoreOptions.map((type) => (
                         <TouchableOpacity
-                            key={type}
+                            key={type.label}
                             style={[
                                 styles.decoreItem,
-                                decore[type] && styles.selectedDecore
+                                decore[type.name] && styles.selectedDecore
                             ]}
-                            onPress={() => handleDecoreSelect(type)}
+                            onPress={() => handleDecoreSelect(type.name)}
                         >
-                            <Text style={styles.decoreText}>{type === 'LobbyDecore' ? 'Sảnh' : type === 'StageDecore' ? 'Sân khấu' : 'Bàn'}</Text>
+                            <View style={styles.decoreText}>{type.name === 'LobbyDecore'
+                                ? <View>
+                                    <Text>Sảnh</Text>
+                                    <Text>{type.price}</Text>
+                                </View>
+                                : type.name === 'StageDecore'
+                                    ? <View>
+                                        <Text>Sân khấu</Text>
+                                        <Text>{type.price}</Text>
+                                    </View>
+                                    : <View>
+                                        <Text>Bàn</Text>
+                                        <Text>{type.price}</Text>
+                                    </View>
+                            }</View>
                         </TouchableOpacity>
                     ))}
                 </View>
@@ -296,5 +343,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
         textAlign: "center",
+    },
+    input: {
+        backgroundColor: 'white',
+        borderWidth: 1,
+        borderColor: '#ccc',
+        padding: 10,
+        borderRadius: 4,
+        marginBottom: 16,
     },
 });
