@@ -32,7 +32,17 @@ const getTime = (time) => {
         default: return '';
     }
 };
-
+const getDecoreType = (decore) => {
+    if (decore) {
+        if (decore?.DecorePrice?.Type === 'BASIC') {
+            return "Cơ bản"
+        } else if (decore?.DecorePrice?.Type === 'ADVANCED') {
+            return "Nâng cao"
+        } else if (decore?.DecorePrice?.Type === 'PREMIUM') {
+            return "Cao cấp"
+        }
+    }
+}
 const getDecore = (Decore) => {
     const lobby = Decore?.LobbyDecore ? "sảnh" : "";
     const stage = Decore?.StageDecore ? "sân khấu" : "";
@@ -42,11 +52,11 @@ const getDecore = (Decore) => {
     const decoreArray = [lobby, stage, table]?.filter(item => item !== "");
 
     // Chỉ viết hoa chữ cái đầu tiên của phần tử đầu tiên
-    if (decoreArray?.length > 0) {
+    if (decoreArray.length > 0) {
         decoreArray[0] = decoreArray[0].charAt(0).toUpperCase() + decoreArray[0].slice(1);
     }
 
-    return decoreArray.join(", ");
+    return decoreArray.join(", ") + " ("+getDecoreType(Decore)+")";
 };
 
 const formatDateTime = (dateString) => {

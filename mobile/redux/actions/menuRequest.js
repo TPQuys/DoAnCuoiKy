@@ -13,6 +13,8 @@ import {
     deleteMenuSuccess,
     deleteMenuFailed
 } from "../reducers/menuSlice";
+import { getFoodsFailed, getFoodsStart, getFoodsSuccess } from "../reducers/foodSilce";
+import { getDrinksFailed, getDrinksStart, getDrinksSuccess } from "../reducers/drinkSlice";
 
 // Lấy tất cả menu
 export const getAllMenus = async (dispatch) => {
@@ -20,7 +22,6 @@ export const getAllMenus = async (dispatch) => {
     try {
         const res = await axios.get("/v1/menu");
         dispatch(getMenusSuccess(res.data)); 
-        console.log(res.data);
     } catch (error) {
         console.error("Get menus failed:", error);
         dispatch(getMenusFailed()); 
@@ -32,7 +33,8 @@ export const addMenu = async (dispatch, menu) => {
     dispatch(addMenuStart());
     try {
         const res = await axios.post("/v1/menu", menu);
-        dispatch(addMenuSuccess(res.data)); 
+        dispatch(addMenuSuccess({...res.data,Name:"Menu mới"})); 
+        return res.data
     } catch (error) {
         console.error("Add menu failed:", error);
         dispatch(addMenuFailed()); 
@@ -60,5 +62,26 @@ export const deleteMenu = async (dispatch, menuId) => {
     } catch (error) {
         console.error("Delete menu failed:", error);
         dispatch(deleteMenuFailed()); 
+    }
+};
+export const getAllFood = async (dispatch) => {
+    dispatch(getFoodsStart());
+    try {
+        const res = await axios.get("/v1/menu/foods");
+        dispatch(getFoodsSuccess(res.data)); 
+    } catch (error) {
+        console.error("Get menus failed:", error);
+        dispatch(getFoodsFailed()); 
+    }
+};
+
+export const getAllDrink = async (dispatch) => {
+    dispatch(getDrinksStart());
+    try {
+        const res = await axios.get("/v1/menu/drinks");
+        dispatch(getDrinksSuccess(res.data)); 
+    } catch (error) {
+        console.error("Get menus failed:", error);
+        dispatch(getDrinksFailed()); 
     }
 };

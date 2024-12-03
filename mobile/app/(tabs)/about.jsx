@@ -163,7 +163,7 @@ const MyForm = () => {
                                     onValueChange={(itemValue) => handleChange('gender')(itemValue)}
                                     enabled={edit}
                                 >
-                                    <Picker.Item label="" value="" />
+                                    <Picker.Item color={edit ? 'black' : 'grey'} label="Giới tính" value="" />
                                     <Picker.Item color={edit ? 'black' : 'grey'} label="Nam" value="male" />
                                     <Picker.Item color={edit ? 'black' : 'grey'} label="Nữ" value="female" />
                                     <Picker.Item color={edit ? 'black' : 'grey'} label="Khác" value="orther" />
@@ -309,6 +309,7 @@ const styles = StyleSheet.create({
         width: 200,
         height: 200,
         borderRadius: 100,
+        backgroundColor:"lightgrey"
     },
     editButton: {
         position: 'absolute',

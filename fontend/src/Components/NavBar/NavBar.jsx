@@ -15,7 +15,7 @@ import { CiLogin } from "react-icons/ci";
 import { IoCloseCircle } from "react-icons/io5";
 import TawkToChat from "./Components/TawkToChat";
 // import { GiFlowers } from "react-icons/gi";
-
+import TawkMessengerReact from '@tawk.to/tawk-messenger-react';
 const NavBar = () => {
   const user = useSelector((state) => state.auth.login.currentUser)?.user;
   const [accessToken] = useState(user?.accessToken);
@@ -45,6 +45,32 @@ const NavBar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+  useEffect(() => {
+    if (user?.email) {
+      if (window.Tawk_API) {
+        try {
+          window.Tawk_API.start({
+            showWidget : true
+         });
+        } catch {
+          console.error("Error")
+        }
+        window.Tawk_API.visitor = {
+          name: user.email || "Khách",
+        };
+      }
+    } else {
+      // Xóa đoạn chat hiện tại khi user là null
+      if (window.Tawk_API) {
+        window.Tawk_API.hideWidget(); // Đóng chat hiện tại
+        window.Tawk_API.endChat(); // Đóng chat hiện tại
+        console.log("Tawk chat session ended");
+      }
+    }
+  }, [user]);
+  const onLoad = () => {
+    console.log('onLoad works!');
+  };
 
   return (
     <nav className={`navbar-container ${isScrolled ? 'navbar-scrolled' : ''}`}>
@@ -72,7 +98,7 @@ const NavBar = () => {
       {user ? (
         user?.admin ? (
           <>
-          <div className="navbar-dropdown">
+            <div className="navbar-dropdown">
               <Link to="/admin" className="navbar-home"><FaUser /> Admin <span> {user?.username} </span> </Link>
               {/* <div className="dropdown-menu">
                 <Link to="/user/info">Thông tin cá nhân</Link>
@@ -80,9 +106,14 @@ const NavBar = () => {
               </div> */}
             </div>
             <Link className="navbar-logout" onClick={handleLogOut}> <IoCloseCircle /> Đăng xuất</Link>
-          </> 
+          </>
         ) : (
           <>
+            {user?.email && <TawkMessengerReact
+              propertyId="674b27722480f5b4f5a62a5d"
+              widgetId="1idup45v4"
+              onLoad={onLoad} />
+            }
             <div className="navbar-dropdown">
               <Link to="/user/info" className="navbar-home"><FaUser /> Cá nhân <span> {user.username} </span> </Link>
               <div className="dropdown-menu">
@@ -99,7 +130,6 @@ const NavBar = () => {
           <Link to="/register" className="navbar-register"><FaUserCircle /> Đăng ký</Link>
         </>
       )}
-      <TawkToChat/>
     </nav>
   );
 };

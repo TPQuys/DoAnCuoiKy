@@ -1,20 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 
-const TawkToChat = () => {
+function MyComponent() {
   useEffect(() => {
-    const script = document.createElement("script");
+    const script = document.createElement('script');
+    script.src = 'https://embed.tawk.to/674b27722480f5b4f5a62a5d/1idup45v4'; // Adjust the path if necessary
     script.async = true;
-    script.src = 'https://embed.tawk.to/674b27722480f5b4f5a62a5d/1idup45v4';
-    script.charset = 'UTF-8';
-    script.setAttribute('crossorigin', '*');
     document.body.appendChild(script);
 
-    return () => {
-      document.body.removeChild(script); // Dọn dẹp khi component bị unmount
-    };
+    // Optionally, clean up the script on component unmount
+    return () => document.body.removeChild(script);
   }, []);
 
-  return null; // Không cần render bất kỳ nội dung nào
-};
+  // ... rest of your component's code
+  return null
+}
 
-export default TawkToChat;
+export default MyComponent;

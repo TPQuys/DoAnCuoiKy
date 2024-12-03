@@ -31,7 +31,9 @@
     color: white;
 }
 
-
+.hidden-chat-widget {
+    display: none !important;
+  }
 .navbar-user {
     color: rgb(0, 154, 165);
 }

@@ -91,7 +91,7 @@ const MyForm = () => {
         >
             {({ errors, touched, handleChange, values, setFieldValue, resetForm }) => (
                 <Form>
-                    <Card sx={{margin:3}}>
+                    <Card sx={{margin:3,marginTop:5, marginBottom:15}}>
                         <Grid container spacing={2} alignItems="center" padding={3}>
 
                             <Grid item xs={12} sm={4} alignItems="center">

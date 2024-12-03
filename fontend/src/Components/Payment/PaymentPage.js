@@ -5,6 +5,8 @@ import { useDispatch } from "react-redux";
 import { getBookingById } from "../../redux/actions/bookingRequest"
 import Header from '../Header/Header';
 import { PostZaloApi } from '../../redux/actions/paymentRequest';
+import { toast } from "react-toastify";
+import ReplayIcon from '@mui/icons-material/Replay';
 const PaymentPage = () => {
     const booking = JSON.parse(sessionStorage.getItem("booking"))
     const [event, setEvent] = useState({});
@@ -19,6 +21,18 @@ const PaymentPage = () => {
             setNewBooking(responseBooking?.data)
             setEvent(responseBooking.data?.Event)
             console.log(responseBooking?.data)
+        }
+    }
+
+    const resetLinkPayment = async () => {
+        if (newBooking) {
+            const zaloApi = await PostZaloApi(dispatch, newBooking)
+            if (zaloApi?.data?.order_url) {
+                setNewBooking({ ...newBooking, PaymentLink: zaloApi.data.order_url })
+                setIsDisable(false)
+                toast.success("Tạo mới link thanh toán thành công!");
+
+            }
         }
     }
 
@@ -48,7 +62,7 @@ const PaymentPage = () => {
     const minutes = Math.floor(remainingTime / 60);
     const seconds = remainingTime % 60;
 
-  
+
 
     const handlePayment = async () => {
         setIsDisable(true)
@@ -67,11 +81,11 @@ const PaymentPage = () => {
             let totalMenuPrice = 0
             // Tính toán giá của menu
             const foodTotalPrice = menu?.Food.reduce((total, food) => {
-                return total + (food.UnitPrice );
+                return total + (food.UnitPrice);
             }, 0);
 
             const drinksTotalPrice = menu?.Drinks.reduce((total, drink) => {
-                return total + (drink.UnitPrice );
+                return total + (drink.UnitPrice);
             }, 0);
 
             totalMenuPrice = foodTotalPrice + drinksTotalPrice;
@@ -147,8 +161,8 @@ const PaymentPage = () => {
             return roomPrice
         }
     }
-    const getDecorePrice = (event,decore) => {
-        if(decore){
+    const getDecorePrice = (event, decore) => {
+        if (decore) {
             let total = 0;
             if (decore?.LobbyDecore) {
                 total += decore?.DecorePrice?.LobbyDecorePrice; // Sử dụng += để cộng dồn
@@ -157,18 +171,18 @@ const PaymentPage = () => {
                 total += decore?.DecorePrice?.StageDecorePrice; // Sử dụng += để cộng dồn
             }
             if (decore?.TableDecore) {
-                total += (decore?.DecorePrice?.TableDecorePrice)*event?.TotalTable; // Sử dụng += để cộng dồn
+                total += (decore?.DecorePrice?.TableDecorePrice) * event?.TotalTable; // Sử dụng += để cộng dồn
             }
             return total; // Trả về tổng giá trị
         }
     };
-    const getDecoreType = (decore)=>{
-        if(decore){
-            if(decore?.DecorePrice?.Type==='BASIC'){
+    const getDecoreType = (decore) => {
+        if (decore) {
+            if (decore?.DecorePrice?.Type === 'BASIC') {
                 return "Cơ bản"
-            }else   if(decore?.DecorePrice?.Type==='ADVANCED'){
+            } else if (decore?.DecorePrice?.Type === 'ADVANCED') {
                 return "Nâng cao"
-            } else   if(decore?.DecorePrice?.Type==='PREMIUM'){
+            } else if (decore?.DecorePrice?.Type === 'PREMIUM') {
                 return "Cao cấp"
             }
         }
@@ -230,21 +244,24 @@ const PaymentPage = () => {
                     <div className='payment-menu'>
                         <div className="payment-price">
                             <h3>TỔNG GIÁ</h3>
-                            <h1>{(getMenuPrice(event.Menu) * event.TotalTable + getDecorePrice(event,event.Decore)+ rommPriceByEvent(event, event.RoomEvent?.Price))?.toLocaleString()} VND</h1>
+                            <h1>{(getMenuPrice(event.Menu) * event.TotalTable + getDecorePrice(event, event.Decore) + rommPriceByEvent(event, event.RoomEvent?.Price))?.toLocaleString()} VND</h1>
                         </div>
                     </div>
                 </div>
                 <div className='payment-button-container'>
-                    {newBooking.Payment ? "Đã thanh toán" : remainingTime > 1 ? 
-                        <Button
-                            component="a"
-                            variant="contained"
-                            sx={{ width: "400px", alignSelf: "center", background: "#e5cc5f" }}
-                            onClick={() => handlePayment()}
-                            disabled={isDisable}
-                        >
-                            Thanh toán ({minutes}:{seconds < 10 ? '0' : ''}{seconds})
-                        </Button> : "Lịch đặt đã hết hạn"
+                    {newBooking.Payment ? "Đã thanh toán" : remainingTime > 1 ?
+                        <div>
+                            <Button
+                                component="a"
+                                variant="contained"
+                                sx={{ width: "400px", alignSelf: "center", background: "#e5cc5f" }}
+                                onClick={() => handlePayment()}
+                                disabled={isDisable}
+                            >
+                                Thanh toán ({minutes}:{seconds < 10 ? '0' : ''}{seconds})
+                            </Button>
+                            <Button variant="text" onClick={() => resetLinkPayment()}><ReplayIcon /></Button>
+                        </div> : "Lịch đặt đã hết hạn"
                     }
                 </div>
             </div>

@@ -18,11 +18,14 @@ export const loginUser = async (user, dispatch, router) => {
         if (error.response.data?.message === "Email not confirmed") {
             ToastAndroid.show("Email chưa được xác thực", ToastAndroid.SHORT)
         }
-        if (error.response.data?.message === "Wrong username") {
+        else if (error.response.data?.message === "Wrong username") {
             ToastAndroid.show("Tài khoản không tồn tại", ToastAndroid.SHORT)
         }
-        if (error.response.data?.message === "Wrong password") {
+        else if (error.response.data?.message === "Wrong password") {
             ToastAndroid.show("Mật khẩu không chính xác", ToastAndroid.SHORT)
+        }
+        else{
+            ToastAndroid.show("Email chưa được xác thực", ToastAndroid.SHORT)
         }
         dispatch(loginFailed());
     }

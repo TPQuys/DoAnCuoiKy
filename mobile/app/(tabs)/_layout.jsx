@@ -5,7 +5,8 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllRooms } from '@/redux/actions/roomRequest';
 import { getBookingByUser } from '@/redux/actions/bookingRequest';
-import { getAllMenus } from '@/redux/actions/menuRequest';
+import { getAllDrink, getAllFood, getAllMenus } from '@/redux/actions/menuRequest';
+import { getDecorePrice } from '@/redux/actions/decoreRequest';
 
 export default function TabLayout() {
   const dispatch = useDispatch();
@@ -15,7 +16,11 @@ export default function TabLayout() {
   useEffect(() => {
     getAllRooms(dispatch);
     getAllMenus(dispatch);
+    getAllFood(dispatch);
+    getAllDrink(dispatch);
     getBookingByUser(dispatch, user);
+    getDecorePrice(dispatch);
+    
   }, [dispatch, user]);
 
   return (
@@ -41,6 +46,15 @@ export default function TabLayout() {
           title: 'Đặt phòng',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'book' : 'book-outline'} color={color} />
+          ),
+        }}
+      />
+          <Tabs.Screen
+        name="chat"
+        options={{
+          title: 'Chat',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'chatbubble' : 'chatbubble-outline'} color={color} />
           ),
         }}
       />
