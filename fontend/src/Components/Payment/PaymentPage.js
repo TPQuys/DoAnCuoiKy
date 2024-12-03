@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { getBookingById } from "../../redux/actions/bookingRequest"
 import Header from '../Header/Header';
 import { PostZaloApi } from '../../redux/actions/paymentRequest';
+import { toast } from "react-toastify";
 import ReplayIcon from '@mui/icons-material/Replay';
 const PaymentPage = () => {
     const booking = JSON.parse(sessionStorage.getItem("booking"))
@@ -29,6 +30,8 @@ const PaymentPage = () => {
             if (zaloApi?.data?.order_url) {
                 setNewBooking({ ...newBooking, PaymentLink: zaloApi.data.order_url })
                 setIsDisable(false)
+                toast.success("Tạo mới link thanh toán thành công!");
+
             }
         }
     }
@@ -261,7 +264,6 @@ const PaymentPage = () => {
                         </div> : "Lịch đặt đã hết hạn"
                     }
                 </div>
-                <Button variant="text" onClick={() => resetLinkPayment()}><ReplayIcon /></Button>
             </div>
         </main>
 

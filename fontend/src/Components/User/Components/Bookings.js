@@ -153,7 +153,10 @@ const Bookings = ({ bookings }) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {bookings?.filter(booking => booking != null).map((booking) => (
+                    {bookings
+                    ?.filter(booking => booking != null)
+                    ?.sort((a, b) => new Date(b.BookingTime) - new Date(a.BookingTime))
+                    .map((booking) => (
                         <TableRow key={booking?.BookingID}>
                             <TableCell>{formatDateTime(new Date(booking.BookingTime))}</TableCell>
                             <TableCell>{getEventType(booking.Event?.EventType)}</TableCell>
