@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TableSortLabel } from '@mui/material';
 import { getAllUsers, updateUser, deleteUser } from "../../../../redux/actions/userRequest";
-// import EditUserModal from "./component/EditUserModal";
+import EditUserModal from "./component/EditUserModal";
 import { toast } from "react-toastify";
 
 const UsersManagement = () => {
@@ -56,6 +56,8 @@ const UsersManagement = () => {
                         <TableCell>Email</TableCell>
                         <TableCell>Họ và tên</TableCell>
                         <TableCell>Số điện thoại</TableCell>
+                        <TableCell>Ngày sinh</TableCell>
+                        <TableCell>role</TableCell>
                         <TableCell>
                             <TableSortLabel
                                 active={sortConfig.key === 'createdAt'}
@@ -76,11 +78,13 @@ const UsersManagement = () => {
                             <TableCell>{user.email}</TableCell>
                             <TableCell>{user.fullname || "Không có"}</TableCell>
                             <TableCell>{user.phone || "Không có"}</TableCell>
+                            <TableCell>{new Date(user.dayofbirth).toLocaleDateString() || "Không có"}</TableCell>
+                            <TableCell>{user.role || "Không có"}</TableCell>
                             <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                             <TableCell>
-                                {/* <Button variant="text" onClick={() => handleEdit(user)}>
+                                <Button variant="text" onClick={() => handleEdit(user)}>
                                     Sửa
-                                </Button> */}
+                                </Button>
                                 <Button variant="text" color="error" onClick={() => handleDelete(user.id)}>
                                     Xóa
                                 </Button>
@@ -91,7 +95,7 @@ const UsersManagement = () => {
                 </TableBody>
             </Table>
 
-            {/* {selectedUser && (
+            {selectedUser && (
                 <EditUserModal
                     initialValues={selectedUser}
                     open={isEditOpen}
@@ -102,7 +106,7 @@ const UsersManagement = () => {
                         toast.success("Cập nhật thông tin người dùng thành công!");
                     }}
                 />
-            )} */}
+            )}
         </TableContainer>
     );
 };

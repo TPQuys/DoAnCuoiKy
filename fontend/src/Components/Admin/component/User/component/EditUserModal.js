@@ -113,7 +113,7 @@ const EditUserModal = ({ open, onClose, onSubmit, initialValues }) => {
                                                     },
                                                 }}
                                                 label="Ngày sinh"
-                                                value={field.value}
+                                                value={field?.value}
                                                 onChange={(newValue) => setFieldValue(field.name, newValue)}
                                                 slotProps={{
                                                     textField: {

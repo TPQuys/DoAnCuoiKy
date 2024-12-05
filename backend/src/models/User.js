@@ -1,10 +1,7 @@
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../utils/supabase/connection");
 
-class User extends Model {}
-
-User.init(
-    {
+const User = sequelize.define('User', {
         id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
@@ -19,10 +16,10 @@ User.init(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        admin: {
-            type: DataTypes.BOOLEAN,
+        role: {
+            type: DataTypes.ENUM('ADMIN','MANAGER','HR','ACCOUNTANT','USER'),
             allowNull: false,
-            defaultValue: false,
+            defaultValue: 'USER',
         },
         isVerified: {  
             type: DataTypes.BOOLEAN,
@@ -73,10 +70,6 @@ User.init(
             allowNull: true
         },
     },
-    {
-        sequelize,
-        modelName: "User",
-    }
 );
 
 module.exports = User;

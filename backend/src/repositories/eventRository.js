@@ -12,7 +12,26 @@ const eventRepository = {
         return await Event.findByPk(eventId);
     },
 
-    findByRoomAndTime: async (RoomEventID, EventDate, Time) => {
+
+    findByRoomAndTime: async (RoomEventID, EventDate, Time, From = null, To = null) => {
+        const timeCondition = {
+            [Op.or]: [
+                { Time: 'ALLDAY' },
+                {
+                    Time: Time === 'ALLDAY'
+                        ? { [Op.in]: ['MORNING', 'AFTERNOON', 'CUSTOM'] }
+                        : Time
+                },
+                {
+                    Time: 'CUSTOM',
+                    [Op.and]: [
+                        From ? { From: { [Op.lt]: To } } : {},
+                        To ? { To: { [Op.gt]: From } } : {}
+                    ]
+                }
+            ]
+        };
+
         return await Event.findOne({
             include: [
                 {
@@ -34,25 +53,14 @@ const eventRepository = {
                         '=',
                         Sequelize.fn('DATE', EventDate)
                     ),
+                    timeCondition,
                     {
                         [Op.or]: [
-                            { Time: 'ALLDAY' },
-                            {
-                                Time: Time === 'ALLDAY'
-                                    ? { [Op.in]: ['MORNING', 'AFTERNOON'] }
-                                    : Time
-                            }
-                        ]
-                    },
-                    {
-                        [Op.or]: [
-                            // Kiểm tra nếu thời gian hiện tại đã vượt qua BookingTime + 15 phút
                             Sequelize.where(
                                 Sequelize.literal(`"Booking"."BookingTime" + INTERVAL '15 minutes'`),
                                 '>',
                                 Sequelize.literal('NOW()')
                             ),
-                            // Kiểm tra nếu Payment đã được thanh toán (PaymentID không null)
                             { '$Booking.Payment.PaymentID$': { [Op.ne]: null } }
                         ]
                     }
@@ -60,6 +68,7 @@ const eventRepository = {
             }
         });
     },
+
 
     create: async (eventData) => {
         return await Event.create(eventData);

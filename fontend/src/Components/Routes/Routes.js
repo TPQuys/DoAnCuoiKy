@@ -30,13 +30,14 @@ const AppRoutes = () => {
 
     const previousPath = location.pathname;
     useEffect(() => {
+        console.log(user1)
         getAllRooms(dispatch);
         getAllMenus(dispatch);
         getAllFood(dispatch)
         getAllDrink(dispatch)
         getDecorePrice(dispatch)
         if(user1){
-            if (user1?.user?.admin) {
+            if (user1?.user?.role==="ADMIN") {
                 getAllUsers(dispatch)
             }
         }

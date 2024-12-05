@@ -5,13 +5,13 @@ const upload = require('../utils/supabase/uploadImage');
 const router = require("express").Router();
 
 // Lấy danh sách user
-router.get("/", middlewareController.verifyTokenAdmin, userController.getAllUsers);
+router.get("/", middlewareController.verifyTokenHR, userController.getAllUsers);
 
 // Lấy user theo ID
 router.get("/:id", middlewareController.verifyToken, userController.getUserById);
 
 // Tạo mới user
-router.post("/", middlewareController.verifyTokenAdmin, userController.createUser);
+router.post("/", middlewareController.verifyTokenHR, userController.createUser);
 
 //Gửi email reset password
 router.post("/reset_password/", userController.sendResetPassword);
@@ -23,7 +23,7 @@ router.put("/update_password/", userController.updatePassword);
 router.put("/:id", middlewareController.verifyToken, userController.updateUser);
 
 // Xóa user
-router.delete("/:id", middlewareController.verifyTokenAdmin, userController.deleteUser);
+router.delete("/:id", middlewareController.verifyTokenHR, userController.deleteUser);
 
 router.put('/:id/avatar', upload.single('avatar'), userController.uploadAvatar)
 

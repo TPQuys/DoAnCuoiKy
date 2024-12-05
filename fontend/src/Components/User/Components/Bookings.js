@@ -111,14 +111,11 @@ const Bookings = ({ bookings }) => {
     const handleDelete = async (bookingID) => {
         if (window.confirm("Bạn có chắc chắn muốn xóa booking này?")) {
             await deleteBookingUser(dispatch, bookingID);
+            await getBookingByUser(dispatch)
         }
     };
 
     useEffect(() => {
-        if (bookings.length < 1) {
-            getBookingByUser(dispatch);
-        }
-
         // Cập nhật thời gian còn lại mỗi giây cho từng booking
         const interval = setInterval(() => {
             const newRemainingTimes = {};

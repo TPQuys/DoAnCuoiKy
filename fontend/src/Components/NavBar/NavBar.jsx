@@ -13,8 +13,7 @@ import {
 } from 'react-icons/fa';
 import { CiLogin } from "react-icons/ci";
 import { IoCloseCircle } from "react-icons/io5";
-import TawkToChat from "./Components/TawkToChat";
-// import { GiFlowers } from "react-icons/gi";
+import { GiFlowers } from "react-icons/gi";
 import TawkMessengerReact from '@tawk.to/tawk-messenger-react';
 const NavBar = () => {
   const user = useSelector((state) => state.auth.login.currentUser)?.user;
@@ -79,31 +78,19 @@ const NavBar = () => {
         <Link className="navbar-home"> <FaCalendarAlt /> Thêm </Link>
         <div className="dropdown-menu">
           <Link to="/menu">Menu</Link>
-          {/* <Link to="/event/conference">Hội nghị</Link>
-          <Link to="/event/other">Sự kiện khác</Link> */}
+           {/* <Link to="/discount" className="navbar-home"><FaTag /> Ưu đãi </Link> */}
+      {/* <Link to="/news" className="navbar-home"><FaNewspaper /> Tin tức </Link> */}
+      <Link to="/decore" className="navbar-home"><GiFlowers /> Trang trí </Link>
         </div>
       </div>
-      {/* <div className="navbar-dropdown">
-        <Link to="/food" className="navbar-home"><FaUtensils /> Thực đơn </Link>
-        <div className="dropdown-menu">
-          <Link to="/food/main-course">Món chính</Link>
-          <Link to="/food/side-dish">Món phụ</Link>
-          <Link to="/food/drinks">Đồ uống</Link>
-        </div>
-      </div> */}
-      {/* <Link to="/decore" className="navbar-home"><GiFlowers /> Trang trí </Link> */}
       <Link to="/room" className="navbar-home"><FaTag /> Đặt nhà hàng </Link>
-      {/* <Link to="/discount" className="navbar-home"><FaTag /> Ưu đãi </Link> */}
-      {/* <Link to="/news" className="navbar-home"><FaNewspaper /> Tin tức </Link> */}
+
       {user ? (
-        user?.admin ? (
+        user?.role!=="USER" ? (
           <>
             <div className="navbar-dropdown">
               <Link to="/admin" className="navbar-home"><FaUser /> Admin <span> {user?.username} </span> </Link>
-              {/* <div className="dropdown-menu">
-                <Link to="/user/info">Thông tin cá nhân</Link>
-                <Link to="/payment">Thanh toán</Link>
-              </div> */}
+           
             </div>
             <Link className="navbar-logout" onClick={handleLogOut}> <IoCloseCircle /> Đăng xuất</Link>
           </>
