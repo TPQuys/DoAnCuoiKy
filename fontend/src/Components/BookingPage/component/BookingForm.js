@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -12,6 +12,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { styled } from '@mui/material/styles';
+import MeetingRoomScheduler from './MeetingRoomScheduler';
 
 
 // Tạo một component Paper có nền trong suốt
@@ -33,7 +34,24 @@ const WhiteTextField = styled(({ ...props }) => <Field as={TextField} {...props}
     }
 });
 
+
+
 const EventForm = forwardRef(({ handleSubmit, maxTable }, ref) => {
+    const [selectedSlot, setSelectedSlot] = useState(null);
+
+  const roomSlots = [
+    { start: "08:00", end: "09:00", status: "available" },
+    { start: "09:00", end: "10:00", status: "available" },
+    { start: "10:00", end: "11:00", status: "booked" },
+    { start: "11:00", end: "12:00", status: "available" },
+  ];
+
+  const handleSlotSelect = (slot) => {
+    setSelectedSlot(slot);
+    console.log("Selected Slot:", slot);
+  };
+
+
     const initialValues = {
         EventType: '',
         TotalTable: '',
@@ -59,12 +77,12 @@ const EventForm = forwardRef(({ handleSubmit, maxTable }, ref) => {
                 function (value) {
                     const { TotalTable } = this.parent; // Lấy giá trị từ TotalTable
                     if (!value) return false;
-    
+
                     // Tính số ngày tối thiểu
                     const today = dayjs();
                     const eventDate = dayjs(value);
                     let minDays = 1; // Mặc định tối thiểu là từ ngày mai
-    
+
                     if (TotalTable > 30 && TotalTable <= 50) {
                         minDays = 3;
                     } else if (TotalTable > 50 && TotalTable <= 90) {
@@ -72,14 +90,14 @@ const EventForm = forwardRef(({ handleSubmit, maxTable }, ref) => {
                     } else if (TotalTable > 90) {
                         minDays = 6;
                     }
-    
+
                     return eventDate.isAfter(today.add(minDays, 'day'));
                 }
             ),
         Time: Yup.string().required('Vui lòng chọn thời gian'),
         Note: Yup.string(),
     });
-    
+
 
     return (
         <TransparentPaper>
@@ -169,6 +187,10 @@ const EventForm = forwardRef(({ handleSubmit, maxTable }, ref) => {
                                     helperText={touched.Note && errors.Note}
                                 />
                             </Grid>
+                            <div>
+                            <MeetingRoomScheduler slots={roomSlots} onSlotSelect={handleSlotSelect} />
+                            </div>
+
                         </Grid>
                     </Form>
                 )}

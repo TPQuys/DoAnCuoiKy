@@ -48,9 +48,7 @@ const NavBar = () => {
     if (user?.email) {
       if (window.Tawk_API) {
         try {
-          window.Tawk_API.start({
-            showWidget : true
-         });
+          window.Tawk_API.endChat(); // Đóng chat hiện tại
         } catch {
           console.error("Error")
         }
@@ -62,7 +60,6 @@ const NavBar = () => {
       // Xóa đoạn chat hiện tại khi user là null
       if (window.Tawk_API) {
         window.Tawk_API.hideWidget(); // Đóng chat hiện tại
-        window.Tawk_API.endChat(); // Đóng chat hiện tại
         console.log("Tawk chat session ended");
       }
     }

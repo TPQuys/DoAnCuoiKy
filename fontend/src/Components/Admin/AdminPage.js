@@ -25,10 +25,10 @@ const UserPage = () => {
         setValue(newValue);
     };
     useEffect(() => {
-        if (user.role === "AMDIN" || user.role === "HR") {
+        if (user.role === "ADMIN" || user.role === "HR") {
             getAllUsers(dispatch)
         }
-        if (user.role === "AMDIN" || user.role === "ACCOUNTANT") {
+        if (user.role === "ADMIN" || user.role === "ACCOUNTANT") {
             getAllBooking(dispatch)
         }
     }, [])
@@ -42,10 +42,10 @@ const UserPage = () => {
                         <Box sx={{ borderBottom: 1, borderColor: 'divider', backgroundColor: "#fafaeb" }}>
                             <TabList onChange={handleChange} aria-label="lab API tabs example">
                                 <Tab label="Cá nhân" value="1" />
-                                {user.role === "AMDIN" || user.role === "MANAGER" && <Tab label="Phòng" value="2" />}
-                                {user.role === "AMDIN" || user.role === "ACCOUNTANT" && <Tab label="Lịch sử đặt" value="3" />}
-                                {user.role === "AMDIN" || user.role === "HR" && <Tab label="Người dùng" value="4" />}
-                                {user.role === "AMDIN" || user.role === "ACCOUNTANT" && <Tab label="Biểu đồ" value="5" />}
+                                {(user.role === "ADMIN" || user.role === "MANAGER" )&& <Tab label="Phòng" value="2" />}
+                                {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Lịch sử đặt" value="3" />}
+                                {(user.role === "ADMIN" || user.role === "HR" )&& <Tab label="Người dùng" value="4" />}
+                                {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Biểu đồ" value="5" />}
                             </TabList>
                         </Box>
                         <TabPanel value="1"><UserProfile /></TabPanel>
