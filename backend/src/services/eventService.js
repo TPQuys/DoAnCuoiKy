@@ -7,6 +7,11 @@ const eventService = {
 
     createEvent: async (eventData) => {
         const { RoomEventID, EventDate, Time, From, To } = eventData;
+        if(Time==="CUSTOM"){
+            if(From===null){
+                throw new Error("Hãy chọn giờ tổ chức")
+            }
+        }
 
         // Tìm sự kiện trùng RoomEventID, EventDate và Time
         const existingEvent = await eventRepository.findByRoomAndTime(RoomEventID, EventDate, Time, From, To);
@@ -21,6 +26,7 @@ const eventService = {
                 throw new Error("Phòng này đã được đặt cả ngày.");
             }
         }
+
 
         // Nếu không có sự kiện trùng, tiếp tục tạo mới sự kiện
         const newEvent = await eventRepository.create(eventData);

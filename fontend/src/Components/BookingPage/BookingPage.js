@@ -54,13 +54,6 @@ const HomePage = () => {
 
     const handleSubmit = (values) => {
     }
-    const handleChangeCheckbox = (event) => {
-        const { name, checked } = event.target;
-        setDecore({
-            ...Decore,
-            [name]: checked,
-        });
-    };
     const handleSubmitHomePage = async () => {
         setIsDisabled(true);
         if (formikRef.current) {
