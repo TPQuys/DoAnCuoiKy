@@ -13,7 +13,7 @@ const eventRepository = {
     },
 
 
-    findByRoomAndTime: async (RoomEventID, EventDate, Time, From = null, To = null) => {
+    findByRoomAndTime: async (RoomEventID, EventDate, Time, From, To) => {
         const timeCondition = {
             [Op.or]: [
                 { Time: 'ALLDAY' },
@@ -54,6 +54,45 @@ const eventRepository = {
                         Sequelize.fn('DATE', EventDate)
                     ),
                     timeCondition,
+                    {
+                        [Op.or]: [
+                            Sequelize.where(
+                                Sequelize.literal(`"Booking"."BookingTime" + INTERVAL '15 minutes'`),
+                                '>',
+                                Sequelize.literal('NOW()')
+                            ),
+                            { '$Booking.Payment.PaymentID$': { [Op.ne]: null } }
+                        ]
+                    }
+                ]
+            }
+        });
+    },
+
+    findByRoom: async (RoomEventID, EventDate) => {
+
+        return await Event.findAll({
+            include: [
+                {
+                    model: Booking,
+                    attributes: ["BookingTime"],
+                    include: [
+                        {
+                            model: Payment,
+                            attributes: ["PaymentID"]
+                        }
+                    ]
+                }
+            ],
+            attributes:['Time',"From","To"],
+            where: {
+                RoomEventID,
+                [Op.and]: [
+                    Sequelize.where(
+                        Sequelize.fn('DATE', Sequelize.col('EventDate')),
+                        '=',
+                        Sequelize.fn('DATE', EventDate)
+                    ),
                     {
                         [Op.or]: [
                             Sequelize.where(

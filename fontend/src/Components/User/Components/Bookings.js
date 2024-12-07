@@ -73,6 +73,13 @@ const getTime = (time) => {
     }
 }
 
+const getRangeTime = (from,to)=>{
+    const fromTime = new Date(from).toLocaleTimeString()
+    const toTime = new Date(to).toLocaleTimeString()
+
+    return fromTime+"-"+ toTime
+}
+
 const getDecore = (Decore) => {
     const lobby = Decore?.LobbyDecore ? "sảnh" : "";
     const stage = Decore?.StageDecore ? "sân khấu" : "";
@@ -159,10 +166,14 @@ const Bookings = ({ bookings }) => {
                             <TableCell>{getEventType(booking.Event?.EventType)}</TableCell>
                             <TableCell>{booking.Event?.TotalTable}</TableCell>
                             <TableCell>{formatDate(new Date(booking.Event?.EventDate))}</TableCell>
-                            <TableCell>{getTime(booking.Event?.Time)}</TableCell>
+                            <TableCell>{
+                            booking.Event.Time!=="CUSTOM"?
+                            getTime(booking.Event?.Time)
+                            :getRangeTime(booking.Event?.From,booking.Event?.To)
+                            }</TableCell>
                             <TableCell>{booking.Event?.Note || "Không có"}</TableCell>
                             <TableCell>{booking.Event?.RoomEvent?.RoomName}</TableCell>
-                        <TableCell>{getDecore(booking.Event?.Decore)} {getDecoreType(booking.Event?.Decore)}</TableCell>
+                        <TableCell>{getDecore(booking.Event?.Decore)} {getDecore(booking.Event?.Decore)!==""&&getDecoreType(booking.Event?.Decore)}</TableCell>
                             <TableCell>{booking.Event?.Menu?.MenuID && <Button sx={{ padding: 0, margin: 0 }} variant="text" onClick={() => openMenu(booking.Event?.Menu)}>Chi tiết Menu</Button>}</TableCell>
                             <TableCell>
                                 {booking.Payment ?

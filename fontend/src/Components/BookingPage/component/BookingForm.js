@@ -1,9 +1,10 @@
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import {
-    MenuItem,
+    Button,
     Grid,
+    MenuItem,
     Paper,
     TextField,
 } from '@mui/material';
@@ -12,8 +13,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { styled } from '@mui/material/styles';
-import MeetingRoomScheduler from './MeetingRoomScheduler';
-
+import { getRoomBooked } from '../../../redux/actions/eventRequest';
+import { useDispatch } from 'react-redux';
 
 // Tạo một component Paper có nền trong suốt
 const TransparentPaper = styled(Paper)({
@@ -34,29 +35,151 @@ const WhiteTextField = styled(({ ...props }) => <Field as={TextField} {...props}
     }
 });
 
+const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEventID }, ref) => {
+    const [selectedTimes, setSelectedTimes] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [bookedSlots, setBookedSlots] = useState([]);
+    useEffect(() => {
+        mergeTimeSlots(selectedTimes);
+    }, [selectedTimes, selectedDate]);
+
+    useEffect(() => {
+        const fetchRoomBooked = async () => {
+            if (selectedDate) {
+                try {
+                    const res = await getRoomBooked(RoomEventID, selectedDate);
+                    console.log(res)
+                    setBookedSlots(res)
+                } catch (error) {
+                    console.error("Error fetching room booked data:", error);
+                }
+            }
+        };
+
+        fetchRoomBooked();
+    }, [selectedDate]);
+
+    const isSlotDisabled = (slotStart, slotEnd, bookedSlots) => {
+        const selectDate = new Date(selectedDate);
+
+        const timezoneOffset = 7 * 60;
+        const selectDateInICT = new Date(selectDate.getTime() + timezoneOffset * 60000);
+
+        const slotStartTime = new Date(selectDateInICT.toISOString().split('T')[0] + `T${slotStart}:00.000+07:00`);
+        const slotEndTime = new Date(selectDateInICT.toISOString().split('T')[0] + `T${slotEnd}:00.000+07:00`);
+
+        return bookedSlots.some(({ From, To }) => {
+            const fromTime = new Date(From);
+            const toTime = new Date(To);
+            return slotStartTime >= fromTime && slotEndTime <= toTime;
+        });
+    };
+
+    const handleChangeDate = (setFieldValue, name, value) => {
+        setSelectedDate(value);
+        setFieldValue(name, value);
+        if (maxTable >= 5) {
+            setFieldValue('Time', '');
+        }else{
+            setFieldValue('Time', 'CUSTOM');
+            setFieldValue('TotalTable', 1);
+        }
+        setSelectedTimes([]);
+    }
+    const mergeTimeSlots = (slots) => {
+        const first = slots[0];
+        const last = slots[slots.length - 1];
+
+        const newDate = selectedDate // Tạo một đối tượng Date với thời gian hiện tại
+
+        // Lấy giờ từ khoảng thời gian đầu và cuối
+        const fromTime = first?.split(':')[0];  // Tách giờ từ phần đầu tiên
+        const toTime = last?.split(' - ')[1]?.split(':')[0];  // Tách giờ từ phần cuối cùng
+
+        // Thiết lập giờ cho đối tượng Date mới, không thay đổi đối tượng ban đầu
+        const newDateFrom = new Date(newDate);  // Tạo một bản sao của newDate
+        newDateFrom.setHours(parseInt(fromTime));
+        newDateFrom.setMinutes(0)
+        newDateFrom.setSeconds(0)
+        setFrom(newDateFrom)
+
+        const newDateTo = new Date(newDate);  // Tạo bản sao khác để thay đổi giờ
+        newDateTo.setHours(parseInt(toTime));
+        newDateTo.setMinutes(0)
+        newDateTo.setSeconds(0)
+        setTo(newDateTo)
+    };
 
 
-const EventForm = forwardRef(({ handleSubmit, maxTable }, ref) => {
-    const [selectedSlot, setSelectedSlot] = useState(null);
+    const generateTimeSlots = (startHour, endHour, interval) => {
+        const slots = [];
+        for (let hour = startHour; hour < endHour; hour++) {
+            const start = `${String(hour).padStart(2, "0")}:00`;
+            const end = `${String(hour + interval).padStart(2, "0")}:00`;
+            slots.push({ start, end });
+        }
+        return slots;
+    };
 
-  const roomSlots = [
-    { start: "08:00", end: "09:00", status: "available" },
-    { start: "09:00", end: "10:00", status: "available" },
-    { start: "10:00", end: "11:00", status: "booked" },
-    { start: "11:00", end: "12:00", status: "available" },
-  ];
+    const bookedTimes = bookedSlots.map(item => item.Time);
 
-  const handleSlotSelect = (slot) => {
-    setSelectedSlot(slot);
-    console.log("Selected Slot:", slot);
-  };
+    const disableAllDay = bookedTimes.includes('MORNING') || bookedTimes.includes('AFTERNOON');
 
+
+    const timeSlots = generateTimeSlots(8, 23, 1); // Khoảng 1 giờ, từ 8h sáng đến 11h tối
+
+    const toggleTimeSelection = (time) => {
+        const [start] = time.split(" - ");
+        const selectedStartTimes = selectedTimes.map((t) => t.split(" - ")[0]);
+
+        // Kiểm tra xem thời gian mới có liền kề với các thời gian đã chọn không
+        const isAdjacent = selectedStartTimes.some((selectedStart) =>
+            dayjs(selectedStart, "HH:mm").add(1, "hour").format("HH:mm") === start ||
+            dayjs(selectedStart, "HH:mm").subtract(1, "hour").format("HH:mm") === start
+        );
+
+        // Nếu thời gian đã được chọn, bỏ chọn và loại bỏ các button phía sau
+        if (selectedTimes.includes(time)) {
+            const index = selectedTimes.indexOf(time);
+            const newSelectedTimes = selectedTimes.slice(0, index);
+            setSelectedTimes(newSelectedTimes);
+        } else {
+            // Nếu chưa được chọn, kiểm tra nếu thời gian này không liền kề với thời gian đã chọn
+            if (selectedTimes.length === 0 || isAdjacent) {
+                setSelectedTimes((prevSelectedTimes) => {
+                    // Thêm vào nếu không có thời gian nào được chọn hoặc là thời gian liền kề
+                    return [...prevSelectedTimes, time].sort();
+                });
+            } else {
+                // Nếu chọn 2 button không liền kề, chọn tất cả button nằm giữa
+                const [firstStart] = selectedTimes[0].split(" - ");
+                const selectedStart = dayjs(firstStart, "HH:mm");
+                const newStart = dayjs(start, "HH:mm");
+                const rangeStart = selectedStart.isBefore(newStart) ? selectedStart : newStart;
+                const rangeEnd = selectedStart.isBefore(newStart) ? newStart : selectedStart;
+                const newSelectedTimes = [];
+
+                // Chọn tất cả các thời gian nằm giữa
+                timeSlots.forEach((slot) => {
+                    const slotStart = dayjs(slot.start, "HH:mm");
+                    if (slotStart.isBetween(rangeStart, rangeEnd, null, "[]")) {
+                        newSelectedTimes.push(`${slot.start} - ${slot.end}`);
+                    }
+                });
+
+                setSelectedTimes((prevSelectedTimes) => {
+                    // Thêm các thời gian mới vào và sắp xếp lại
+                    return [...prevSelectedTimes, ...newSelectedTimes].sort();
+                });
+            }
+        }
+    };
 
     const initialValues = {
         EventType: '',
-        TotalTable: '',
+        TotalTable: (maxTable <= 5) ? 1 : '',
         EventDate: null,
-        Time: '',
+        Time: maxTable <= 5 ? "CUSTOM" : '',
         Note: '',
     };
 
@@ -99,12 +222,15 @@ const EventForm = forwardRef(({ handleSubmit, maxTable }, ref) => {
     });
 
 
+
     return (
         <TransparentPaper>
             <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
-                onSubmit={handleSubmit}
+                onSubmit={(values) => {
+                    handleSubmit({ ...values, Time: selectedTimes });
+                }}
                 innerRef={ref} // Nhận ref từ HomePage
             >
                 {({ errors, touched, setFieldValue }) => (
@@ -119,23 +245,26 @@ const EventForm = forwardRef(({ handleSubmit, maxTable }, ref) => {
                                     error={touched.EventType && Boolean(errors.EventType)}
                                     helperText={touched.EventType && errors.EventType}
                                 >
-                                    <MenuItem value="WEDDING">Đám Cưới</MenuItem>
+                                     {maxTable >= 5 && <MenuItem value="WEDDING">Đám Cưới</MenuItem>}
                                     <MenuItem value="CONFERENCE">Hội Nghị</MenuItem>
                                     <MenuItem value="BIRTHDAY">Sinh nhật</MenuItem>
-                                    <MenuItem value="ORTHER">Khác</MenuItem>
+                                    <MenuItem value="OTHER">Khác</MenuItem>
                                 </WhiteTextField>
                             </Grid>
+                            {maxTable > 5 &&
+                                <Grid item xs={12} sm={6}>
+                                    <WhiteTextField
+                                        name="TotalTable"
+                                        label="Tổng Số Bàn"
+                                        type="number"
+                                        fullWidth
+                                        error={touched.TotalTable && Boolean(errors.TotalTable)}
+                                        helperText={touched.TotalTable && errors.TotalTable}
+                                    />
+                                </Grid>
+                            }
                             <Grid item xs={12} sm={6}>
-                                <WhiteTextField
-                                    name="TotalTable"
-                                    label="Tổng Số Bàn"
-                                    type="number"
-                                    fullWidth
-                                    error={touched.TotalTable && Boolean(errors.TotalTable)}
-                                    helperText={touched.TotalTable && errors.TotalTable}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
+
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <Field name="EventDate">
                                         {({ field }) => (
@@ -155,27 +284,48 @@ const EventForm = forwardRef(({ handleSubmit, maxTable }, ref) => {
                                                         helperText: touched.EventDate && errors.EventDate,
                                                     },
                                                 }}
-                                                onChange={(value) => setFieldValue(field.name, value)}
+                                                onChange={(value) => handleChangeDate(setFieldValue, field.name, value)}
                                                 format='DD/MM/YYYY'
                                             />
                                         )}
                                     </Field>
                                 </LocalizationProvider>
                             </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <WhiteTextField
-                                    name="Time"
-                                    select
-                                    label="Thời gian"
-                                    fullWidth
-                                    error={touched.Time && Boolean(errors.Time)}
-                                    helperText={touched.Time && errors.Time}
-                                >
-                                    <MenuItem value="MORNING">Buổi sáng</MenuItem>
-                                    <MenuItem value="AFTERNOON">Buổi chiều</MenuItem>
-                                    <MenuItem value="ALLDAY">Cả ngày</MenuItem>
-                                </WhiteTextField>
-                            </Grid>
+                            {maxTable > 5 &&
+                                <Grid item xs={12} sm={6}>
+                                    <WhiteTextField
+                                        name="Time"
+                                        select
+                                        label="Thời gian"
+                                        fullWidth
+                                        disabled={selectedDate === null}
+                                        error={touched.Time && Boolean(errors.Time)}
+                                        helperText={touched.Time && errors.Time}
+                                    >
+                                        <MenuItem value="MORNING" disabled={bookedTimes?.includes('MORNING')}>Buổi sáng</MenuItem>
+                                        <MenuItem value="AFTERNOON" disabled={bookedTimes?.includes('AFTERNOON')}>Buổi chiều</MenuItem>
+                                        <MenuItem value="ALLDAY" disabled={disableAllDay}>Cả ngày</MenuItem>
+                                        {maxTable < 5 && <MenuItem value="CUSTOM">Tùy chỉnh</MenuItem>}
+                                    </WhiteTextField>
+                                </Grid>
+                            }
+                            {(selectedDate && maxTable < 5) &&
+                                <Grid item xs={12}>
+                                    <Grid container spacing={1}>
+                                        {timeSlots.map((slot, index) => (
+                                            <Grid item key={index}>
+                                                <Button
+                                                    variant={selectedTimes.includes(`${slot.start} - ${slot.end}`) ? "contained" : "outlined"}
+                                                    onClick={() => toggleTimeSelection(`${slot.start} - ${slot.end}`)}
+                                                    disabled={isSlotDisabled(slot.start, slot.end, bookedSlots)} // Disable nếu slot bị trùng
+                                                >
+                                                    {`${slot.start} - ${slot.end}`}
+                                                </Button>
+                                            </Grid>
+                                        ))}
+                                    </Grid>
+                                </Grid>
+                            }
                             <Grid item xs={12}>
                                 <WhiteTextField
                                     name="Note"
@@ -187,10 +337,6 @@ const EventForm = forwardRef(({ handleSubmit, maxTable }, ref) => {
                                     helperText={touched.Note && errors.Note}
                                 />
                             </Grid>
-                            <div>
-                            <MeetingRoomScheduler slots={roomSlots} onSlotSelect={handleSlotSelect} />
-                            </div>
-
                         </Grid>
                     </Form>
                 )}

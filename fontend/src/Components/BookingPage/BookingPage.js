@@ -25,6 +25,8 @@ const HomePage = () => {
         TableDecore: true,
     });
     const [openModal, setOpenModal] = useState(false);
+    const [from, setFrom] = useState(null);
+    const [to, setTo] = useState(null);
 
     const handleOpenModal = () => setOpenModal(true);
     const handleCloseModal = () => setOpenModal(false);
@@ -97,9 +99,11 @@ const HomePage = () => {
                     MenuID: selected,
                     DecoreID: decore.DecoreID,
                     EventType: formValues.EventType,
-                    TotalTable: formValues.TotalTable,
+                    TotalTable: room.MaxTable>5?formValues.TotalTable:1,
                     EventDate: formValues.EventDate,
-                    Time: formValues.Time,
+                    Time: room.MaxTable>5?formValues.Time:"CUSTOM",
+                    From:from,
+                    To:to,
                     TotalPrice: totalMenuPrice,
                     Note: formValues.Note
                     // Thêm thông tin giá tổng
@@ -171,8 +175,7 @@ const HomePage = () => {
                 </div>
                 <div className="booking-room-name">Nhập Thông Tin Sự Kiện</div>
                 <div className="booking-center">
-                    <Form ref={formikRef} handleSubmit={handleSubmit} maxTable={room?.MaxTable} />
-
+                    <Form RoomEventID={roomId} setFrom={setFrom} setTo={setTo} ref={formikRef} handleSubmit={handleSubmit} maxTable={room?.MaxTable} />
                 </div>
                 {room?.MaxTable > 5 &&
 

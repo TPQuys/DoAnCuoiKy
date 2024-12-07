@@ -31,7 +31,6 @@ const PaymentPage = () => {
                 setNewBooking({ ...newBooking, PaymentLink: zaloApi.data.order_url })
                 setIsDisable(false)
                 toast.success("Tạo mới link thanh toán thành công!");
-
             }
         }
     }
@@ -135,6 +134,13 @@ const PaymentPage = () => {
         }
     }
 
+    const getRangeTime = (from,to)=>{
+        const fromTime = new Date(from).toLocaleTimeString()
+        const toTime = new Date(to).toLocaleTimeString()
+
+        return fromTime+"-"+ toTime
+    }
+
     const getDecore = (Decore) => {
         const lobby = Decore?.LobbyDecore ? "sảnh" : "";
         const stage = Decore?.StageDecore ? "sân khấu" : "";
@@ -156,6 +162,11 @@ const PaymentPage = () => {
     const rommPriceByEvent = (event, roomPrice) => {
         if (event?.Time === "ALLDAY") {
             return roomPrice * 2
+        } else if (event?.Time === "CUSTOM") {
+            const from = new Date(event.From)
+            const to = new Date(event.To)
+            const diff = (to - from) / (1000 * 60 * 60)
+            return roomPrice * diff
         }
         else {
             return roomPrice
@@ -204,43 +215,51 @@ const PaymentPage = () => {
                         <div className="payment-content">
                             <p>Ngày tổ chức: {formatDate(new Date(event?.EventDate))}</p>
                             <p>Loại sự kiện: {getEventType(event?.EventType)}</p>
-                            <p>Thời gian: {getTime(event?.Time)}</p>
+                            {getDecore(event?.Decore).length > 0 ?
+                                <p>Thời gian: {getTime(event?.Time)}</p>
+                                :
+                                <p>Thời gian: {getRangeTime(event?.From,event?.To)}</p>
+                            }
                             <p>Tống số bàn: {event?.TotalTable}</p>
-                            <p>Trang trí: {getDecore(event?.Decore)} ({getDecoreType(event?.Decore)})</p>
+                            {getDecore(event?.Decore).length > 0 &&
+                                <p>Trang trí: {getDecore(event?.Decore)} ({getDecoreType(event?.Decore)})</p>
+                            }
                             <p>Ghi chú: {event?.Note}</p>
                         </div>
                     </div>
 
                 </div>
                 <div className='flex'>
-                    <div className='payment-menu'>
-                        <h3 className=''>Menu</h3>
-                        <h6>Tổng giá: {getMenuPrice(event.Menu)?.toLocaleString()} VND/Bàn</h6>
-                        <div>
-                            <div className=''>
-                                <strong>Món ăn</strong>
-                                {/* <strong>Số lượng</strong> */}
-                            </div>
-                            {event.Menu?.Food.map((food, idx) => (
-                                <div key={idx} className='menu-item'>
-                                    <span >{food.Name}</span>
-                                    {/* <span >{food.MenuFoods.Quantity}</span> */}
+                    {event?.Menu &&
+                        <div className='payment-menu'>
+                            <h3 className=''>Menu</h3>
+                            <h6>Tổng giá: {getMenuPrice(event.Menu)?.toLocaleString()} VND/Bàn</h6>
+                            <div>
+                                <div className=''>
+                                    <strong>Món ăn</strong>
+                                    {/* <strong>Số lượng</strong> */}
                                 </div>
-                            ))}
-                        </div>
-                        <div>
-                            <div className=''>
-                                <strong>Đồ uống</strong>
-                                {/* <strong>Số lượng</strong> */}
+                                {event.Menu?.Food.map((food, idx) => (
+                                    <div key={idx} className='menu-item'>
+                                        <span >{food.Name}</span>
+                                        {/* <span >{food.MenuFoods.Quantity}</span> */}
+                                    </div>
+                                ))}
                             </div>
-                            {event.Menu?.Drinks.map((drink, idx) => (
-                                <div key={idx} className='menu-item'>
-                                    <span >{drink.Name}</span>
-                                    {/* <span >{drink.MenuDrinks.Quantity}</span> */}
+                            <div>
+                                <div className=''>
+                                    <strong>Đồ uống</strong>
+                                    {/* <strong>Số lượng</strong> */}
                                 </div>
-                            ))}
+                                {event.Menu?.Drinks.map((drink, idx) => (
+                                    <div key={idx} className='menu-item'>
+                                        <span >{drink.Name}</span>
+                                        {/* <span >{drink.MenuDrinks.Quantity}</span> */}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    }
                     <div className='payment-menu'>
                         <div className="payment-price">
                             <h3>TỔNG GIÁ</h3>
@@ -248,6 +267,7 @@ const PaymentPage = () => {
                         </div>
                     </div>
                 </div>
+
                 <div className='payment-button-container'>
                     {newBooking.Payment ? "Đã thanh toán" : remainingTime > 1 ?
                         <div>

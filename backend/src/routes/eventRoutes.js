@@ -6,7 +6,7 @@ const router = express.Router();
 // Route để tạo sự kiện mới
 router.post('/', middlewareController.verifyToken, eventController.createEvent);
 
-router.get('/room_by_time', middlewareController.verifyToken, eventController.createEvent);
+router.post('/room_booked', middlewareController.verifyToken, eventController.getRoomBooked);
 
 // Route để cập nhật sự kiện
 router.put('/:id', middlewareController.verifyToken, eventController.updateEvent);

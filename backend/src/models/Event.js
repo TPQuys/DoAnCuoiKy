@@ -29,11 +29,11 @@ const Event = sequelize.define('Event', {
         allowNull: false
     },
     From:{
-        type: DataTypes.TIME,
+        type: DataTypes.DATE,
         allowNull: true
     },
     To:{
-        type: DataTypes.TIME,
+        type: DataTypes.DATE,
         allowNull: true
     },
     Note: {
