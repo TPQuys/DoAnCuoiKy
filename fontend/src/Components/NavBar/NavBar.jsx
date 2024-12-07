@@ -86,7 +86,7 @@ const NavBar = () => {
         user?.role!=="USER" ? (
           <>
             <div className="navbar-dropdown">
-              <Link to="/admin" className="navbar-home"><FaUser /> Admin <span> {user?.username} </span> </Link>
+              <Link to="/admin" className="navbar-home"><FaUser /> {user?.role} <span> {user?.username} </span> </Link>
            
             </div>
             <Link className="navbar-logout" onClick={handleLogOut}> <IoCloseCircle /> Đăng xuất</Link>

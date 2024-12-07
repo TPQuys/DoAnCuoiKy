@@ -11,6 +11,6 @@ const sequelize = new Sequelize(process.env.PGDATABASE, process.env.PGUSER, proc
 
 });
 
-sequelize.sync({ alter: true });
+// sequelize.sync({ force: true });
 
 module.exports = sequelize;
