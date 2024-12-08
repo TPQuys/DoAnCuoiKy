@@ -38,6 +38,13 @@ const getEventType = (type) => {
     }
 };
 
+const getRangeTime = (from, to) => {
+    const fromTime = new Date(from).toLocaleTimeString()
+    const toTime = new Date(to).toLocaleTimeString()
+
+    return fromTime + "-" + toTime
+}
+
 const getTime = (time) => {
     switch (time) {
         case "MORNING": return "Buổi sáng";
@@ -63,15 +70,15 @@ const getDecore = (Decore) => {
     return decoreArray.join(", ");
 };
 
-const getDecoreType = (decore)=>{
-    if(decore){
-        if(decore?.DecorePrice?.Type==='BASIC'){
+const getDecoreType = (decore) => {
+    if (decore) {
+        if (decore?.DecorePrice?.Type === 'BASIC') {
             return "(Cơ bản)"
-        }else   if(decore?.DecorePrice?.Type==='ADVANCED'){
+        } else if (decore?.DecorePrice?.Type === 'ADVANCED') {
             return "(Nâng cao)"
-        } else   if(decore?.DecorePrice?.Type==='PREMIUM'){
+        } else if (decore?.DecorePrice?.Type === 'PREMIUM') {
             return "(Cao cấp)"
-        } 
+        }
     }
 }
 
@@ -99,16 +106,16 @@ const Bookings = ({ bookings, rooms }) => {
 
     const sortedBookings = React.useMemo(() => {
         let filteredBookings = bookings;
-    
+
         if (selectedRoom) {
             filteredBookings = filteredBookings.filter(booking => booking.Event.RoomEvent?.RoomName === selectedRoom);
         }
-    
+
         if (sortConfig.key) {
             const sorted = [...filteredBookings].sort((a, b) => {
                 let aValue = a[sortConfig.key];
                 let bValue = b[sortConfig.key];
-    
+
                 // Kiểm tra nếu đang sắp xếp theo 'EventDate' hoặc 'BookingTime'
                 if (sortConfig.key === 'EventDate') {
                     aValue = new Date(a.Event.EventDate);
@@ -117,14 +124,14 @@ const Bookings = ({ bookings, rooms }) => {
                     aValue = new Date(a.BookingTime);  // Sử dụng 'BookingTime' ở đây
                     bValue = new Date(b.BookingTime);
                 }
-    
+
                 return (aValue > bValue ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
             });
             return sorted;
         }
         return filteredBookings;
     }, [bookings, sortConfig, selectedRoom]);
-    
+
 
     const requestSort = (key) => {
         let direction = 'asc';
@@ -210,7 +217,11 @@ const Bookings = ({ bookings, rooms }) => {
                             <TableCell>{getEventType(booking.Event?.EventType)}</TableCell>
                             <TableCell>{booking.Event?.TotalTable}</TableCell>
                             <TableCell>{formatDate(new Date(booking.Event?.EventDate))}</TableCell>
-                            <TableCell>{getTime(booking.Event?.Time)}</TableCell>
+                            <TableCell>{
+                                booking.Event.Time !== "CUSTOM" ?
+                                    getTime(booking.Event?.Time)
+                                    : getRangeTime(booking.Event?.From, booking.Event?.To)
+                            }</TableCell>
                             <TableCell>{booking.Event?.Note || "Không có"}</TableCell>
                             <TableCell>{booking.Event?.RoomEvent?.RoomName}</TableCell>
                             <TableCell>{getDecore(booking.Event?.Decore)} {getDecoreType(booking.Event?.Decore)}</TableCell>
