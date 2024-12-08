@@ -6,6 +6,14 @@ import Bookings from "./Components/Bookings";
 
 
 const UserPage = () => {
+    const dispatch = useDispatch()
+    useEffect(()=>{
+        const getBooking = async ()=>{
+            await getBookingByUser(dispatch)
+        }
+
+        getBooking();
+    },[])
     const bookings = useSelector((state) => state.bookings?.bookings)
 
     return (

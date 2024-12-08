@@ -6,6 +6,7 @@ const MenuFoods = sequelize.define('MenuFoods', {
     MenuID: {
         type: DataTypes.UUID,
         allowNull: false,
+        primaryKey: true, // Đặt là khóa chính
         references: {
             model: 'Menus',
             key: 'MenuID'
@@ -14,6 +15,7 @@ const MenuFoods = sequelize.define('MenuFoods', {
     FoodID: {
         type: DataTypes.UUID,
         allowNull: false,
+        primaryKey: true, // Đặt là khóa chính
         references: {
             model: 'Food',
             key: 'FoodID'
@@ -21,7 +23,7 @@ const MenuFoods = sequelize.define('MenuFoods', {
     },
     Quantity: {
         type: DataTypes.INTEGER,
-        defaultValue:1,
+        defaultValue: 1,
         allowNull: false
     }
 }, {

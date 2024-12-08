@@ -71,6 +71,10 @@ const PaymentPage = () => {
             if (newBooking.PaymentLink) {
                 window.location.href = newBooking.PaymentLink;
                 setIsDisable(false)
+            }else {
+                const zaloApi = await PostZaloApi(dispatch, newBooking)
+                window.location.href =  zaloApi?.data?.order_url
+               
             }
         }
     }

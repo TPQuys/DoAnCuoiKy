@@ -15,6 +15,7 @@ import { CiLogin } from "react-icons/ci";
 import { IoCloseCircle } from "react-icons/io5";
 import { GiFlowers } from "react-icons/gi";
 import TawkMessengerReact from '@tawk.to/tawk-messenger-react';
+import { Avatar } from "@mui/material";
 const NavBar = () => {
   const user = useSelector((state) => state.auth.login.currentUser)?.user;
   const [accessToken] = useState(user?.accessToken);
@@ -86,7 +87,9 @@ const NavBar = () => {
         user?.role!=="USER" ? (
           <>
             <div className="navbar-dropdown">
-              <Link to="/admin" className="navbar-home"><FaUser /> {user?.role} <span> {user?.username} </span> </Link>
+              <Link to="/admin" className="navbar-home">
+              <Avatar sx={{ width: "25px", height: "25px", margin: 1, display:'inline-flex'}} src={user?.avatar} />
+               {user?.role} <span> {user?.username} </span> </Link>
            
             </div>
             <Link className="navbar-logout" onClick={handleLogOut}> <IoCloseCircle /> Đăng xuất</Link>
@@ -99,7 +102,9 @@ const NavBar = () => {
               onLoad={onLoad} />
             }
             <div className="navbar-dropdown">
-              <Link to="/user/info" className="navbar-home"><FaUser /> Cá nhân <span> {user.username} </span> </Link>
+              <Link to="/user/info" className="navbar-home">
+              <Avatar sx={{ width: "25px", height: "25px", margin: 1, display:'inline-flex'}} src={user?.avatar} />
+              Cá nhân <span> {user.username} </span> </Link>
               <div className="dropdown-menu">
                 <Link to="/user/info">Thông tin cá nhân</Link>
                 <Link to="/user">Lịch sử</Link>
