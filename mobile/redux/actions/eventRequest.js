@@ -24,6 +24,15 @@ export const addEvent = async (dispatch, eventData,user) => {
     }
 };
 
+export const getRoomBooked = async ( RoomEventID, EventDate, user) => {
+    let axiosJWT = createAxios(user);
+    try {
+        const res = await axiosJWT.post("/v1/event/room_booked", {RoomEventID, EventDate});
+        return res.data
+    } catch (error) {
+        console.error("lấy phòng đã đặt trước thất bại thất bại:", error.response.data.message);
+    }
+};
 // // Hàm updateEvent
 // export const updateEvent = async (dispatch, eventId, eventData) => {
 //     const user = JSON.parse(sessionStorage.getItem("user"));

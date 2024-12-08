@@ -7,6 +7,7 @@ export const loginUser = async (user, dispatch, router) => {
     dispatch(loginStart());
     try {
         const res = await axios.post("/v1/auth/login", user);
+        console.log(res)
         const avatarUrl = `${res.data.user.avatar}?t=${new Date().getTime()}`;
         const newUser = { ...res.data.user, avatar: avatarUrl }
         dispatch(loginSuccess({ ...res.data, user: newUser }));
@@ -15,6 +16,7 @@ export const loginUser = async (user, dispatch, router) => {
         return true
     } catch (error) {
         console.log(error.response.data?.message)
+        
         if (error.response.data?.message === "Email not confirmed") {
             ToastAndroid.show("Email chưa được xác thực", ToastAndroid.SHORT)
         }
@@ -28,6 +30,7 @@ export const loginUser = async (user, dispatch, router) => {
             ToastAndroid.show("Email chưa được xác thực", ToastAndroid.SHORT)
         }
         dispatch(loginFailed());
+        throw new Error(error.response.data?.message)
     }
 };
 

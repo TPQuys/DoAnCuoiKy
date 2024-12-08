@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, Text, ImageBackground, TouchableOpacity, ScrollView, StyleSheet, Button } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { addEvent } from "@/redux/actions/eventRequest";
@@ -22,6 +22,8 @@ const HomePage = () => {
     });
     const [selectedType, setSelectedType] = useState(deocrePrice[0]);
     const [openModal, setOpenModal] = useState(false);
+    const [from, setFrom] = useState(null);
+    const [to, setTo] = useState(null);
 
     const handleOpenModal = () => setOpenModal(true);
     const handleCloseModal = () => setOpenModal(false);
@@ -35,7 +37,17 @@ const HomePage = () => {
     const room = rooms.find(item => item.RoomEventID === roomId);
     const user = useSelector((state) => state.auth.login.currentUser);
 
-    
+
+    useEffect(() => {
+        if(room?.MaxTable<5){
+            setDecore({
+                LobbyDecore: false,
+                StageDecore: false,
+                TableDecore: false,
+            })
+        }
+    }, [from])
+
     const handleDecoreSelect = (type) => {
         setDecore(prev => ({
             ...prev,
@@ -64,7 +76,7 @@ const HomePage = () => {
                 Note: true,
             });
 
-            const newDecore = await addDecore(dispatch, {...decore, DecorePriceID:selectedType.DecorePriceID}, user)
+            const newDecore = await addDecore(dispatch, { ...decore, DecorePriceID: selectedType.DecorePriceID }, user)
             if (isValid && Object.keys(isValid).length === 0) {
                 const formValues = formik.values;
                 const selectedMenu = menus.find(menu => menu.MenuID === selected);
@@ -82,10 +94,12 @@ const HomePage = () => {
                     DecoreID: newDecore.DecoreID,
                     EventType: formValues.EventType,
                     TotalTable: formValues.TotalTable,
-                    EventDate: formValues.EventDate,
+                    EventDate: new Date(formValues.EventDate).toLocaleDateString(),
                     Time: formValues.Time,
                     TotalPrice: totalMenuPrice,
                     Note: formValues.Note,
+                    From: from,
+                    To: to,
                 };
 
                 try {
@@ -141,92 +155,94 @@ const HomePage = () => {
                 </View>
 
                 <Text style={styles.sectionTitle}>Nhập Thông Tin Sự Kiện</Text>
-                <Form ref={formikRef} handleSubmit={() => { }} maxTable={room?.MaxTable} />
+                <Form setFrom={setFrom} setTo={setTo} user={user} RoomEventID={roomId} ref={formikRef} handleSubmit={() => { }} maxTable={room?.MaxTable} />
 
-                <Text style={styles.sectionTitle}>Chọn Menu</Text>
-                <View style={styles.menuContainer}>
-                    {menus?.filter((item) => item.Name != null)
-                        .map((menu, index) => {
-                            const foodTotalPrice = menu.Food.reduce((total, food) => {
-                                return total + (food.UnitPrice * 1);
-                            }, 0);
-                            const drinksTotalPrice = menu.Drinks.reduce((total, drink) => {
-                                return total + (drink.UnitPrice * 1);
-                            }, 0);
-                            const totalMenuPrice = foodTotalPrice + drinksTotalPrice;
+                {room?.MaxTable >= 5 && <>
+                    <Text style={styles.sectionTitle}>Chọn Menu</Text>
+                    <View style={styles.menuContainer}>
+                        {menus?.filter((item) => item.Name != null)
+                            .map((menu, index) => {
+                                const foodTotalPrice = menu.Food.reduce((total, food) => {
+                                    return total + (food.UnitPrice * 1);
+                                }, 0);
+                                const drinksTotalPrice = menu.Drinks.reduce((total, drink) => {
+                                    return total + (drink.UnitPrice * 1);
+                                }, 0);
+                                const totalMenuPrice = foodTotalPrice + drinksTotalPrice;
 
-                            return (
-                                <View key={index}>
-                                    <TouchableOpacity
-                                        style={[styles.menuItem, selected === menu?.MenuID && styles.selectedMenu]}
-                                        onPress={() => setSelected(menu?.MenuID)}
-                                    >
-                                        <Text style={styles.menuTitle}>{menu.Name}</Text>
-                                        <Text style={styles.menuPrice}>{`Giá: ${totalMenuPrice.toLocaleString()} VND/bàn`}</Text>
-                                    </TouchableOpacity>
-                                    {selected === menu?.MenuID && (
-                                        <View style={styles.dishesContainer}>
-                                            <Text style={styles.dishesTitle}>Danh sách món ăn:</Text>
-                                            {menu.Food.map((food, i) => (
-                                                <Text key={i} style={styles.dishText}>{`${food.Name} - ${food.UnitPrice.toLocaleString()} VND `}</Text>
-                                            ))}
-                                            <Text style={styles.dishesTitle}>Danh sách thức uống:</Text>
-                                            {menu.Drinks.map((drink, i) => (
-                                                <Text key={i} style={styles.dishText}>{`${drink.Name} - ${drink.UnitPrice.toLocaleString()} VND`}</Text>
-                                            ))}
-                                        </View>
-                                    )}
-                                </View>
-                            );
-                        })}
-                </View>
-                <Button
-                    title="Tự chọn menu"
-                    onPress={handleOpenModal}
-                />
-                <Text style={styles.sectionTitle}>Chọn Trang Trí</Text>
-                <View>
-                    <Text style={styles.label}>Loại trang trí</Text>
-                    <Picker
-                        selectedValue={selectedType.Type}
-                        onValueChange={(itemValue) => handleSelectType(itemValue)}
-                        style={styles.input}
-                    >
-                        <Picker.Item label="Cơ bản" value="BASIC" />
-                        <Picker.Item label="Nâng cao" value="ADVANCED" />
-                        <Picker.Item label="Cao cấp" value="PREMIUM" />
-                    </Picker>
-                </View>
-
-                <View style={styles.decoreContainer}>
-
-                    {decoreOptions.map((type) => (
-                        <TouchableOpacity
-                            key={type.label}
-                            style={[
-                                styles.decoreItem,
-                                decore[type.name] && styles.selectedDecore
-                            ]}
-                            onPress={() => handleDecoreSelect(type.name)}
+                                return (
+                                    <View key={index}>
+                                        <TouchableOpacity
+                                            style={[styles.menuItem, selected === menu?.MenuID && styles.selectedMenu]}
+                                            onPress={() => setSelected(menu?.MenuID)}
+                                        >
+                                            <Text style={styles.menuTitle}>{menu.Name}</Text>
+                                            <Text style={styles.menuPrice}>{`Giá: ${totalMenuPrice.toLocaleString()} VND/bàn`}</Text>
+                                        </TouchableOpacity>
+                                        {selected === menu?.MenuID && (
+                                            <View style={styles.dishesContainer}>
+                                                <Text style={styles.dishesTitle}>Danh sách món ăn:</Text>
+                                                {menu.Food.map((food, i) => (
+                                                    <Text key={i} style={styles.dishText}>{`${food.Name} - ${food.UnitPrice.toLocaleString()} VND `}</Text>
+                                                ))}
+                                                <Text style={styles.dishesTitle}>Danh sách thức uống:</Text>
+                                                {menu.Drinks.map((drink, i) => (
+                                                    <Text key={i} style={styles.dishText}>{`${drink.Name} - ${drink.UnitPrice.toLocaleString()} VND`}</Text>
+                                                ))}
+                                            </View>
+                                        )}
+                                    </View>
+                                );
+                            })}
+                    </View>
+                    <Button
+                        title="Tự chọn menu"
+                        onPress={handleOpenModal}
+                    />
+                    <Text style={styles.sectionTitle}>Chọn Trang Trí</Text>
+                    <View>
+                        <Text style={styles.label}>Loại trang trí</Text>
+                        <Picker
+                            selectedValue={selectedType.Type}
+                            onValueChange={(itemValue) => handleSelectType(itemValue)}
+                            style={styles.input}
                         >
-                            <View style={styles.decoreText}>{type.name === 'LobbyDecore'
-                                ? <View>
-                                    <Text>Sảnh</Text>
-                                    <Text>{type.price}</Text>
-                                </View>
-                                : type.name === 'StageDecore'
+                            <Picker.Item label="Cơ bản" value="BASIC" />
+                            <Picker.Item label="Nâng cao" value="ADVANCED" />
+                            <Picker.Item label="Cao cấp" value="PREMIUM" />
+                        </Picker>
+                    </View>
+
+                    <View style={styles.decoreContainer}>
+
+                        {decoreOptions.map((type) => (
+                            <TouchableOpacity
+                                key={type.label}
+                                style={[
+                                    styles.decoreItem,
+                                    decore[type.name] && styles.selectedDecore
+                                ]}
+                                onPress={() => handleDecoreSelect(type.name)}
+                            >
+                                <View style={styles.decoreText}>{type.name === 'LobbyDecore'
                                     ? <View>
-                                        <Text>Sân khấu</Text>
+                                        <Text>Sảnh</Text>
                                         <Text>{type.price}</Text>
                                     </View>
-                                    : <View>
-                                        <Text>Bàn</Text>
-                                        <Text>{type.price}</Text>
-                                    </View>
-                            }</View>
-                        </TouchableOpacity>
-                    ))}
-                </View>
+                                    : type.name === 'StageDecore'
+                                        ? <View>
+                                            <Text>Sân khấu</Text>
+                                            <Text>{type.price}</Text>
+                                        </View>
+                                        : <View>
+                                            <Text>Bàn</Text>
+                                            <Text>{type.price}</Text>
+                                        </View>
+                                }</View>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </>}
 
                 {bookingSuccess ? (
                     <Button

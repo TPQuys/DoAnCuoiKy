@@ -24,7 +24,12 @@ const Login = () => {
             email: values.email,
             password: values.password,
         };
-        const success = await loginUser(newUser, dispatch, router).then(()=> setIsDisable(false))
+        const success = await loginUser(newUser, dispatch, router)
+        .then(()=> setIsDisable(false))
+        .catch((e)=>{
+            setIsDisable(false)
+            console.log(e)
+        })
     };
 
     return (
