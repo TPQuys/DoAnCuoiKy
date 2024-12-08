@@ -84,7 +84,7 @@ const eventRepository = {
                     ]
                 }
             ],
-            attributes:['Time',"From","To"],
+            attributes:['Time',"From","To","EventDate"],
             where: {
                 RoomEventID,
                 [Op.and]: [

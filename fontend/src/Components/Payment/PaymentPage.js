@@ -219,7 +219,7 @@ const PaymentPage = () => {
                         <div className="payment-content">
                             <p>Ngày tổ chức: {formatDate(new Date(event?.EventDate))}</p>
                             <p>Loại sự kiện: {getEventType(event?.EventType)}</p>
-                            {getDecore(event?.Decore).length > 0 ?
+                            {event?.RoomEvent?.MaxTable >=5 ?
                                 <p>Thời gian: {getTime(event?.Time)}</p>
                                 :
                                 <p>Thời gian: {getRangeTime(event?.From,event?.To)}</p>

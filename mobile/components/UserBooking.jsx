@@ -14,6 +14,13 @@ const formatDate = (date) => {
     }
 };
 
+const getRangeTime = (from,to)=>{
+    const fromTime = new Date(from).toLocaleTimeString()
+    const toTime = new Date(to).toLocaleTimeString()
+
+    return fromTime+"-"+ toTime
+}
+
 const getEventType = (type) => {
     switch (type) {
         case 'WEDDING': return 'Đám cưới';
@@ -183,7 +190,10 @@ const Bookings = ({ bookings, user }) => {
                                     <Paragraph>Nhà hàng: {booking.Event?.RoomEvent?.RoomName}</Paragraph>
                                     <Paragraph>Tổng số bàn: {booking.Event?.TotalTable}</Paragraph>
                                     <Paragraph>Ngày tổ chức: {formatDate(new Date(booking.Event?.EventDate))}</Paragraph>
-                                    <Paragraph>Thời gian: {getTime(booking.Event?.Time)}</Paragraph>
+                                    {booking.Event.Time="CUSTOM"?
+                                    <Paragraph>Thời gian: {getRangeTime(booking.Event?.From,booking.Event?.To)}</Paragraph>
+                                :
+                                    <Paragraph>Thời gian: {getTime(booking.Event?.Time)}</Paragraph>}
                                     <Paragraph>Trang trí: {getDecore(booking?.Event?.Decore)}</Paragraph>
                                     <Paragraph>Ghi chú: {booking.Event?.Note || 'Không có'}</Paragraph>
                                     <Paragraph>

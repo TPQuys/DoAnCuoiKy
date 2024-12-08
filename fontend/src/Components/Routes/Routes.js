@@ -44,6 +44,10 @@ const AppRoutes = () => {
     }, [dispatch,user1]);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+      }, [location.pathname]);
+
+    useEffect(() => {
 
         if (!user1) {
             if (location.pathname === "/booking" || location.pathname === "/room") {

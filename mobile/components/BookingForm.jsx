@@ -12,7 +12,7 @@ dayjs.extend(isBetween);
 
 import { getRoomBooked } from '../redux/actions/eventRequest';
 
-const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEventID, user}, ref) => {
+const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEventID, user }, ref) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [selectedTimes, setSelectedTimes] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
@@ -33,7 +33,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
         const fetchRoomBooked = async () => {
             if (selectedDate) {
                 try {
-                    const res = await getRoomBooked(RoomEventID, selectedDate,user );
+                    const res = await getRoomBooked(RoomEventID, selectedDate, user);
                     console.log(res)
                     setBookedSlots(res)
                 } catch (error) {
@@ -62,6 +62,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
     };
 
     const handleChangeDate = (setFieldValue, name, value) => {
+        value.setHours(0, 0, 0, 0)
         setSelectedDate(value);
         setFieldValue(name, value);
         if (maxTable >= 5) {
@@ -204,19 +205,21 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                         <Text style={styles.errorText}>{errors.EventType}</Text>
                     )}
 
-                    {/* TotalTable Field */}
-                    <Text style={styles.label}>Tổng Số Bàn</Text>
-                    <TextInput
-                        style={styles.input}
-                        keyboardType="numeric"
-                        onChangeText={handleChange('TotalTable')}
-                        onBlur={handleBlur('TotalTable')}
-                        value={values.TotalTable}
-                    />
-                    {touched.TotalTable && errors.TotalTable && (
-                        <Text style={styles.errorText}>{errors.TotalTable}</Text>
-                    )}
+                    {maxTable >= 5 && <>
 
+                        {/* TotalTable Field */}
+                        <Text style={styles.label}>Tổng Số Bàn</Text>
+                        <TextInput
+                            style={styles.input}
+                            keyboardType="numeric"
+                            onChangeText={handleChange('TotalTable')}
+                            onBlur={handleBlur('TotalTable')}
+                            value={values.TotalTable}
+                        />
+                        {touched.TotalTable && errors.TotalTable && (
+                            <Text style={styles.errorText}>{errors.TotalTable}</Text>
+                        )}
+                    </>}
                     {/* EventDate Field */}
                     <Text style={styles.label}>Ngày</Text>
                     <TouchableOpacity
@@ -233,7 +236,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                             onChange={(event, date) => {
                                 setShowDatePicker(false);
                                 if (date) {
-                                    handleChangeDate(setFieldValue,'EventDate',date)
+                                    handleChangeDate(setFieldValue, 'EventDate', date)
                                 }
                             }}
                         />
@@ -244,31 +247,52 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
 
                     {/* Time Field */}
                     {maxTable >= 5 && <>
-                    <Text style={styles.label}>Thời gian</Text>
-                    <Picker
-                        selectedValue={values.Time}
-                        onValueChange={handleChange('Time')}
-                        style={styles.input}
-                    >
-                        <Picker.Item label="Chọn thời gian" value="" />
-                        <Picker.Item label="Buổi sáng" value="MORNING" />
-                        <Picker.Item label="Buổi chiều" value="AFTERNOON" />
-                        <Picker.Item label="Cả ngày" value="ALLDAY" />
-                        {maxTable < 5 &&<Picker.Item label="Tùy chỉnh" value="CUSTOM" />}
-                    </Picker>
-                    {touched.Time && errors.Time && (
-                        <Text style={styles.errorText}>{errors.Time}</Text>
-                    )}
-                    </> } 
+                        <Text style={styles.label}>Thời gian</Text>
+                        <Picker
+                            selectedValue={values.Time}
+                            onValueChange={handleChange('Time')}
+                            style={styles.input}
+                        >
+                            <Picker.Item label="Chọn thời gian" value="" />
+                            <Picker.Item
+                                label="Buổi sáng"
+                                value="MORNING"
+                                style={{
+                                    color: !(bookedTimes?.includes('MORNING') || bookedTimes?.includes('ALLDAY')) ? 'black' : 'gray',
+                                }}
+                                enabled={!(bookedTimes?.includes('MORNING') || bookedTimes?.includes('ALLDAY'))}
+                            />
+                            <Picker.Item
+                                label="Buổi chiều"
+                                value="AFTERNOON"
+                                style={{
+                                    color: !(bookedTimes?.includes('AFTERNOON') || bookedTimes?.includes('ALLDAY')) ? 'black' : 'gray',
+                                }}
+                                enabled={!(bookedTimes?.includes('AFTERNOON') || bookedTimes?.includes('ALLDAY'))}
+                            />
+                            <Picker.Item
+                                label="Cả ngày"
+                                value="ALLDAY"
+                                style={{
+                                    color: !disableAllDay ? 'black' : 'gray',
+                                }}
+                                enabled={!disableAllDay}
+                            />
+                            {maxTable < 5 && (
+                                <Picker.Item label="Tùy chỉnh" value="CUSTOM" style={{ color: 'black' }} />
+                            )}
+                        </Picker>
+
+                        {touched.Time && errors.Time && (
+                            <Text style={styles.errorText}>{errors.Time}</Text>
+                        )}
+                    </>}
 
                     {selectedDate && maxTable < 5 && (
                         <View style={styles.container}>
-                            <FlatList
-                                data={timeSlots}
-                                keyExtractor={(item, index) => index.toString()}
-                                numColumns={3} // Hiển thị theo lưới 3 cột
-                                renderItem={({ item }) => (
-                                    <View style={styles.timeSlot}>
+                            <View style={styles.gridContainer}>
+                                {timeSlots.map((item, index) => (
+                                    <View style={styles.timeSlot} key={index}>
                                         <Button
                                             title={`${item.start} - ${item.end}`}
                                             onPress={() => toggleTimeSelection(`${item.start} - ${item.end}`)}
@@ -276,8 +300,8 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                                             disabled={isSlotDisabled(item.start, item.end, bookedSlots)}
                                         />
                                     </View>
-                                )}
-                            />
+                                ))}
+                            </View>
                         </View>
                     )}
 
@@ -325,6 +349,16 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 12,
         marginBottom: 16,
+    },
+    gridContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap', // Tạo lưới
+        justifyContent: 'space-between',
+    },
+    timeSlot: {
+        width: '30%', // Mỗi ô chiếm 30% chiều rộng
+        marginVertical: 10,
+        alignItems: 'center',
     },
 });
 

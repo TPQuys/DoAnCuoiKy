@@ -40,6 +40,7 @@ const eventController = {
         try {
             const {RoomEventID, EventDate} = req.body
             const response = await eventService.getRoomBooked(RoomEventID, EventDate);
+            console.log(response)
             res.status(200).json(response);
         } catch (error) {
             console.log(error)

@@ -14,7 +14,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { styled } from '@mui/material/styles';
 import { getRoomBooked } from '../../../redux/actions/eventRequest';
-import { validationSchema } from './formComponent/validationSchema'
+import { useDispatch } from 'react-redux';
+
 // Tạo một component Paper có nền trong suốt
 const TransparentPaper = styled(Paper)({
     padding: 16,
@@ -122,7 +123,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
 
     const bookedTimes = bookedSlots.map(item => item.Time);
 
-    const disableAllDay = bookedTimes.includes('MORNING') || bookedTimes.includes('AFTERNOON') || bookedTimes.includes('ALLDAY') ;
+    const disableAllDay = bookedTimes.includes('MORNING') || bookedTimes.includes('AFTERNOON');
 
 
     const timeSlots = generateTimeSlots(8, 23, 1); // Khoảng 1 giờ, từ 8h sáng đến 11h tối
@@ -182,11 +183,51 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
         Note: '',
     };
 
+    // Định nghĩa schema cho validation
+    const validationSchema = Yup.object().shape({
+        EventType: Yup.string().required('Vui lòng chọn loại sự kiện'),
+        TotalTable: Yup.number()
+            .required('Vui lòng nhập tổng số bàn')
+            .positive('Số bàn phải là số dương')
+            .integer('Số bàn phải là số nguyên')
+            .min(maxTable * 0.7, `Số bàn tối thiểu là ${Math.round(maxTable * 0.7)}`)
+            .max(maxTable, `Số bàn tối đa là ${maxTable}`),
+        EventDate: Yup.date()
+            .required('Vui lòng chọn ngày')
+            .test(
+                'check-date',
+                'Ngày đặt phải trước 3 ngày với hơn 30 bàn, 4 ngày với hơn 50 bàn, và 6 ngày với hơn 90 bàn',
+                function (value) {
+                    const { TotalTable } = this.parent; // Lấy giá trị từ TotalTable
+                    if (!value) return false;
+
+                    // Tính số ngày tối thiểu
+                    const today = dayjs();
+                    const eventDate = dayjs(value);
+                    let minDays = 1; // Mặc định tối thiểu là từ ngày mai
+
+                    if (TotalTable > 30 && TotalTable <= 50) {
+                        minDays = 3;
+                    } else if (TotalTable > 50 && TotalTable <= 90) {
+                        minDays = 4;
+                    } else if (TotalTable > 90) {
+                        minDays = 6;
+                    }
+
+                    return eventDate.isAfter(today.add(minDays, 'day'));
+                }
+            ),
+        Time: Yup.string().required('Vui lòng chọn thời gian'),
+        Note: Yup.string(),
+    });
+
+
+
     return (
         <TransparentPaper>
             <Formik
                 initialValues={initialValues}
-                validationSchema={validationSchema(maxTable)}
+                validationSchema={validationSchema}
                 onSubmit={(values) => {
                     handleSubmit({ ...values, Time: selectedTimes });
                 }}
