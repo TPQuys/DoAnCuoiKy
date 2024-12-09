@@ -5,104 +5,19 @@ import { useNavigate } from "react-router-dom";
 import { getBookingByUser, deleteBookingUser } from "../../../redux/actions/bookingRequest";
 import MenuModal from "./MenuModal";
 import PaymentModal from "./PaymentModal";
+import AddRatingModal from "./AddRatingModal";
+import {formatDate, formatDateTime, getDecore, getDecoreType, getEventType, getRangeTime, getTime} from './FormatFunction'
 
-const formatDate = (date) => {
-    if (date) {
-        // Lấy ngày, tháng và năm
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // tháng bắt đầu từ 0 nên +1
-        const year = date.getFullYear();
-
-        // Định dạng thành dd/mm/yyyy
-        const formattedDate = `${day}/${month}/${year}`;
-        return formattedDate
-    }
-}
-
-const formatDateTime = (dateString) => {
-    const date = new Date(dateString);
-    if (date) {
-        return date.toLocaleString("vi-VN", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-        });
-    }
-};
-
-const getEventType = (type) => {
-    if (type) {
-        if (type === "WEDDING") {
-            return "Đám cưới"
-        } else if (type === "CONFERENCE") {
-            return "Hội nghị"
-        } else if (type === "BIRTHDAY") {
-            return "Sinh nhật"
-        } else if (type === "ORTHER") {
-            return "Khác"
-        }
-    }
-}
-
-const getDecoreType = (decore)=>{
-    if(decore){
-        if(decore?.DecorePrice?.Type==='BASIC'){
-            return "(Cơ bản)"
-        }else   if(decore?.DecorePrice?.Type==='ADVANCED'){
-            return "(Nâng cao)"
-        } else   if(decore?.DecorePrice?.Type==='PREMIUM'){
-            return "(Cao cấp)"
-        } 
-    }
-}
-
-const getTime = (time) => {
-    if (time) {
-        if (time === "MORNING") {
-            return "Buổi sáng"
-        }
-        if (time === "AFTERNOON") {
-            return "Buổi chiều"
-        }
-        if (time === "ALLDAY") {
-            return "Cả ngày"
-        }
-    }
-}
-
-const getRangeTime = (from,to)=>{
-    const fromTime = new Date(from).toLocaleTimeString()
-    const toTime = new Date(to).toLocaleTimeString()
-
-    return fromTime+"-"+ toTime
-}
-
-const getDecore = (Decore) => {
-    const lobby = Decore?.LobbyDecore ? "sảnh" : "";
-    const stage = Decore?.StageDecore ? "sân khấu" : "";
-    const table = Decore?.TableDecore ? "bàn" : "";
-
-    // Tạo một mảng chỉ chứa các phần tử không rỗng
-    const decoreArray = [lobby, stage, table]?.filter(item => item !== "");
-
-    // Chỉ viết hoa chữ cái đầu tiên của phần tử đầu tiên
-    if (decoreArray.length > 0) {
-        decoreArray[0] = decoreArray[0].charAt(0).toUpperCase() + decoreArray[0].slice(1);
-    }
-
-    return decoreArray.join(", ");
-};
 
 const Bookings = ({ bookings }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch()
+    const [modalOpen, setModalOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isPaymentOpen, setIsPaymentOpen] = useState(false);
     const [menu, setMenu] = useState({});
     const [payment, setPayment] = useState({});
+    const [selectedBooking,setSelectBooking] = useState(null);
     const [remainingTimes, setRemainingTimes] = useState({}); // Lưu thời gian còn lại cho mỗi booking
 
     const handleClick = (booking) => {
@@ -120,6 +35,18 @@ const Bookings = ({ bookings }) => {
             await deleteBookingUser(dispatch, bookingID);
             await getBookingByUser(dispatch)
         }
+    };
+
+    const handleOpen = (bookingID) => {
+        console.log(bookingID)
+        setSelectBooking(bookingID)
+        setModalOpen(true);
+    }
+    const handleClose = () => setModalOpen(false);
+  
+    const handleSubmit = (data) => {
+      console.log("Submitted Data:", data);
+      // Xử lý gửi dữ liệu lên server
     };
 
     useEffect(() => {
@@ -183,16 +110,18 @@ const Bookings = ({ bookings }) => {
                                     : <Button onClick={() => handleClick(booking)}>Thanh toán ngay ({remainingTimes[booking.BookingID]})</Button>}
                             </TableCell>
                             <TableCell>
-                                {!booking.Payment &&
+                                {!booking.Payment ?
                                     <Button variant="text" color="error" onClick={() => handleDelete(booking?.BookingID)}>
                                         Xóa
-                                    </Button>}
+                                    </Button>:
+                                    <Button variant="text" color="info" onClick={()=>handleOpen(booking?.BookingID)}>Add Rating</Button>
+                                    }
                             </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
-
+            <AddRatingModal booking={selectedBooking} open={modalOpen} onClose={handleClose} onSubmit={handleSubmit} />
             <MenuModal menu={menu} onClose={closeMenu} open={isMenuOpen} />
             <PaymentModal paymentData={payment} onClose={closePayment} open={isPaymentOpen} />
         </TableContainer>

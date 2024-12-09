@@ -2,7 +2,7 @@ const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../utils/supabase/connection");
 const Booking = require("./Booking"); 
 
-const Review = sequelize.define('Review', {
+const Rate = sequelize.define('Rate', {
     ReviewID: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -30,8 +30,4 @@ const Review = sequelize.define('Review', {
     
 });
 
-Booking.hasOne(Payment, { foreignKey: 'BookingID' });
-Payment.belongsTo(Booking, { foreignKey: 'BookingID' });
-
-
-module.exports = Payment;
+module.exports = Rate;
