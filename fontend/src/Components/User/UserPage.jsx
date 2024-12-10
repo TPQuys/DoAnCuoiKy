@@ -9,7 +9,8 @@ const UserPage = () => {
     const dispatch = useDispatch()
     useEffect(()=>{
         const getBooking = async ()=>{
-            await getBookingByUser(dispatch)
+            const bookings= await getBookingByUser(dispatch)
+            console.log(bookings)
         }
 
         getBooking();

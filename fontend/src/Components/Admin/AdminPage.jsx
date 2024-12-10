@@ -15,6 +15,7 @@ import { Box, Grid2, Stack, } from '@mui/material';
 import TabPanel from '@mui/lab/TabPanel';
 import { getAllUsers } from "../../redux/actions/userRequest";
 import { getAllBooking } from "../../redux/actions/bookingRequest";
+import { getRate } from "../../redux/actions/rateRequest";
 const UserPage = () => {
     const [value, setValue] = useState('1');
     const Booking = useSelector((state) => state.bookings.bookings)
@@ -25,11 +26,16 @@ const UserPage = () => {
         setValue(newValue);
     };
     useEffect(() => {
+        const getAllRate = async () => {
+            const res = await getRate();
+            console.log(res)
+        } 
         if (user.role === "ADMIN" || user.role === "HR") {
             getAllUsers(dispatch)
         }
         if (user.role === "ADMIN" || user.role === "ACCOUNTANT") {
             getAllBooking(dispatch)
+            getAllRate()
         }
     }, [])
 

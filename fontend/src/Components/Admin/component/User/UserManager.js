@@ -50,15 +50,15 @@ const UsersManagement = () => {
 
     return (
         <TableContainer component={Paper}>
-            <Table stickyHeader aria-label="user management table">
+            <Table >
                 <TableHead>
                     <TableRow>
-                        <TableCell>Email</TableCell>
-                        <TableCell>Họ và tên</TableCell>
-                        <TableCell>Số điện thoại</TableCell>
-                        <TableCell>Ngày sinh</TableCell>
-                        <TableCell>role</TableCell>
-                        <TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Họ và tên</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Số điện thoại</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Ngày sinh</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Role</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>
                             <TableSortLabel
                                 active={sortConfig.key === 'createdAt'}
                                 direction={sortConfig.direction}
@@ -67,30 +67,33 @@ const UsersManagement = () => {
                                 Ngày tạo
                             </TableSortLabel>
                         </TableCell>
-                        <TableCell>Hành động</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Hành động</TableCell>
                     </TableRow>
                 </TableHead>
+
                 <TableBody>
-                    {sortedUsers.map((user) =>
-                    {if(!user.admin){
-                        return (
-                        <TableRow key={user.id}>
-                            <TableCell>{user.email}</TableCell>
-                            <TableCell>{user.fullname || "Không có"}</TableCell>
-                            <TableCell>{user.phone || "Không có"}</TableCell>
-                            <TableCell>{new Date(user.dayofbirth).toLocaleDateString() || "Không có"}</TableCell>
-                            <TableCell>{user.role || "Không có"}</TableCell>
-                            <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
-                            <TableCell>
-                                <Button variant="text" onClick={() => handleEdit(user)}>
-                                    Sửa
-                                </Button>
-                                <Button variant="text" color="error" onClick={() => handleDelete(user.id)}>
-                                    Xóa
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    )}})
+                    {sortedUsers.map((user) => {
+                        if (!user.admin) {
+                            return (
+                                <TableRow key={user.id}>
+                                    <TableCell>{user.email}</TableCell>
+                                    <TableCell>{user.fullname || "Không có"}</TableCell>
+                                    <TableCell>{user.phone || "Không có"}</TableCell>
+                                    <TableCell>{new Date(user.dayofbirth).toLocaleDateString() || "Không có"}</TableCell>
+                                    <TableCell>{user.role || "Không có"}</TableCell>
+                                    <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                                    <TableCell>
+                                        <Button variant="text" onClick={() => handleEdit(user)}>
+                                            Sửa
+                                        </Button>
+                                        <Button variant="text" color="error" onClick={() => handleDelete(user.id)}>
+                                            Xóa
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            )
+                        }
+                    })
                     }
                 </TableBody>
             </Table>

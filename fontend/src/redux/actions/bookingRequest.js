@@ -34,6 +34,7 @@ export const getBookingByUser = async (dispatch) => {
         try {
             const res = await axiosJWT.get(`/v1/booking/user/${user.user.id}`);
             dispatch(getBookingsSuccess(res.data));
+            return res.data
         } catch (error) {
             console.error("lấy booking thất bại:", error);
             dispatch(getBookingsFailed());

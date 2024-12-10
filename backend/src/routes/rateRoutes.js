@@ -3,6 +3,9 @@ const rateController = require('../controllers/RateController');
 const middlewareController = require("../middlewares/middlewareController");
 const router = express.Router();
 
+
+router.get('/all', middlewareController.verifyTokenAccountant, rateController.getAllBookingRated);
+
 // Route để tạo sự kiện mới
 router.post('/', middlewareController.verifyToken, rateController.createRate);
 

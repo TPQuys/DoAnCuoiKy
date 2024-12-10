@@ -10,12 +10,12 @@ const Rate = sequelize.define('Rate', {
     },
         
     Rate: {
-        type: DataTypes.ENUM('VERYBAD','BAD', 'OK', 'GOOD', 'VERYGOOD'),
+        type: DataTypes.ENUM('1','2', '3', '4', '5'),
         allowNull: false
     },
 
     Comment: {
-        type: DataTypes.DATE,
+        type: DataTypes.STRING,
         allowNull: true
     },
 
@@ -29,5 +29,9 @@ const Rate = sequelize.define('Rate', {
     },
     
 });
+
+Booking.hasOne(Rate, { foreignKey: 'BookingID' });
+Rate.belongsTo(Booking, { foreignKey: 'BookingID' });
+
 
 module.exports = Rate;

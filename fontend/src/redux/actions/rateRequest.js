@@ -15,6 +15,19 @@ export const addRate = async (dispatch, RateData) => {
     }
 };
 
+
+export const getRate = async () => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    let axiosJWT = createAxios(user);
+    try {
+        const res = await axiosJWT.get("/v1/rate/all");
+        return res.data
+    } catch (error) {
+        console.error("Lấy đánh giá thất bại:", error.response.data.message);
+        toast.error(error.response.data.message);
+    }
+};
+
 // Hàm updateRate
 export const updateRate = async ( RateId, RateData) => {
     const user = JSON.parse(sessionStorage.getItem("user"));

@@ -8,6 +8,7 @@ const Payment = require('../models/Payment');
 const User = require('../models/User');
 const Decore = require('../models/Decore');
 const DecorePrice = require('../models/DecorePrice');
+const Rate = require('../models/Rate');
 class BookingRepository {
     // Tạo một booking mới
     async createBooking(bookingData) {
@@ -59,6 +60,9 @@ class BookingRepository {
                         model:Payment,
                     },
                     {
+                        model:Rate,
+                    },
+                    {
                         model:User,
                         attributes : ["email"]
                     }
@@ -108,6 +112,9 @@ class BookingRepository {
                     },
                     {
                         model:Payment,
+                    },
+                    {
+                        model:Rate,
                     },
                     {
                         model:User,
@@ -162,6 +169,9 @@ class BookingRepository {
                     },
                     {
                         model: Payment, // Bao gồm thông tin thanh toán
+                    },
+                    {
+                        model:Rate,
                     },
                     {
                         model:User,

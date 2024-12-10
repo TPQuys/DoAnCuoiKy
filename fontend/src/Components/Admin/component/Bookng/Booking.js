@@ -163,7 +163,7 @@ const Bookings = ({ bookings, rooms }) => {
             <Table stickyHeader aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                        <TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>
                             <TableSortLabel
                                 active={sortConfig.key === 'BookingTime'}
                                 direction={sortConfig.direction}
@@ -172,8 +172,8 @@ const Bookings = ({ bookings, rooms }) => {
                                 Thời gian đặt
                             </TableSortLabel>
                         </TableCell>
-                        <TableCell>Email</TableCell>
-                        <TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>
                             <TableSortLabel
                                 active={sortConfig.key === 'EventType'}
                                 direction={sortConfig.direction}
@@ -182,8 +182,8 @@ const Bookings = ({ bookings, rooms }) => {
                                 Loại sự kiện
                             </TableSortLabel>
                         </TableCell>
-                        <TableCell>Tổng số bàn</TableCell>
-                        <TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Tổng số bàn</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>
                             <TableSortLabel
                                 active={sortConfig.key === 'EventDate'}
                                 direction={sortConfig.direction}
@@ -192,8 +192,8 @@ const Bookings = ({ bookings, rooms }) => {
                                 Tổ chức ngày
                             </TableSortLabel>
                         </TableCell>
-                        <TableCell>Thời gian</TableCell>
-                        <TableCell>Ghi chú</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Thời gian</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
                         <TableCell>
                             <TableSortLabel
                                 active={sortConfig.key === 'RoomName'}
@@ -203,10 +203,10 @@ const Bookings = ({ bookings, rooms }) => {
                                 Tên nhà hàng
                             </TableSortLabel>
                         </TableCell>
-                        <TableCell>Trang trí</TableCell>
-                        <TableCell>Menu</TableCell>
-                        <TableCell>Phương thức thanh toán</TableCell>
-                        <TableCell>Hành động</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Trang trí</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Menu</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Phương thức thanh toán</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Hành động</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
