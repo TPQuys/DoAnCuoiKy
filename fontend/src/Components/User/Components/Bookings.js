@@ -65,18 +65,21 @@ const Bookings = ({ bookings }) => {
         const interval = setInterval(() => {
             const newRemainingTimes = {};
             bookings.forEach(booking => {
-                const endTime = new Date(booking.BookingTime).getTime() + 15 * 60 * 1000;
+                // Thời gian kết thúc là 1 ngày sau thời gian BookingTime
+                const endTime = new Date(booking.BookingTime).getTime() + 24 * 60 * 60 * 1000;
                 const currentTime = new Date().getTime();
                 const timeLeft = Math.max(0, Math.floor((endTime - currentTime) / 1000));
+                
                 newRemainingTimes[booking.BookingID] = timeLeft > 0
-                    ? `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`
+                    ? `${Math.floor(timeLeft / 3600)}:${String(Math.floor((timeLeft % 3600) / 60)).padStart(2, '0')}:${String(timeLeft % 60).padStart(2, '0')}`
                     : 'Lịch đặt đã hết hạn';
             });
             setRemainingTimes(newRemainingTimes);
         }, 1000);
-
+    
         return () => clearInterval(interval);
     }, [bookings]);
+    
 
     return (
         <TableContainer component={Paper} title="Lịch sử đặt sự kiện">

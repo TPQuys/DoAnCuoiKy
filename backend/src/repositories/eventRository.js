@@ -31,7 +31,7 @@ const eventRepository = {
                 }
             ]
         };
-
+    
         return await Event.findOne({
             include: [
                 {
@@ -57,7 +57,7 @@ const eventRepository = {
                     {
                         [Op.or]: [
                             Sequelize.where(
-                                Sequelize.literal(`"Booking"."BookingTime" + INTERVAL '15 minutes'`),
+                                Sequelize.literal(`"Booking"."BookingTime" + INTERVAL '1 day'`),
                                 '>',
                                 Sequelize.literal('NOW()')
                             ),
@@ -68,9 +68,8 @@ const eventRepository = {
             }
         });
     },
-
+    
     findByRoom: async (RoomEventID, EventDate) => {
-
         return await Event.findAll({
             include: [
                 {
@@ -84,7 +83,7 @@ const eventRepository = {
                     ]
                 }
             ],
-            attributes:['Time',"From","To","EventDate"],
+            attributes: ['Time', "From", "To", "EventDate"],
             where: {
                 RoomEventID,
                 [Op.and]: [
@@ -96,7 +95,7 @@ const eventRepository = {
                     {
                         [Op.or]: [
                             Sequelize.where(
-                                Sequelize.literal(`"Booking"."BookingTime" + INTERVAL '15 minutes'`),
+                                Sequelize.literal(`"Booking"."BookingTime" + INTERVAL '1 day'`),
                                 '>',
                                 Sequelize.literal('NOW()')
                             ),
@@ -107,7 +106,7 @@ const eventRepository = {
             }
         });
     },
-
+    
 
     create: async (eventData) => {
         return await Event.create(eventData);

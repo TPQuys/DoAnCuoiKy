@@ -174,10 +174,27 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
             .max(maxTable, `Số bàn tối đa là ${maxTable}`),
         EventDate: Yup.date()
             .required('Vui lòng chọn ngày')
-            .min(dayjs().add(1, 'day').toDate(), 'Ngày sự kiện phải từ ngày mai trở đi'),
+            .test(
+                'check-date',
+                'Ngày đặt phải trước 1 ngày với <= 30 bàn và trước 15 ngày với > 30 bàn',
+                function (value) {
+                    const { TotalTable } = this.parent; // Lấy giá trị từ TotalTable
+                    if (!value) return false;
+
+                    const today = dayjs();
+                    const eventDate = dayjs(value);
+
+                    if (TotalTable > 30) {
+                        return eventDate.isAfter(today.add(15, 'day'));
+                    } else {
+                        return eventDate.isAfter(today.add(1, 'day'));
+                    }
+                }
+            ),
         Time: Yup.string().required('Vui lòng chọn thời gian'),
         Note: Yup.string(),
     });
+
 
     return (
         <Formik

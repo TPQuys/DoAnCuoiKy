@@ -80,7 +80,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
         setFieldValue(name, value);
         if (maxTable >= 5) {
             setFieldValue('Time', '');
-        }else{
+        } else {
             setFieldValue('Time', 'CUSTOM');
             setFieldValue('TotalTable', 1);
         }
@@ -196,31 +196,38 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
             .required('Vui lòng chọn ngày')
             .test(
                 'check-date',
-                'Ngày đặt phải trước 3 ngày với hơn 30 bàn, 4 ngày với hơn 50 bàn, và 6 ngày với hơn 90 bàn',
+                'Ngày đặt không hợp lệ',
                 function (value) {
                     const { TotalTable } = this.parent; // Lấy giá trị từ TotalTable
                     if (!value) return false;
 
-                    // Tính số ngày tối thiểu
                     const today = dayjs();
                     const eventDate = dayjs(value);
-                    let minDays = 1; // Mặc định tối thiểu là từ ngày mai
 
-                    if (TotalTable > 30 && TotalTable <= 50) {
-                        minDays = 3;
-                    } else if (TotalTable > 50 && TotalTable <= 90) {
-                        minDays = 4;
-                    } else if (TotalTable > 90) {
-                        minDays = 6;
+                    if (TotalTable > 30) {
+                        // Nếu số bàn > 30, kiểm tra ngày phải sau ít nhất 15 ngày
+                        if (!eventDate.isAfter(today.add(15, 'day'))) {
+                            return this.createError({
+                                path: 'EventDate',
+                                message: 'Ngày đặt phải trước 15 ngày ',
+                            });
+                        }
+                    } else {
+                        // Nếu số bàn <= 30, kiểm tra ngày phải sau ít nhất 1 ngày
+                        if (!eventDate.isAfter(today.add(1, 'day'))) {
+                            return this.createError({
+                                path: 'EventDate',
+                                message: 'Ngày đặt phải trước 1 ngày ',
+                            });
+                        }
                     }
 
-                    return eventDate.isAfter(today.add(minDays, 'day'));
+                    return true;
                 }
             ),
         Time: Yup.string().required('Vui lòng chọn thời gian'),
         Note: Yup.string(),
     });
-
 
 
     return (
@@ -245,7 +252,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                                     error={touched.EventType && Boolean(errors.EventType)}
                                     helperText={touched.EventType && errors.EventType}
                                 >
-                                     {maxTable >= 5 && <MenuItem value="WEDDING">Đám Cưới</MenuItem>}
+                                    {maxTable >= 5 && <MenuItem value="WEDDING">Đám Cưới</MenuItem>}
                                     <MenuItem value="CONFERENCE">Hội Nghị</MenuItem>
                                     <MenuItem value="BIRTHDAY">Sinh nhật</MenuItem>
                                     <MenuItem value="OTHER">Khác</MenuItem>
@@ -302,8 +309,8 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                                         error={touched.Time && Boolean(errors.Time)}
                                         helperText={touched.Time && errors.Time}
                                     >
-                                        <MenuItem value="MORNING" disabled={bookedTimes?.includes('MORNING')||bookedTimes?.includes('ALLDAY')}>Buổi sáng</MenuItem>
-                                        <MenuItem value="AFTERNOON" disabled={bookedTimes?.includes('AFTERNOON')||bookedTimes?.includes('ALLDAY')}>Buổi chiều</MenuItem>
+                                        <MenuItem value="MORNING" disabled={bookedTimes?.includes('MORNING') || bookedTimes?.includes('ALLDAY')}>Buổi sáng</MenuItem>
+                                        <MenuItem value="AFTERNOON" disabled={bookedTimes?.includes('AFTERNOON') || bookedTimes?.includes('ALLDAY')}>Buổi chiều</MenuItem>
                                         <MenuItem value="ALLDAY" disabled={disableAllDay}>Cả ngày</MenuItem>
                                         {maxTable < 5 && <MenuItem value="CUSTOM">Tùy chỉnh</MenuItem>}
                                     </WhiteTextField>

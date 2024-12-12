@@ -7,7 +7,7 @@ import Header from '../Header/Header';
 import { PostZaloApi } from '../../redux/actions/paymentRequest';
 import { toast } from "react-toastify";
 import ReplayIcon from '@mui/icons-material/Replay';
-import {formatDate,getDecorePrice,getMenuPrice,rommPriceByEvent, getDecore, getDecoreType, getEventType, getRangeTime, getTime} from './FormatFunction'
+import { formatDate, getDecorePrice, getMenuPrice, rommPriceByEvent, getDecore, getDecoreType, getEventType, getRangeTime, getTime } from './FormatFunction'
 
 const PaymentPage = () => {
     const booking = JSON.parse(sessionStorage.getItem("booking"))
@@ -42,8 +42,8 @@ const PaymentPage = () => {
     }, [])
 
     useEffect(() => {
-        // Tính toán thời điểm kết thúc (bookingTime + 15 phút)
-        const endTime = new Date(booking.BookingTime).getTime() + 15 * 60 * 1000;
+        // Tính toán thời điểm kết thúc (bookingTime + 1 ngày)
+        const endTime = new Date(booking.BookingTime).getTime() + 24 * 60 * 60 * 1000;
 
         // Cập nhật thời gian còn lại mỗi giây
         const interval = setInterval(() => {
@@ -60,6 +60,7 @@ const PaymentPage = () => {
         return () => clearInterval(interval);
     }, [booking.BookingTime]);
 
+
     const minutes = Math.floor(remainingTime / 60);
     const seconds = remainingTime % 60;
 
@@ -68,15 +69,18 @@ const PaymentPage = () => {
     const handlePayment = async () => {
         setIsDisable(true)
         if (newBooking) {
-            // const zaloApi = await PostZaloApi(dispatch, newBooking)
-            // console.log(zaloApi)
+            if (new Date(newBooking.LinkExpiry) < new Date()) {
+                const zaloApi = await PostZaloApi(dispatch, newBooking)
+                window.location.href = zaloApi.data.order_url;
+                return
+            }
             if (newBooking.PaymentLink) {
                 window.location.href = newBooking.PaymentLink;
                 setIsDisable(false)
-            }else {
+            } else {
                 const zaloApi = await PostZaloApi(dispatch, newBooking)
-                window.location.href =  zaloApi?.data?.order_url
-               
+                window.location.href = zaloApi?.data?.order_url
+
             }
         }
     }
@@ -98,10 +102,10 @@ const PaymentPage = () => {
                         <div className="payment-content">
                             <p>Ngày tổ chức: {formatDate(new Date(event?.EventDate))}</p>
                             <p>Loại sự kiện: {getEventType(event?.EventType)}</p>
-                            {event?.RoomEvent?.MaxTable >=5 ?
+                            {event?.RoomEvent?.MaxTable >= 5 ?
                                 <p>Thời gian: {getTime(event?.Time)}</p>
                                 :
-                                <p>Thời gian: {getRangeTime(event?.From,event?.To)}</p>
+                                <p>Thời gian: {getRangeTime(event?.From, event?.To)}</p>
                             }
                             <p>Tống số bàn: {event?.TotalTable}</p>
                             {getDecore(event?.Decore).length > 0 &&
@@ -161,7 +165,8 @@ const PaymentPage = () => {
                                 onClick={() => handlePayment()}
                                 disabled={isDisable}
                             >
-                                Thanh toán ({minutes}:{seconds < 10 ? '0' : ''}{seconds})
+                                Thanh toán {minutes <= 30 && `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`}
+
                             </Button>
                             <Button variant="text" onClick={() => resetLinkPayment()}><ReplayIcon /></Button>
                         </div> : "Lịch đặt đã hết hạn"

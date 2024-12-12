@@ -190,15 +190,17 @@ const PaymentPage = () => {
     }, []);
 
     const handlePayment = async () => {
-        console.log(1)
         setIsDisable(true);
         if (newBooking) {
             console.log(newBooking)
+            if (new Date(newBooking.LinkExpiry) < new Date()) {
+                const zaloApi = await PostZaloApi(dispatch, newBooking)
+                Linking.openURL(zaloApi.data.order_url);
+                return
+            }
             if (newBooking.PaymentLink) {
-                console.log(3)
                 Linking.openURL(newBooking.PaymentLink);
                 setIsDisable(false)
-                console.log(4)
             }
         }
         setIsDisable(false);
