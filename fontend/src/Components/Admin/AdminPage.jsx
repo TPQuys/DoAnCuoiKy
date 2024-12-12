@@ -15,17 +15,28 @@ import { Box, Grid2, Stack, } from '@mui/material';
 import TabPanel from '@mui/lab/TabPanel';
 import { getAllUsers } from "../../redux/actions/userRequest";
 import { getAllBooking } from "../../redux/actions/bookingRequest";
+import { getRate } from "../../redux/actions/rateRequest";
 const UserPage = () => {
     const [value, setValue] = useState('1');
     const Booking = useSelector((state) => state.bookings.bookings)
     const rooms = useSelector((state) => state.rooms?.rooms);
+    const user = useSelector((state) => state.auth.login.currentUser)?.user;
     const dispatch = useDispatch()
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
     useEffect(() => {
-        getAllUsers(dispatch)
-        getAllBooking(dispatch)
+        const getAllRate = async () => {
+            const res = await getRate();
+            console.log(res)
+        } 
+        if (user.role === "ADMIN" || user.role === "HR") {
+            getAllUsers(dispatch)
+        }
+        if (user.role === "ADMIN" || user.role === "ACCOUNTANT") {
+            getAllBooking(dispatch)
+            getAllRate()
+        }
     }, [])
 
     return (
@@ -34,13 +45,13 @@ const UserPage = () => {
             <div className="room-body">
                 <div className="booking-center">
                     <TabContext value={value}>
-                        <Box sx={{ borderBottom: 1, borderColor: 'divider',backgroundColor:"#fafaeb" }}>
+                        <Box sx={{ borderBottom: 1, borderColor: 'divider', backgroundColor: "#fafaeb" }}>
                             <TabList onChange={handleChange} aria-label="lab API tabs example">
                                 <Tab label="Cá nhân" value="1" />
-                                <Tab label="Phòng" value="2" />
-                                <Tab label="Lịch sử đặt" value="3" />
-                                <Tab label="Người dùng" value="4" />
-                                <Tab label="Biểu đồ" value="5" />
+                                {(user.role === "ADMIN" || user.role === "MANAGER" )&& <Tab label="Phòng" value="2" />}
+                                {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Lịch sử đặt" value="3" />}
+                                {(user.role === "ADMIN" || user.role === "HR" )&& <Tab label="Người dùng" value="4" />}
+                                {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Biểu đồ" value="5" />}
                             </TabList>
                         </Box>
                         <TabPanel value="1"><UserProfile /></TabPanel>

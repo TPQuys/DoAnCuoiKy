@@ -17,7 +17,7 @@ class UserRepository {
                 attributes: [
                     "id",
                     "email",
-                    "admin",
+                    "role",
                     "isVerified",
                     "gender",
                     "dayofbirth",

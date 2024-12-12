@@ -97,15 +97,28 @@ const getDecore = (Decore) => {
         decoreArray[0] = decoreArray[0].charAt(0).toUpperCase() + decoreArray[0].slice(1);
     }
 
-    return decoreArray.join(", ") + " ("+getDecoreType(Decore)+")";
+    return decoreArray.join(", ") + " (" + getDecoreType(Decore) + ")";
 };
 const roomPriceByEvent = (event, roomPrice) => {
     if (event?.Time === "ALLDAY") {
-        return roomPrice * 1.5;
-    } else {
-        return roomPrice;
+        return roomPrice * 2
+    } else if (event?.Time === "CUSTOM") {
+        const from = new Date(event.From)
+        const to = new Date(event.To)
+        const diff = (to - from) / (1000 * 60 * 60)
+        return roomPrice * diff
+    }
+    else {
+        return roomPrice
     }
 };
+
+const getRangeTime = (from, to) => {
+    const fromTime = new Date(from).toLocaleTimeString()
+    const toTime = new Date(to).toLocaleTimeString()
+
+    return fromTime + "-" + toTime
+}
 
 const PaymentPage = () => {
     const [event, setEvent] = useState({});
@@ -177,15 +190,17 @@ const PaymentPage = () => {
     }, []);
 
     const handlePayment = async () => {
-        console.log(1)
         setIsDisable(true);
         if (newBooking) {
             console.log(newBooking)
+            if (new Date(newBooking.LinkExpiry) < new Date()) {
+                const zaloApi = await PostZaloApi(dispatch, newBooking)
+                Linking.openURL(zaloApi.data.order_url);
+                return
+            }
             if (newBooking.PaymentLink) {
-                console.log(3)
                 Linking.openURL(newBooking.PaymentLink);
                 setIsDisable(false)
-                console.log(4)
             }
         }
         setIsDisable(false);
@@ -207,7 +222,11 @@ const PaymentPage = () => {
                         <View style={styles.paymentContent}>
                             <Text>Ngày tổ chức: {formatDate(new Date(event?.EventDate))}</Text>
                             <Text>Loại sự kiện: {getEventType(event?.EventType)}</Text>
-                            <Text>Thời gian: {getTime(event?.Time)}</Text>
+                            {event?.RoomEvent?.MaxTable >= 5 ?
+                                <Text>Thời gian: {getTime(event?.Time)}</Text>
+                                :
+                                <Text>Thời gian: {getRangeTime(event?.From, event?.To)}</Text>
+                            }
                             <Text>Tổng số bàn: {event?.TotalTable}</Text>
                             <Text>Trang trí: {getDecore(event?.Decore)}</Text>
                             <Text>Ghi chú: {event?.Note}</Text>
@@ -216,33 +235,35 @@ const PaymentPage = () => {
                 </View>
 
                 <View style={styles.flex}>
-                    <View style={styles.paymentMenu}>
-                        <Text style={styles.menuTitle}>Menu</Text>
-                        <Text style={styles.menuPrice}>Tổng giá:</Text>
-                        <Text style={styles.menuPrice}>{getMenuPrice(event.Menu)?.toLocaleString()} VND/Bàn</Text>
-                        <View>
-                            <Text style={styles.itemTitle}>Món ăn</Text>
-                            {event.Menu?.Food.map((food, idx) => (
-                                <View key={idx} style={styles.menuItem}>
-                                    <Text style={styles.textItem}>{food.Name}</Text>
-                                </View>
-                            ))}
-                        </View>
-                        <View>
-                            <Text style={styles.itemTitle}>Đồ uống</Text>
-                            {event.Menu?.Drinks.map((drink, idx) => (
-                                <View key={idx} style={styles.menuItem}>
-                                    <Text style={styles.textItem}>{drink.Name}</Text>
-                                </View>
-                            ))}
-                        </View>
-                    </View>
+                    {event?.Menu &&
 
+                        <View style={styles.paymentMenu}>
+                            <Text style={styles.menuTitle}>Menu</Text>
+                            <Text style={styles.menuPrice}>Tổng giá:</Text>
+                            <Text style={styles.menuPrice}>{getMenuPrice(event.Menu)?.toLocaleString()} VND/Bàn</Text>
+                            <View>
+                                <Text style={styles.itemTitle}>Món ăn</Text>
+                                {event.Menu?.Food.map((food, idx) => (
+                                    <View key={idx} style={styles.menuItem}>
+                                        <Text style={styles.textItem}>{food.Name}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                            <View>
+                                <Text style={styles.itemTitle}>Đồ uống</Text>
+                                {event.Menu?.Drinks.map((drink, idx) => (
+                                    <View key={idx} style={styles.menuItem}>
+                                        <Text style={styles.textItem}>{drink.Name}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                        </View>
+                    }
                     <View style={styles.paymentMenu}>
                         <View style={styles.paymentPrice}>
                             <Text style={styles.totalPrice}>TỔNG GIÁ</Text>
                             <Text style={styles.totalAmount}>
-                                {(getMenuPrice(event.Menu) * event.TotalTable +getDecorePrice(event,event.Decore) + roomPriceByEvent(event, event.RoomEvent?.Price))?.toLocaleString()} VND
+                                {(getMenuPrice(event.Menu) * event.TotalTable + getDecorePrice(event, event.Decore) + roomPriceByEvent(event, event.RoomEvent?.Price))?.toLocaleString()} VND
                             </Text>
                         </View>
                     </View>
@@ -262,7 +283,7 @@ const PaymentPage = () => {
                                 style={styles.resetButton}
                                 onPress={() => resetLinkPayment()}
                             >
-                                 <MaterialIcons name="refresh" size={32}/>
+                                <MaterialIcons name="refresh" size={32} />
                             </TouchableOpacity>
                         </View>
                     ) : <Text>Lịch đặt đã hết hạn</Text>
@@ -379,9 +400,9 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "700"
     },
-    resetButton:{
-        marginTop:10,
-        alignItems:"center"
+    resetButton: {
+        marginTop: 10,
+        alignItems: "center"
     }
 });
 

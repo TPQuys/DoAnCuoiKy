@@ -34,7 +34,20 @@ const eventController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
-    }
+    },
+    // Xóa sự kiện
+    getRoomBooked: async (req, res) => {
+        try {
+            const {RoomEventID, EventDate} = req.body
+            const response = await eventService.getRoomBooked(RoomEventID, EventDate);
+            console.log(response)
+            res.status(200).json(response);
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ message: error.message });
+        }
+    },
+
 };
 
 module.exports = eventController;

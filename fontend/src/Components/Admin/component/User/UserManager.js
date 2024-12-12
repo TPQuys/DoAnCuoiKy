@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TableSortLabel } from '@mui/material';
 import { getAllUsers, updateUser, deleteUser } from "../../../../redux/actions/userRequest";
-// import EditUserModal from "./component/EditUserModal";
+import EditUserModal from "./component/EditUserModal";
 import { toast } from "react-toastify";
 
 const UsersManagement = () => {
@@ -50,13 +50,15 @@ const UsersManagement = () => {
 
     return (
         <TableContainer component={Paper}>
-            <Table stickyHeader aria-label="user management table">
+            <Table >
                 <TableHead>
                     <TableRow>
-                        <TableCell>Email</TableCell>
-                        <TableCell>Họ và tên</TableCell>
-                        <TableCell>Số điện thoại</TableCell>
-                        <TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Họ và tên</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Số điện thoại</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Ngày sinh</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Role</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>
                             <TableSortLabel
                                 active={sortConfig.key === 'createdAt'}
                                 direction={sortConfig.direction}
@@ -65,33 +67,38 @@ const UsersManagement = () => {
                                 Ngày tạo
                             </TableSortLabel>
                         </TableCell>
-                        <TableCell>Hành động</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Hành động</TableCell>
                     </TableRow>
                 </TableHead>
+
                 <TableBody>
-                    {sortedUsers.map((user) =>
-                    {if(!user.admin){
-                        return (
-                        <TableRow key={user.id}>
-                            <TableCell>{user.email}</TableCell>
-                            <TableCell>{user.fullname || "Không có"}</TableCell>
-                            <TableCell>{user.phone || "Không có"}</TableCell>
-                            <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
-                            <TableCell>
-                                {/* <Button variant="text" onClick={() => handleEdit(user)}>
-                                    Sửa
-                                </Button> */}
-                                <Button variant="text" color="error" onClick={() => handleDelete(user.id)}>
-                                    Xóa
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    )}})
+                    {sortedUsers.map((user) => {
+                        if (!user.admin) {
+                            return (
+                                <TableRow key={user.id}>
+                                    <TableCell>{user.email}</TableCell>
+                                    <TableCell>{user.fullname || "Không có"}</TableCell>
+                                    <TableCell>{user.phone || "Không có"}</TableCell>
+                                    <TableCell>{new Date(user.dayofbirth).toLocaleDateString() || "Không có"}</TableCell>
+                                    <TableCell>{user.role || "Không có"}</TableCell>
+                                    <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                                    <TableCell>
+                                        <Button variant="text" onClick={() => handleEdit(user)}>
+                                            Sửa
+                                        </Button>
+                                        <Button variant="text" color="error" onClick={() => handleDelete(user.id)}>
+                                            Xóa
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            )
+                        }
+                    })
                     }
                 </TableBody>
             </Table>
 
-            {/* {selectedUser && (
+            {selectedUser && (
                 <EditUserModal
                     initialValues={selectedUser}
                     open={isEditOpen}
@@ -102,7 +109,7 @@ const UsersManagement = () => {
                         toast.success("Cập nhật thông tin người dùng thành công!");
                     }}
                 />
-            )} */}
+            )}
         </TableContainer>
     );
 };

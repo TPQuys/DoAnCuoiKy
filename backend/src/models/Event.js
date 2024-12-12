@@ -25,8 +25,16 @@ const Event = sequelize.define('Event', {
         allowNull: false
     },
     Time:{
-        type: DataTypes.ENUM('MORNING','AFTERNOON','ALLDAY'),
+        type: DataTypes.ENUM('MORNING','AFTERNOON','ALLDAY','CUSTOM'),
         allowNull: false
+    },
+    From:{
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    To:{
+        type: DataTypes.DATE,
+        allowNull: true
     },
     Note: {
         type: DataTypes.TEXT,

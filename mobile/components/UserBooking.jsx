@@ -14,6 +14,13 @@ const formatDate = (date) => {
     }
 };
 
+const getRangeTime = (from,to)=>{
+    const fromTime = new Date(from).toLocaleTimeString()
+    const toTime = new Date(to).toLocaleTimeString()
+
+    return fromTime+"-"+ toTime
+}
+
 const getEventType = (type) => {
     switch (type) {
         case 'WEDDING': return 'Đám cưới';
@@ -73,9 +80,9 @@ const formatDateTime = (dateString) => {
     }
 };
 
-const isExpiry = (LinkExpiry) => {
-    const experi = new Date(LinkExpiry)
-    const curent = new Date()
+const isExpiry = (bookingTime) => {
+    const experi = new Date(bookingTime).getTime() + 24 * 60 * 60 * 1000;
+    const curent = new Date().getTime()
     if (experi < curent) {
         return true;
     } else {
@@ -183,7 +190,10 @@ const Bookings = ({ bookings, user }) => {
                                     <Paragraph>Nhà hàng: {booking.Event?.RoomEvent?.RoomName}</Paragraph>
                                     <Paragraph>Tổng số bàn: {booking.Event?.TotalTable}</Paragraph>
                                     <Paragraph>Ngày tổ chức: {formatDate(new Date(booking.Event?.EventDate))}</Paragraph>
-                                    <Paragraph>Thời gian: {getTime(booking.Event?.Time)}</Paragraph>
+                                    {booking.Event.Time="CUSTOM"?
+                                    <Paragraph>Thời gian: {getRangeTime(booking.Event?.From,booking.Event?.To)}</Paragraph>
+                                :
+                                    <Paragraph>Thời gian: {getTime(booking.Event?.Time)}</Paragraph>}
                                     <Paragraph>Trang trí: {getDecore(booking?.Event?.Decore)}</Paragraph>
                                     <Paragraph>Ghi chú: {booking.Event?.Note || 'Không có'}</Paragraph>
                                     <Paragraph>
@@ -204,7 +214,7 @@ const Bookings = ({ bookings, user }) => {
                                 <Card.Actions style={styles.buttonContainer}>
                                     {!booking.Payment && (
                                         <>
-                                            {isExpiry(booking.LinkExpiry) ? (
+                                            {isExpiry(booking.BookingTime) ? (
                                                 <Button color="grey" title="Đã hết hạn" />
                                             ) : (
                                                 <Button title="Thanh toán ngay" onPress={() => handlePaymentClick(booking)} />

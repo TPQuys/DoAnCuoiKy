@@ -12,7 +12,26 @@ const eventRepository = {
         return await Event.findByPk(eventId);
     },
 
-    findByRoomAndTime: async (RoomEventID, EventDate, Time) => {
+
+    findByRoomAndTime: async (RoomEventID, EventDate, Time, From, To) => {
+        const timeCondition = {
+            [Op.or]: [
+                { Time: 'ALLDAY' },
+                {
+                    Time: Time === 'ALLDAY'
+                        ? { [Op.in]: ['MORNING', 'AFTERNOON', 'CUSTOM'] }
+                        : Time
+                },
+                {
+                    Time: 'CUSTOM',
+                    [Op.and]: [
+                        From ? { From: { [Op.lt]: To } } : {},
+                        To ? { To: { [Op.gt]: From } } : {}
+                    ]
+                }
+            ]
+        };
+    
         return await Event.findOne({
             include: [
                 {
@@ -34,28 +53,76 @@ const eventRepository = {
                         '=',
                         Sequelize.fn('DATE', EventDate)
                     ),
+                    timeCondition,
                     {
                         [Op.or]: [
-                            { Time: 'ALLDAY' },
-                            {
-                                Time: Time === 'ALLDAY'
-                                    ? { [Op.in]: ['MORNING', 'AFTERNOON'] }
-                                    : Time
-                            }
-                        ]
-                    },
-                    {
-                        [Op.or]: [
-                            // Kiểm tra nếu thời gian hiện tại đã vượt qua BookingTime + 15 phút
                             Sequelize.where(
-                                Sequelize.literal(`"Booking"."BookingTime" + INTERVAL '15 minutes'`),
+                                Sequelize.literal(`"Booking"."BookingTime" + INTERVAL '1 day'`),
                                 '>',
                                 Sequelize.literal('NOW()')
                             ),
-                            // Kiểm tra nếu Payment đã được thanh toán (PaymentID không null)
                             { '$Booking.Payment.PaymentID$': { [Op.ne]: null } }
                         ]
                     }
+                ]
+            }
+        });
+    },
+    
+    findByRoom: async (RoomEventID, EventDate) => {
+        return await Event.findAll({
+            include: [
+                {
+                    model: Booking,
+                    attributes: ["BookingTime"],
+                    include: [
+                        {
+                            model: Payment,
+                            attributes: ["PaymentID"]
+                        }
+                    ]
+                }
+            ],
+            attributes: ['Time', "From", "To", "EventDate"],
+            where: {
+                RoomEventID,
+                [Op.and]: [
+                    Sequelize.where(
+                        Sequelize.fn('DATE', Sequelize.col('EventDate')),
+                        '=',
+                        Sequelize.fn('DATE', EventDate)
+                    ),
+                    {
+                        [Op.or]: [
+                            Sequelize.where(
+                                Sequelize.literal(`"Booking"."BookingTime" + INTERVAL '1 day'`),
+                                '>',
+                                Sequelize.literal('NOW()')
+                            ),
+                            { '$Booking.Payment.PaymentID$': { [Op.ne]: null } }
+                        ]
+                    }
+                ]
+            }
+        });
+    },
+    
+    checkPendingBookings: async () => {
+        return await Booking.findAll({
+            include: [
+                {
+                    model: Payment,
+                    attributes: ["PaymentID"]
+                }
+            ],
+            where: {
+                [Op.and]: [
+                    Sequelize.where(
+                        Sequelize.literal(`"Booking"."BookingTime" + INTERVAL '1 day'`),
+                        '>',
+                        Sequelize.literal('NOW()')
+                    ),
+                    { '$Payment.PaymentID$': { [Op.is]: null } } // Kiểm tra thanh toán chưa thực hiện
                 ]
             }
         });

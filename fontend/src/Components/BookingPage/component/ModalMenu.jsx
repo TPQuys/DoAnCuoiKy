@@ -11,7 +11,7 @@ const modalStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 600,
+    width: '70vw',
     border: '2px solid #000',
     boxShadow: 24,
     p: 4,
@@ -19,6 +19,7 @@ const modalStyle = {
 
 const selectedStyle = {
     padding: 2,
+    width:'30%',
     background: "#fafaeb",
     borderRadius: 4,
 }
@@ -89,7 +90,6 @@ const CreateMenuModal = ({ open, handleClose, setSelected }) => {
                 handleClose(); // Close the modal
             } catch (error) {
                 console.error('Error creating menu:', error);
-                alert('Error creating menu');
             }
         }else{
             if(selectedFood.length<4){
@@ -109,7 +109,7 @@ const CreateMenuModal = ({ open, handleClose, setSelected }) => {
                 <Grid  >
                     {/* Left side: Display selected food and drinks */}
                     <Grid container sx={{ marginBottom: 2 }}>
-                        <Grid sx={selectedStyle} xs={5}>
+                        <Grid sx={selectedStyle} xs={4}>
                             <Typography variant="h6" gutterBottom>Món ăn đã chọn</Typography>
                             <List sx={listStyle}>
                                 {selectedFood.map((foodId) => {
@@ -122,7 +122,7 @@ const CreateMenuModal = ({ open, handleClose, setSelected }) => {
                                 })}
                             </List>
                         </Grid>
-                        <Grid sx={listWrap} xs={7}>
+                        <Grid sx={listWrap} xs={8}>
                             <Typography variant="h6" gutterBottom>Danh sách món ăn</Typography>
                             <List sx={listStyle}>
                                 <Grid container >
@@ -142,7 +142,7 @@ const CreateMenuModal = ({ open, handleClose, setSelected }) => {
                         </Grid>
                     </Grid>
                     <Grid container>
-                        <Grid sx={selectedStyle} xs={5}>
+                        <Grid sx={selectedStyle} xs={4}>
                             <Typography variant="h6" gutterBottom>Đồ uống đã chọn</Typography>
                             <List sx={listStyle}>
                                 {selectedDrinks.map((drinkId) => {
@@ -155,7 +155,7 @@ const CreateMenuModal = ({ open, handleClose, setSelected }) => {
                                 })}
                             </List>
                         </Grid>
-                        <Grid sx={listWrap} xs={7}>
+                        <Grid sx={listWrap} xs={8}>
                             <Typography variant="h6" gutterBottom>Danh sách đồ uống</Typography>
                             <List sx={listStyle}>
                                 <Grid container>

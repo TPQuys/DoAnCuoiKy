@@ -10,6 +10,7 @@ const menuController = {
             const menus = await menuService.getAllMenus();
             return res.status(200).json(menus);
         } catch (error) {
+            console.error(error)
             return res.status(500).json({ message: error.message });
         }
     },
@@ -66,6 +67,7 @@ const menuController = {
     
             return res.status(201).json(fullMenu);
         } catch (error) {
+            console.error(error)
             return res.status(500).json({ message: error.message });
         }
     },

@@ -61,7 +61,7 @@ export const logOut = async (dispatch, id, navigate, accessToken, axiosJWT) => {
         navigate("/login");
     } catch (error) {
         console.error("Logout failed:", error);
-        toast.error("Đăng xuất thất bại!");
+        navigate("/login");
         dispatch(logOutSuccess());
 
     }

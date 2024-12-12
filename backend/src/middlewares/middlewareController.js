@@ -21,7 +21,35 @@ const middlewareController = {
     // Kiểm tra quyền Admin
     verifyTokenAdmin: (req, res, next) => {
         middlewareController.verifyToken(req, res, () => {
-            if ( req.user.admin) {
+            if ( req.user.role==='ADMIN') {
+                next();
+            } else {
+                res.status(403).json({ message: "Bạn không có quyền truy cập." });
+            }
+        });
+    },
+
+    verifyTokenHR: (req, res, next) => {
+        middlewareController.verifyToken(req, res, () => {
+            if ( req.user.role==='ADMIN'||req.user.role==='HR') {
+                next();
+            } else {
+                res.status(403).json({ message: "Bạn không có quyền truy cập." });
+            }
+        });
+    },
+    verifyTokenManager: (req, res, next) => {
+        middlewareController.verifyToken(req, res, () => {
+            if ( req.user.role==='ADMIN'||req.user.role==='MANAGER') {
+                next();
+            } else {
+                res.status(403).json({ message: "Bạn không có quyền truy cập." });
+            }
+        });
+    },
+    verifyTokenAccountant: (req, res, next) => {
+        middlewareController.verifyToken(req, res, () => {
+            if ( req.user.role==='ADMIN'||req.user.role==='ACCOUNTANT') {
                 next();
             } else {
                 res.status(403).json({ message: "Bạn không có quyền truy cập." });

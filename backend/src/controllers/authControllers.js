@@ -9,17 +9,20 @@ const authController = {
                 user: newUser.dataValues
             });
         } catch (error) {
+            console.error(error)
             res.status(400).json({ message: error.message });
         }
     },
 
     loginUser: async (req, res) => {
         try {
+            console.log(req.body)
             const user = await authService.loginUser(req.body.email, req.body.password);
             const accessToken = authService.generateAccessToken(user);
             const { password, ...other } = user;
             res.status(200).json({ user: other, accessToken });
         } catch (error) {
+            console.error(error)
             res.status(400).json({ message: error.message });
         }
     },

@@ -26,7 +26,7 @@ class PaymentService {
         }, 0); // Bắt đầu từ 0
     }
 
-    getDecorePrice (event,decore) {
+    getDecorePrice(event, decore) {
         let total = 0;
         if (decore?.LobbyDecore) {
             total += decore?.DecorePrice?.LobbyDecorePrice; // Sử dụng += để cộng dồn
@@ -35,7 +35,7 @@ class PaymentService {
             total += decore?.DecorePrice?.StageDecorePrice; // Sử dụng += để cộng dồn
         }
         if (decore?.TableDecore) {
-            total += (decore?.DecorePrice?.TableDecorePrice)*event?.TotalTable; // Sử dụng += để cộng dồn
+            total += (decore?.DecorePrice?.TableDecorePrice) * event?.TotalTable; // Sử dụng += để cộng dồn
         }
         return total; // Trả về tổng giá trị
     };
@@ -72,10 +72,28 @@ class PaymentService {
         return await PaymentRepository.getAllPayments();
     }
 
+    rommPriceByEvent(event, roomPrice) {
+        if (event?.Time === "ALLDAY") {
+            return roomPrice * 2
+        } else if (event?.Time === "CUSTOM") {
+            const from = new Date(event.From)
+            const to = new Date(event.To)
+            const diff = (to - from) / (1000 * 60 * 60)
+
+            console.log(diff)
+            return roomPrice * diff
+        }
+        else {
+            return roomPrice
+        }
+    }
+
     async postZaloApi(booking, backendURL) {
-        ngrok.kill()
+        try {
+            ngrok.kill()
+        } catch { }
         const url = backendURL.includes("8000") ? await ngrok.connect(8000) : backendURL
-        // const url = "https://7ded-27-65-230-251.ngrok-free.app"
+        // const url = "https://160b-116-106-193-155.ngrok-free.app"
         // console.log(url)
         const findBooking = await bookingRepository.getBookingById(booking.BookingID)
         // if(findBooking.PaymentLink && (findBooking.LinkExpiry> new Date())){
@@ -94,10 +112,10 @@ class PaymentService {
 
             const totalTable = eventData?.TotalTable || 1; // Tổng số bàn, mặc định là 1 nếu không có
             const Time = eventData?.Time; // Tổng số bàn, mặc định là 1 nếu không có
-            const roomPrice = (Time === "ALLDAY" ? roomEventData?.Price * 2 : roomEventData?.Price) || 0; // Giá phòng
+            const roomPrice = this.rommPriceByEvent(eventData, roomEventData.Price)
             // console.log(roomPrice)
             // Tính tổng tiền thanh toán
-            const Amount = (totalPriceFoods + totalPriceDrinks) * totalTable + this.getDecorePrice(eventData,eventData.Decore) + roomPrice;
+            const Amount = (totalPriceFoods + totalPriceDrinks) * totalTable + this.getDecorePrice(eventData, eventData.Decore) + roomPrice;
             const BookingID = findBooking.BookingID
             const embed_data = {
                 redirecturl: `${process.env.FRONTEND_URL}/payment`
@@ -135,7 +153,7 @@ class PaymentService {
                             },
                             { where: { BookingID: findBooking.BookingID } }
                         );
-                    return result.data
+                        return result.data
                     }
 
                 } catch (error) {

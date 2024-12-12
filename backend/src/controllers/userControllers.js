@@ -8,6 +8,8 @@ const Menu = require("../models/Menu")
 const Payment = require("../models/Payment")
 const MenuDrinks = require("../models/MenuDrinks")
 const MenuFoods = require("../models/MenuFoods")
+const Rate = require("../models/Rate")
+
 // Thêm mới user
 const createUser = async (req, res) => {
     try {
