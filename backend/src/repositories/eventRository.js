@@ -107,6 +107,26 @@ const eventRepository = {
         });
     },
     
+    checkPendingBookings: async () => {
+        return await Booking.findAll({
+            include: [
+                {
+                    model: Payment,
+                    attributes: ["PaymentID"]
+                }
+            ],
+            where: {
+                [Op.and]: [
+                    Sequelize.where(
+                        Sequelize.literal(`"Booking"."BookingTime" + INTERVAL '1 day'`),
+                        '>',
+                        Sequelize.literal('NOW()')
+                    ),
+                    { '$Payment.PaymentID$': { [Op.is]: null } } // Kiểm tra thanh toán chưa thực hiện
+                ]
+            }
+        });
+    },
 
     create: async (eventData) => {
         return await Event.create(eventData);

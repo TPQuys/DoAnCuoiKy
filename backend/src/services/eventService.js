@@ -12,7 +12,10 @@ const eventService = {
                 throw new Error("Hãy chọn giờ tổ chức")
             }
         }
-
+        const BookingPending = await eventRepository.checkPendingBookings()
+        if(BookingPending.length>0){
+            throw new Error("Bạn có đơn đặt chưa thanh toán, hãy thanh toán hoặc hủy bỏ trước khi đặt đơn mới!")
+        }
         // Tìm sự kiện trùng RoomEventID, EventDate và Time
         const existingEvent = await eventRepository.findByRoomAndTime(RoomEventID, EventDate, Time, From, To);
 

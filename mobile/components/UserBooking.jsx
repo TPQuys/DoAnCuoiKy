@@ -80,9 +80,9 @@ const formatDateTime = (dateString) => {
     }
 };
 
-const isExpiry = (LinkExpiry) => {
-    const experi = new Date(LinkExpiry)
-    const curent = new Date()
+const isExpiry = (bookingTime) => {
+    const experi = new Date(bookingTime).getTime() + 24 * 60 * 60 * 1000;
+    const curent = new Date().getTime()
     if (experi < curent) {
         return true;
     } else {
@@ -214,7 +214,7 @@ const Bookings = ({ bookings, user }) => {
                                 <Card.Actions style={styles.buttonContainer}>
                                     {!booking.Payment && (
                                         <>
-                                            {isExpiry(booking.LinkExpiry) ? (
+                                            {isExpiry(booking.BookingTime) ? (
                                                 <Button color="grey" title="Đã hết hạn" />
                                             ) : (
                                                 <Button title="Thanh toán ngay" onPress={() => handlePaymentClick(booking)} />
