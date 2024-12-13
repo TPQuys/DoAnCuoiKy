@@ -99,7 +99,8 @@ class PaymentService {
         // if(findBooking.PaymentLink && (findBooking.LinkExpiry> new Date())){
         //     return {order_url:findBooking.PaymentLink}
         // }
-        if (!booking.Payment) {
+        console.log(booking)
+        if (booking.Payment==null) {
             const eventData = findBooking?.Event || {};
             const roomEventData = eventData?.RoomEvent || {};
             const menuData = eventData?.Menu || {};
@@ -161,7 +162,7 @@ class PaymentService {
                 }
             }
         } else
-            return "Sự kiện này đã được thanh toán trước"
+        throw new Error('Sự kiện này đã được thanh toán trước')
     }
 
     // async postZaloApiMobile(booking,backendURL ) {
