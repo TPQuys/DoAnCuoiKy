@@ -309,8 +309,8 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                                         error={touched.Time && Boolean(errors.Time)}
                                         helperText={touched.Time && errors.Time}
                                     >
-                                        <MenuItem value="MORNING" disabled={bookedTimes?.includes('MORNING') || bookedTimes?.includes('ALLDAY')}>Buổi sáng</MenuItem>
-                                        <MenuItem value="AFTERNOON" disabled={bookedTimes?.includes('AFTERNOON') || bookedTimes?.includes('ALLDAY')}>Buổi chiều</MenuItem>
+                                        <MenuItem value="MORNING" disabled={bookedTimes?.includes('MORNING') || bookedTimes?.includes('ALLDAY')}>Buổi sáng (8:00-14:00)</MenuItem>
+                                        <MenuItem value="AFTERNOON" disabled={bookedTimes?.includes('AFTERNOON') || bookedTimes?.includes('ALLDAY')}>Buổi chiều (16:00-23:00)</MenuItem>
                                         <MenuItem value="ALLDAY" disabled={disableAllDay}>Cả ngày</MenuItem>
                                         {maxTable < 5 && <MenuItem value="CUSTOM">Tùy chỉnh</MenuItem>}
                                     </WhiteTextField>
