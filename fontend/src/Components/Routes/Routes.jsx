@@ -5,6 +5,7 @@ import Login from "../Login/Login";
 import Register from "../Register/Register";
 import Room from "../Rooms/Room";
 import BookingPage from "../BookingPage/BookingPage";
+import BookingDetail from "../BookingPage/BookingDetail";
 import EventPage from "../EventPage/EventPage";
 import PaymentPage from "../Payment/PaymentPage";
 import UserPage from "../User/UserPage";
@@ -47,22 +48,22 @@ const AppRoutes = () => {
         window.scrollTo(0, 0);
       }, [location.pathname]);
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        if (!user1) {
-            if (location.pathname === "/booking" || location.pathname === "/room") {
-                toast.info("Hãy đăng nhập để đặt phòng");
-                sessionStorage.setItem("previousPath", previousPath)
-                navigate("/login");
+    //     if (!user1) {
+    //         if (location.pathname === "/booking" || location.pathname === "/room") {
+    //             toast.info("Hãy đăng nhập để đặt phòng");
+    //             sessionStorage.setItem("previousPath", previousPath)
+    //             navigate("/login");
 
-            }
-            if (location.pathname === "/logout" || location.pathname === "/user") {
-                navigate("/login");
+    //         }
+    //         if (location.pathname === "/logout" || location.pathname === "/user") {
+    //             navigate("/login");
 
-            }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sessionStorage, location.pathname, navigate, previousPath],user1);
+    //         }
+    //     }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [sessionStorage, location.pathname, navigate, previousPath],user1);
 
     return (
         <>
@@ -72,11 +73,11 @@ const AppRoutes = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/room" element={<Room />} />
-                    <Route path="/booking/:roomId" element={<BookingPage />} />
+                    <Route path="/booking/detail" element={<BookingDetail />} />
+                    <Route path="/booking" element={<BookingPage />} />
                     <Route path="/payment" element={<PaymentPage />} />
                     <Route path="/user" element={<UserPage />} />
                     <Route path="/user/info" element={<UserInfoPage />} />
-                    {/* <Route path="/event" element={<EventPage />} /> */}
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/decore" element={<DecorePage />} />
                     <Route path="/reset_password" element={<ResetPassword />} />

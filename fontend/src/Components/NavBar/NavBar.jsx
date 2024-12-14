@@ -81,7 +81,7 @@ const NavBar = () => {
       <Link to="/decore" className="navbar-home"><GiFlowers /> Trang trí </Link>
         </div>
       </div>
-      <Link to="/room" className="navbar-home"><FaTag /> Đặt nhà hàng </Link>
+      <Link to="/booking" className="navbar-home"><FaTag /> Đặt nhà hàng </Link>
 
       {user ? (
         user?.role!=="USER" ? (

@@ -23,6 +23,18 @@ const roomEventController = {
             res.status(500).json(error);
         }
     },
+    // Tạo RoomEvent mới
+    findAvailableRooms: async (req, res) => {
+        try {
+            const { EventDate, Time, From, To } = req.body.values
+            const availableRooms = await roomEventService.findAvailableRooms(EventDate, Time, From, To);
+            res.status(201).json(availableRooms);  // Trả về RoomEvent mới được tạo
+        } catch (error) {
+            console.error(error)
+            res.status(500).json(error);
+        }
+    },
+
 
     // Cập nhật RoomEvent
     updateRoomEvent: async (req, res) => {
@@ -61,14 +73,14 @@ const roomEventController = {
 
             if (!req.file) {
                 const room = await roomEventService.updateRoomEvent(roomId, roomData)
-                res.status(200).json( room );
+                res.status(200).json(room);
             }
 
             const imageUrl = await roomEventService.uploadRoomImage(roomId, req.file);
 
             if (imageUrl) {
                 const room = await roomEventService.updateRoomEvent(roomId, { ...roomData, RoomImage: imageUrl })
-                res.status(200).json( room );
+                res.status(200).json(room);
             }
         } catch (error) {
             res.status(500).json({ error: error.message });

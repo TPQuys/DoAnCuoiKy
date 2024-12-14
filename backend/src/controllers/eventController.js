@@ -38,8 +38,9 @@ const eventController = {
     // Xóa sự kiện
     getRoomBooked: async (req, res) => {
         try {
-            const {RoomEventID, EventDate} = req.body
-            const response = await eventService.getRoomBooked(RoomEventID, EventDate);
+            const {EventDate} = req.body
+            console.log(req.body)
+            const response = await eventService.getRoomBooked(EventDate);
             console.log(response)
             res.status(200).json(response);
         } catch (error) {

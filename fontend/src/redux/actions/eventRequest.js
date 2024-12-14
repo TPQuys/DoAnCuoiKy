@@ -26,11 +26,11 @@ export const addEvent = async (dispatch, eventData) => {
     }
 };
 
-export const getRoomBooked = async ( RoomEventID, EventDate) => {
+export const getRoomBooked = async ( values) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     let axiosJWT = createAxios(user);
     try {
-        const res = await axiosJWT.post("/v1/event/room_booked", {RoomEventID, EventDate});
+        const res = await axiosJWT.post("/v1/event/room_booked", values);
         return res.data
     } catch (error) {
         console.error("lấy phòng đã đặt trước thất bại thất bại:", error.response.data.message);

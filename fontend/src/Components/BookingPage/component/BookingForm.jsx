@@ -35,55 +35,18 @@ const WhiteTextField = styled(({ ...props }) => <Field as={TextField} {...props}
     }
 });
 
-const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEventID }, ref) => {
+
+const EventForm = forwardRef(({ handleSubmit, setFrom, setTo }, ref) => {
     const [selectedTimes, setSelectedTimes] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
-    const [bookedSlots, setBookedSlots] = useState([]);
     useEffect(() => {
         mergeTimeSlots(selectedTimes);
     }, [selectedTimes, selectedDate]);
 
-    useEffect(() => {
-        const fetchRoomBooked = async () => {
-            if (selectedDate) {
-                try {
-                    const res = await getRoomBooked(RoomEventID, selectedDate);
-                    console.log(res)
-                    setBookedSlots(res)
-                } catch (error) {
-                    console.error("Error fetching room booked data:", error);
-                }
-            }
-        };
-
-        fetchRoomBooked();
-    }, [selectedDate]);
-
-    const isSlotDisabled = (slotStart, slotEnd, bookedSlots) => {
-        const selectDate = new Date(selectedDate);
-
-        const timezoneOffset = 7 * 60;
-        const selectDateInICT = new Date(selectDate.getTime() + timezoneOffset * 60000);
-
-        const slotStartTime = new Date(selectDateInICT.toISOString().split('T')[0] + `T${slotStart}:00.000+07:00`);
-        const slotEndTime = new Date(selectDateInICT.toISOString().split('T')[0] + `T${slotEnd}:00.000+07:00`);
-
-        return bookedSlots.some(({ From, To }) => {
-            const fromTime = new Date(From);
-            const toTime = new Date(To);
-            return slotStartTime >= fromTime && slotEndTime <= toTime;
-        });
-    };
 
     const handleChangeDate = (setFieldValue, name, value) => {
         setSelectedDate(value);
         setFieldValue(name, value);
-        if (maxTable >= 5) {
-            setFieldValue('Time', '');
-        } else {
-            setFieldValue('Time', 'CUSTOM');
-            setFieldValue('TotalTable', 1);
-        }
         setSelectedTimes([]);
     }
     const mergeTimeSlots = (slots) => {
@@ -120,10 +83,6 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
         }
         return slots;
     };
-
-    const bookedTimes = bookedSlots.map(item => item.Time);
-
-    const disableAllDay = bookedTimes.includes('MORNING') || bookedTimes.includes('AFTERNOON');
 
 
     const timeSlots = generateTimeSlots(8, 23, 1); // Khoảng 1 giờ, từ 8h sáng đến 11h tối
@@ -177,10 +136,9 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
 
     const initialValues = {
         EventType: '',
-        TotalTable: (maxTable <= 5) ? 1 : '',
+        TotalTable: '',
         EventDate: null,
-        Time: maxTable <= 5 ? "CUSTOM" : '',
-        Note: '',
+        Time: '',
     };
 
     // Định nghĩa schema cho validation
@@ -189,9 +147,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
         TotalTable: Yup.number()
             .required('Vui lòng nhập tổng số bàn')
             .positive('Số bàn phải là số dương')
-            .integer('Số bàn phải là số nguyên')
-            .min(maxTable * 0.7, `Số bàn tối thiểu là ${Math.round(maxTable * 0.7)}`)
-            .max(maxTable, `Số bàn tối đa là ${maxTable}`),
+            .integer('Số bàn phải là số nguyên'),
         EventDate: Yup.date()
             .required('Vui lòng chọn ngày')
             .test(
@@ -206,10 +162,10 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
 
                     if (TotalTable > 30) {
                         // Nếu số bàn > 30, kiểm tra ngày phải sau ít nhất 15 ngày
-                        if (!eventDate.isAfter(today.add(15, 'day'))) {
+                        if (!eventDate.isAfter(today.add(10, 'day'))) {
                             return this.createError({
                                 path: 'EventDate',
-                                message: 'Ngày đặt phải trước 15 ngày ',
+                                message: 'Ngày đặt phải trước 15 ngày với phòng trên 20 bàn',
                             });
                         }
                     } else {
@@ -236,14 +192,14 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                 initialValues={initialValues}
                 validationSchema={validationSchema}
                 onSubmit={(values) => {
-                    handleSubmit({ ...values, Time: selectedTimes });
+                    handleSubmit(values);
                 }}
                 innerRef={ref} // Nhận ref từ HomePage
             >
-                {({ errors, touched, setFieldValue }) => (
+                {({ errors, touched, setFieldValue, values }) => (
                     <Form>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
+                        <Grid container spacing={2} justifyItems='center' justifyContent={'center'}>
+                            <Grid item xs={2.5}>
                                 <WhiteTextField
                                     name="EventType"
                                     select
@@ -252,25 +208,23 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                                     error={touched.EventType && Boolean(errors.EventType)}
                                     helperText={touched.EventType && errors.EventType}
                                 >
-                                    {maxTable >= 5 && <MenuItem value="WEDDING">Đám Cưới</MenuItem>}
+                                    <MenuItem value="WEDDING">Đám Cưới</MenuItem>
                                     <MenuItem value="CONFERENCE">Hội Nghị</MenuItem>
                                     <MenuItem value="BIRTHDAY">Sinh nhật</MenuItem>
                                     <MenuItem value="OTHER">Khác</MenuItem>
                                 </WhiteTextField>
                             </Grid>
-                            {maxTable > 5 &&
-                                <Grid item xs={12} sm={6}>
-                                    <WhiteTextField
-                                        name="TotalTable"
-                                        label="Tổng Số Bàn"
-                                        type="number"
-                                        fullWidth
-                                        error={touched.TotalTable && Boolean(errors.TotalTable)}
-                                        helperText={touched.TotalTable && errors.TotalTable}
-                                    />
-                                </Grid>
-                            }
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={2.5} sm={3}>
+                                <WhiteTextField
+                                    name="TotalTable"
+                                    label="Tổng Số Bàn"
+                                    type="number"
+                                    fullWidth
+                                    error={touched.TotalTable && Boolean(errors.TotalTable)}
+                                    helperText={touched.TotalTable && errors.TotalTable}
+                                />
+                            </Grid>
+                            <Grid item xs={2.5}>
 
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <Field name="EventDate">
@@ -298,25 +252,27 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                                     </Field>
                                 </LocalizationProvider>
                             </Grid>
-                            {maxTable > 5 &&
-                                <Grid item xs={12} sm={6}>
-                                    <WhiteTextField
-                                        name="Time"
-                                        select
-                                        label="Thời gian"
-                                        fullWidth
-                                        disabled={selectedDate === null}
-                                        error={touched.Time && Boolean(errors.Time)}
-                                        helperText={touched.Time && errors.Time}
-                                    >
-                                        <MenuItem value="MORNING" disabled={bookedTimes?.includes('MORNING') || bookedTimes?.includes('ALLDAY')}>Buổi sáng (8:00-14:00)</MenuItem>
-                                        <MenuItem value="AFTERNOON" disabled={bookedTimes?.includes('AFTERNOON') || bookedTimes?.includes('ALLDAY')}>Buổi chiều (16:00-23:00)</MenuItem>
-                                        <MenuItem value="ALLDAY" disabled={disableAllDay}>Cả ngày</MenuItem>
-                                        {maxTable < 5 && <MenuItem value="CUSTOM">Tùy chỉnh</MenuItem>}
-                                    </WhiteTextField>
-                                </Grid>
-                            }
-                            {(selectedDate && maxTable < 5) &&
+                            <Grid item xs={2.5}>
+                                <WhiteTextField
+                                    name="Time"
+                                    select
+                                    label="Thời gian"
+                                    fullWidth
+                                    disabled={selectedDate === null}
+                                    error={touched.Time && Boolean(errors.Time)}
+                                    helperText={touched.Time && errors.Time}
+                                >
+                                    <MenuItem value="MORNING" >Buổi sáng (8:00-14:00)</MenuItem>
+                                    <MenuItem value="AFTERNOON" >Buổi chiều (16:00-23:00)</MenuItem>
+                                    <MenuItem value="ALLDAY" >Cả ngày</MenuItem>
+                                    <MenuItem value="CUSTOM">Tùy chỉnh</MenuItem>                                    </WhiteTextField>
+                            </Grid>
+                            <Grid item xs={1} alignContent='center'>
+                                <Button variant='contained' type='submit'>Tìm</Button>
+                            </Grid>
+                        
+                        </Grid>
+                        {(selectedDate && values.Time === "CUSTOM") &&
                                 <Grid item xs={12}>
                                     <Grid container spacing={1}>
                                         {timeSlots.map((slot, index) => (
@@ -324,7 +280,6 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                                                 <Button
                                                     variant={selectedTimes.includes(`${slot.start} - ${slot.end}`) ? "contained" : "outlined"}
                                                     onClick={() => toggleTimeSelection(`${slot.start} - ${slot.end}`)}
-                                                    disabled={isSlotDisabled(slot.start, slot.end, bookedSlots)} // Disable nếu slot bị trùng
                                                 >
                                                     {`${slot.start} - ${slot.end}`}
                                                 </Button>
@@ -333,18 +288,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                                     </Grid>
                                 </Grid>
                             }
-                            <Grid item xs={12}>
-                                <WhiteTextField
-                                    name="Note"
-                                    label="Ghi chú"
-                                    multiline
-                                    rows={4}
-                                    fullWidth
-                                    error={touched.Note && Boolean(errors.Note)}
-                                    helperText={touched.Note && errors.Note}
-                                />
-                            </Grid>
-                        </Grid>
+
                     </Form>
                 )}
             </Formik>

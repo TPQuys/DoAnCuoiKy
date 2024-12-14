@@ -110,7 +110,7 @@ const Bookings = ({ bookings }) => {
                                 <TableCell>{booking.Event?.TotalTable}</TableCell>
                                 <TableCell>{formatDate(new Date(booking.Event?.EventDate))}</TableCell>
                                 <TableCell>{
-                                    booking.Event.Time !== "CUSTOM" ?
+                                    booking.Event?.Time !== "CUSTOM" ?
                                         getTime(booking.Event?.Time)
                                         : getRangeTime(booking.Event?.From, booking.Event?.To)
                                 }</TableCell>

@@ -134,5 +134,7 @@ export const getDecorePrice = (event, decore) => {
             total += (decore?.DecorePrice?.TableDecorePrice) * event?.TotalTable; // Sử dụng += để cộng dồn
         }
         return total; // Trả về tổng giá trị
+    } else {
+        return 0;
     }
 };

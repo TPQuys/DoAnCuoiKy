@@ -21,6 +21,18 @@ export const getAllRooms = async (dispatch) => {
     }
 };
 
+// Lấy tất cả phòng
+export const getAvailableRooms = async (values) => {
+    let axiosJWT = createAxios();
+    try {
+        const res = await axiosJWT.post("/v1/room/available",{values});
+        return res.data
+    } catch (error) {
+        console.error("Get rooms failed:", error);
+        toast.error("Không thể lấy danh sách phòng!");
+    }
+};
+
 // Thêm phòng
 export const addRoom = async (dispatch, roomData, file) => {
     let axiosJWT = createAxios();
