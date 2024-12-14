@@ -31,7 +31,7 @@ import { Card, CardContent, Grid, Typography } from "@mui/material";
                                 variant="h5"
                                 sx={{
                                     backgroundColor: '#fdeacd',
-                                    fontSize: 25,
+                                    fontSize: 18,
                                     fontWeight: 600,
                                     color: '#81695e',
                                     padding: '10px', // Đảm bảo có khoảng cách xung quanh
@@ -43,7 +43,6 @@ import { Card, CardContent, Grid, Typography } from "@mui/material";
                                 variant="h6"
                                 color="textSecondary"
                                 sx={{
-                                    fontSize: '1.2rem',
                                     textAlign: 'left', // Căn trái giá
                                     paddingX: '10px' // Khoảng cách từ hai bên
                                 }}
@@ -61,11 +60,9 @@ import { Card, CardContent, Grid, Typography } from "@mui/material";
                                         <strong>Món ăn:</strong>
                                     </Typography>
                                     {menu?.Food?.map((food, idx) => (
-                                        <Typography
+                                        <Typography variant="body2" 
                                             key={idx}
-                                            variant="body2"
                                             sx={{
-                                                fontSize: '1rem',
                                                 textAlign: 'left',
                                                 borderBottom: '1px solid #ddd', // Đường viền nhạt
                                                 paddingBottom: '5px' // Khoảng cách dưới dòng
@@ -80,11 +77,9 @@ import { Card, CardContent, Grid, Typography } from "@mui/material";
                                         <strong>Đồ uống:</strong>
                                     </Typography>
                                     {menu?.Drinks?.map((drink, idx) => (
-                                        <Typography
+                                        <Typography variant="body2" 
                                             key={idx}
-                                            variant="body2"
                                             sx={{
-                                                fontSize: '1rem',
                                                 textAlign: 'left',
                                                 borderBottom: '1px solid #ddd', // Đường viền nhạt
                                                 paddingBottom: '5px' // Khoảng cách dưới dòng

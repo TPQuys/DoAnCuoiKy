@@ -28,23 +28,6 @@ const HomePage = () => {
 
     const handleBooking = async (room) => {
         navigate('/booking/detail', { state: { formData, room } });
-        // const newEvent = await addEvent(dispatch, { ...formData, RoomEventID: roomId })
-        // console.log(newEvent)
-        // if (newEvent?.EventID && user) {
-        //     const newBooking = await addBooking(dispatch,
-        //         {
-        //             EventID: newEvent.EventID,
-        //             UserID: user.user.id,
-        //             BookingTime: new Date()
-        //         }
-        //     )
-        //     console.log(newBooking)
-        //     if (newBooking.PaymentLink == null) {
-        //         sessionStorage.setItem("booking", JSON.stringify(newBooking))
-        //         const zaloApi = await PostZaloApi(dispatch, newBooking)
-        //         navigate("/payment");
-        //     }
-        // }
     }
 
     return (

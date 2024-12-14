@@ -64,6 +64,7 @@ const EventForm = forwardRef(({ handleSubmit, setFrom, setTo }, ref) => {
         newDateFrom.setHours(parseInt(fromTime));
         newDateFrom.setMinutes(0)
         newDateFrom.setSeconds(0)
+        console.log(newDateFrom)
         setFrom(newDateFrom)
 
         const newDateTo = new Date(newDate);  // Tạo bản sao khác để thay đổi giờ

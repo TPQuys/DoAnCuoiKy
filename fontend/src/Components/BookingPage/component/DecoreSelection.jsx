@@ -3,6 +3,7 @@ import { TheaterComedy, EventSeat, TableRestaurant, Check } from "@mui/icons-mat
 import { useState } from "react";
 
 const DecoreSelection = ({ Decore, onDecoreChange,price,selectedPrice,setSelectedPrice }) => {
+    console.log(price)
     const [selectedType,setSelectedType] = useState('BASIC')
 
     const decoreOptions = [
