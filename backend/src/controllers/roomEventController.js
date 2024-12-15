@@ -1,4 +1,5 @@
 // controllers/roomEventController.js
+const RequireDay = require('../models/RequireDay');
 const roomEventService = require('../services/roomEventServices');
 const { v4: uuidv4 } = require('uuid');
 const roomEventController = {
@@ -38,6 +39,7 @@ const roomEventController = {
 
     // Cập nhật RoomEvent
     updateRoomEvent: async (req, res) => {
+        console.log("update room")
         try {
             const RoomEvent = await roomEventService.updateRoomEvent(req.params.id, req.body);
             res.status(200).json(RoomEvent);
@@ -68,7 +70,7 @@ const roomEventController = {
     uploadRoom: async (req, res) => {
         const roomId = req.params.id;
         const roomData = req.body;
-
+        console.log("update room")
         try {
 
             if (!req.file) {
@@ -105,6 +107,48 @@ const roomEventController = {
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
-    }
+    },
+    updateRequireDay: async (req, res) => {
+        const { numberDay } = req.body; // Lấy dữ liệu từ body
+    
+        try {
+            // Tìm row đầu tiên trong bảng RequireDay
+            const response = await RequireDay.findOne();
+            console.log(response.RequireDayID)
+
+            if (!response) {
+                return res.status(404).json({ message: "Không tìm thấy row để cập nhật." });
+            }
+    
+            // Cập nhật row đã tìm được
+            const updated = await response.update({NumberDay:numberDay})
+
+             console.log(updated)
+    
+            if (updated) {
+                res.status(200).json( updated );
+            } else {
+                res.status(500).json({ message: "Cập nhật thất bại." });
+            }
+        } catch (error) {
+            console.error("Error updating RequireDay:", error);
+            res.status(500).json({ error: error.message });
+        }
+    },
+    getRequireDay: async (req, res) => {
+        try {
+            const response = await RequireDay.findOne();
+    
+            if (response) {
+                res.status(200).json(response);
+            } else {
+                res.status(404).json({ message: "Không tìm thấy row để cập nhật." });
+            }
+        } catch (error) {
+            console.error(error)
+            res.status(500).json({ error: error.message });
+        }
+    },
 }
+    
 module.exports = roomEventController;

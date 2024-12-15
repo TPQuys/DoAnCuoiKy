@@ -14,6 +14,7 @@ const RoomFormModal = ({ open, onClose, onSubmit, initialValues, editMode, setSe
         MaxTable: Yup.number().required("Số bàn tối đa là bắt buộc").positive("Số bàn tối đa phải là số dương"),
         Price: Yup.number().required("Giá là bắt buộc").positive("Giá phải là số dương"),
         Description: Yup.string().required("Mô tả là bắt buộc"),
+        RequireDay: Yup.number().required("Số ngày yêu cầu đặt trước là bắt buộc").positive("Số ngày yêu cầu đặt trước pahỉ là số dương")
     });
 
     return (
@@ -100,6 +101,17 @@ const RoomFormModal = ({ open, onClose, onSubmit, initialValues, editMode, setSe
                                         onChange={handleChange}
                                         error={touched.Price && Boolean(errors.Price)}
                                         helperText={touched.Price && errors.Price}
+                                    />
+                                        <TextField
+                                        margin="dense"
+                                        name="RequireDay"
+                                        label="Sô ngày yêu cầu đặt trước"
+                                        type="number"
+                                        fullWidth
+                                        value={values.RequireDay}
+                                        onChange={handleChange}
+                                        error={touched.RequireDay && Boolean(errors.RequireDay)}
+                                        helperText={touched.RequireDay && errors.RequireDay}
                                     />
                                     <TextField
                                         margin="dense"

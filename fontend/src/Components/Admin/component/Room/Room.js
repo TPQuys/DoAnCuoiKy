@@ -1,17 +1,22 @@
 import React from "react";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
-import {  useDispatch } from "react-redux";
-import {  addRoom, deleteRoom, updateRoomHaveImage, updateRoomNoImage } from "../../../../redux/actions/roomRequest"; // Đảm bảo đường dẫn đúng
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton, Card, Grid, FormControl, TextField, Typography } from '@mui/material';
+import { useDispatch, useSelector } from "react-redux";
+import { addRoom, deleteRoom, updateRequireDay, updateRoomHaveImage, updateRoomNoImage } from "../../../../redux/actions/roomRequest"; // Đảm bảo đường dẫn đúng
 import { useState } from "react";
 import RoomFormModal from './RoomModal'; // Đảm bảo đường dẫn đúng
 import { toast } from "react-toastify";
+import EditIcon from '@mui/icons-material/Edit';
 
-const Room = ({rooms}) => {
+const Room = ({ rooms }) => {
     const dispatch = useDispatch();
+    const requireDay = useSelector((state) => state.requireDay.numberDay)
     const [openDialog, setOpenDialog] = useState(false);
     const [formData, setFormData] = useState({});
     const [editMode, setEditMode] = useState(false);
     const [selectedImage, setSelectedImage] = useState();
+    const [numberDay,setNumberDay] = useState(requireDay.NumberDay)
+
+    console.log(requireDay)
 
     const handleOpenDialog = (room = null) => {
         if (room) {
@@ -27,7 +32,8 @@ const Room = ({rooms}) => {
                 MaxTable: '',
                 Price: '',
                 Description: '',
-                RoomImage: ''
+                RoomImage: '',
+                RequireDay: '',
             });
             setEditMode(false);
         }
@@ -85,44 +91,66 @@ const Room = ({rooms}) => {
     };
 
     return (
-        <div>
-            <TableContainer component={Paper} title="Danh sách phòng">
-                <Table stickyHeader aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell></TableCell>
-                            <TableCell>Tên phòng</TableCell>
-                            <TableCell>Chiều dài</TableCell>
-                            <TableCell>Chiều rộng</TableCell>
-                            <TableCell>Sức chứa</TableCell>
-                            <TableCell>Số bàn tối đa</TableCell>
-                            <TableCell>Giá</TableCell>
-                            <TableCell>Mô tả</TableCell>
-                            <TableCell>Trạng thái</TableCell>
-                            <TableCell>Hành động</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rooms?.map((room) => (
-                            <TableRow key={room?.RoomEventID}>
-                                <TableCell><img src={room.RoomImage} height={100} width={140} alt={room.RoomName} /></TableCell>
-                                <TableCell>{room.RoomName}</TableCell>
-                                <TableCell>{room.HeightRoom}</TableCell>
-                                <TableCell>{room.WidthRoom}</TableCell>
-                                <TableCell>{room.Capacity}</TableCell>
-                                <TableCell>{room.MaxTable}</TableCell>
-                                <TableCell>{room.Price}</TableCell>
-                                <TableCell sx={{ height: '140px', maxHeight: '140px', overflowY: 'auto', display: 'block', alignContent: "center" }}>{room.Description}</TableCell>
-                                <TableCell>{room.Status}</TableCell>
-                                <TableCell>
-                                    <Button onClick={() => handleOpenDialog(room)}>Sửa</Button>
-                                </TableCell>
+        <Grid container sx={{ height: '100%' }}>
+            <Grid item xs={10} sx={{ display: 'flex', flexDirection: 'column' }}>
+                <TableContainer component={Paper} title="Danh sách phòng" sx={{ maxHeight: '700px', overflowY: 'auto', flex: 1 }}>
+                    <Table stickyHeader aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell sx={{ fontWeight: 600 }}></TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Tên phòng</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Chiều dài</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Chiều rộng</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Sức chứa</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Số bàn tối đa</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Số ngày yêu cầu đặt trước</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Giá</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Mô tả</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Trạng thái</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Hành động</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <Button sx={{ marginTop: "20px" }} variant="contained" color="primary" onClick={() => handleOpenDialog()}>Thêm phòng</Button>
+                        </TableHead>
+                        <TableBody>
+                            {rooms?.map((room) => (
+                                <TableRow key={room?.RoomEventID}>
+                                    <TableCell><img src={room.RoomImage} height={100} width={140} alt={room.RoomName} /></TableCell>
+                                    <TableCell>{room.RoomName}</TableCell>
+                                    <TableCell>{room.HeightRoom}</TableCell>
+                                    <TableCell>{room.WidthRoom}</TableCell>
+                                    <TableCell>{room.Capacity}</TableCell>
+                                    <TableCell>{room.MaxTable}</TableCell>
+                                    <TableCell>{room.RequireDay}</TableCell>
+                                    <TableCell>{room.Price}</TableCell>
+                                    <TableCell sx={{ height: '140px', maxHeight: '140px', overflowY: 'auto', display: 'block', alignContent: "center" }}>{room.Description}</TableCell>
+                                    <TableCell>{room.Status}</TableCell>
+                                    <TableCell>
+                                        <IconButton onClick={() => handleOpenDialog(room)} color="primary">
+                                            <EditIcon />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <Button sx={{ marginTop: "20px" }} variant="contained" color="primary" onClick={() => handleOpenDialog()}>Thêm phòng</Button>
+            </Grid>
+            <Grid item xs={2} sx={{ display: 'flex', flexDirection: 'column' }}>
+
+                <Card sx={{ flex: 1, p: 2 }}>
+                    <Typography variant="h4" gutterBottom>
+                        Thiết lập chung
+                    </Typography>
+                    <TextField
+                        label="Số ngày yêu cầu đặt trước chung"
+                        variant="outlined"
+                        fullWidth
+                        value={numberDay}
+                        onChange={(e)=>{setNumberDay(e.target.value)}}
+                    />
+                    <Button onClick={(()=>updateRequireDay(dispatch,numberDay))}>Lưu</Button>
+                </Card>
+            </Grid>
             <RoomFormModal
                 open={openDialog}
                 onClose={handleCloseDialog}
@@ -132,7 +160,9 @@ const Room = ({rooms}) => {
                 setSelectedImage={setSelectedImage}
                 handleDeleteRoom={handleDeleteRoom}
             />
-        </div>
+        </Grid>
+
+
     );
 };
 

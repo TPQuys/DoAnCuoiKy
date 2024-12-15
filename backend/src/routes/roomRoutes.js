@@ -25,5 +25,4 @@ router.post("/available",middlewareController.verifyToken ,roomController.findAv
 router.post('/', upload.single('imageRoom'),middlewareController.verifyTokenManager, roomController.addRoom)
 
 
-
 module.exports = router;

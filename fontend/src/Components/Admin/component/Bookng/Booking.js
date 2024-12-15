@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TableSortLabel, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TableSortLabel, Select, MenuItem, InputLabel, FormControl, Card, TextField, Grid, IconButton } from '@mui/material';
 import { deleteBooking, getAllBooking } from "../../../../redux/actions/bookingRequest";
 import MenuModal from "./Component.js/MenuModal";
 import PaymentModal from "./Component.js/PaymentModal";
-
+import { Delete, Menu as MenuIcon, Payment as PaymentIcon, Edit } from '@mui/icons-material';  // Import icons
 const formatDate = (date) => {
     if (date) {
         const day = String(date.getDate()).padStart(2, '0');
@@ -89,6 +89,7 @@ const Bookings = ({ bookings, rooms }) => {
     const [payment, setPayment] = useState({});
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
     const [selectedRoom, setSelectedRoom] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");  // Thêm state cho tìm kiếm
 
     const dispatch = useDispatch();
 
@@ -106,6 +107,16 @@ const Bookings = ({ bookings, rooms }) => {
 
     const sortedBookings = React.useMemo(() => {
         let filteredBookings = bookings;
+
+        // Lọc theo từ khóa tìm kiếm
+        if (searchQuery) {
+            filteredBookings = filteredBookings.filter(booking =>
+                booking.User?.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                getEventType(booking.Event?.EventType).toLowerCase().includes(searchQuery.toLowerCase()) ||
+                booking.Event?.RoomEvent?.RoomName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                getDecore(booking.Event?.Decore).toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
 
         if (selectedRoom) {
             filteredBookings = filteredBookings.filter(booking => booking.Event.RoomEvent?.RoomName === selectedRoom);
@@ -130,8 +141,7 @@ const Bookings = ({ bookings, rooms }) => {
             return sorted;
         }
         return filteredBookings;
-    }, [bookings, sortConfig, selectedRoom]);
-
+    }, [bookings, sortConfig, selectedRoom, searchQuery]);  // Thêm searchQuery vào dependencies
 
     const requestSort = (key) => {
         let direction = 'asc';
@@ -142,108 +152,124 @@ const Bookings = ({ bookings, rooms }) => {
     };
 
     return (
-        <TableContainer component={Paper} title="Lịch sử đặt sự kiện">
-            <FormControl fullWidth variant="outlined" margin="normal">
-                <InputLabel id="select-room-label">Chọn nhà hàng</InputLabel>
-                <Select
-                    labelId="select-room-label"
-                    value={selectedRoom}
-                    onChange={(e) => setSelectedRoom(e.target.value)}
-                    label="Chọn nhà hàng"
-                >
-                    <MenuItem value="">
-                        <em>Tất cả</em>
-                    </MenuItem>
-                    {rooms.map((room) => (
-                        <MenuItem key={room.RoomID} value={room.RoomName}>{room.RoomName}</MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+        <Card sx={{p:3}}>
+            <Grid container spacing={2} marginBottom={2}>
+                <Grid item xs={6}>
+                    <TextField
+                        label="Tìm kiếm"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </Grid>
+                <Grid item xs={6}>
+                    <FormControl fullWidth variant="outlined" margin="normal">
+                        <InputLabel id="select-room-label">Chọn nhà hàng</InputLabel>
+                        <Select
+                            labelId="select-room-label"
+                            value={selectedRoom}
+                            onChange={(e) => setSelectedRoom(e.target.value)}
+                            label="Chọn nhà hàng"
+                        >
+                            <MenuItem value="">
+                                <em>Tất cả</em>
+                            </MenuItem>
+                            {rooms.map((room) => (
+                                <MenuItem key={room.RoomID} value={room.RoomName}>{room.RoomName}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+            </Grid>
 
-            <Table stickyHeader aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                            <TableSortLabel
-                                active={sortConfig.key === 'BookingTime'}
-                                direction={sortConfig.direction}
-                                onClick={() => requestSort('BookingTime')}
-                            >
-                                Thời gian đặt
-                            </TableSortLabel>
-                        </TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                            <TableSortLabel
-                                active={sortConfig.key === 'EventType'}
-                                direction={sortConfig.direction}
-                                onClick={() => requestSort('EventType')}
-                            >
-                                Loại sự kiện
-                            </TableSortLabel>
-                        </TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Tổng số bàn</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                            <TableSortLabel
-                                active={sortConfig.key === 'EventDate'}
-                                direction={sortConfig.direction}
-                                onClick={() => requestSort('EventDate')}
-                            >
-                                Tổ chức ngày
-                            </TableSortLabel>
-                        </TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Thời gian</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
-                        <TableCell>
-                            <TableSortLabel
-                                active={sortConfig.key === 'RoomName'}
-                                direction={sortConfig.direction}
-                                onClick={() => requestSort('RoomName')}
-                            >
-                                Tên nhà hàng
-                            </TableSortLabel>
-                        </TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Trang trí</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Menu</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Phương thức thanh toán</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Hành động</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {sortedBookings.filter(booking => booking != null).map((booking) => (
-                        <TableRow key={booking?.BookingID}>
-                            <TableCell>{formatDateTime(new Date(booking.BookingTime))}</TableCell>
-                            <TableCell>{booking?.User?.email}</TableCell>
-                            <TableCell>{getEventType(booking.Event?.EventType)}</TableCell>
-                            <TableCell>{booking.Event?.TotalTable}</TableCell>
-                            <TableCell>{formatDate(new Date(booking.Event?.EventDate))}</TableCell>
-                            <TableCell>{
-                                booking.Event.Time !== "CUSTOM" ?
-                                    getTime(booking.Event?.Time)
-                                    : getRangeTime(booking.Event?.From, booking.Event?.To)
-                            }</TableCell>
-                            <TableCell>{booking.Event?.Note || "Không có"}</TableCell>
-                            <TableCell>{booking.Event?.RoomEvent?.RoomName}</TableCell>
-                            <TableCell>{getDecore(booking.Event?.Decore)} {getDecoreType(booking.Event?.Decore)}</TableCell>
-                            <TableCell>{booking.Event?.Menu?.MenuID && <Button sx={{ padding: 0, margin: 0 }} variant="text" onClick={() => openMenu(booking.Event?.Menu)}>Chi tiết Menu</Button>}</TableCell>
-                            <TableCell>
-                                {booking.Payment ? (
-                                    <Button variant="text" sx={{ padding: 0, margin: 0 }} onClick={() => openPayment(booking?.Payment)}>Chi tiết thanh toán</Button>
-                                ) : "Chưa thanh toán"}
+            <TableContainer component={Paper} title="Lịch sử đặt sự kiện" sx={{ maxHeight: '700px', overflowY: 'auto' }}>
+                <Table stickyHeader aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                <TableSortLabel
+                                    active={sortConfig.key === 'BookingTime'}
+                                    direction={sortConfig.direction}
+                                    onClick={() => requestSort('BookingTime')}
+                                >
+                                    Thời gian đặt
+                                </TableSortLabel>
                             </TableCell>
-                            <TableCell>
-                                <Button variant="text" color="error" onClick={() => handleDelete(booking?.BookingID)}>
-                                    Xóa
-                                </Button>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                <TableSortLabel
+                                    active={sortConfig.key === 'EventType'}
+                                    direction={sortConfig.direction}
+                                    onClick={() => requestSort('EventType')}
+                                >
+                                    Loại sự kiện
+                                </TableSortLabel>
                             </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Tổng số bàn</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                <TableSortLabel
+                                    active={sortConfig.key === 'EventDate'}
+                                    direction={sortConfig.direction}
+                                    onClick={() => requestSort('EventDate')}
+                                >
+                                    Tổ chức ngày
+                                </TableSortLabel>
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Thời gian</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
+                            <TableCell>
+                                <TableSortLabel
+                                    active={sortConfig.key === 'RoomName'}
+                                    direction={sortConfig.direction}
+                                    onClick={() => requestSort('RoomName')}
+                                >
+                                    Tên nhà hàng
+                                </TableSortLabel>
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Trang trí</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Menu</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Phương thức thanh toán</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Hành động</TableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                    </TableHead>
+                    <TableBody>
+                        {sortedBookings.filter(booking => booking != null).map((booking) => (
+                            <TableRow key={booking?.BookingID}>
+                                <TableCell>{formatDateTime(new Date(booking.BookingTime))}</TableCell>
+                                <TableCell>{booking?.User?.email}</TableCell>
+                                <TableCell>{getEventType(booking.Event?.EventType)}</TableCell>
+                                <TableCell>{booking.Event?.TotalTable}</TableCell>
+                                <TableCell>{formatDate(new Date(booking.Event?.EventDate))}</TableCell>
+                                <TableCell>{
+                                    booking.Event.Time !== "CUSTOM" ?
+                                        getTime(booking.Event?.Time)
+                                        : getRangeTime(booking.Event?.From, booking.Event?.To)
+                                }</TableCell>
+                                <TableCell>{booking.Event?.Note || "Không có"}</TableCell>
+                                <TableCell>{booking.Event?.RoomEvent?.RoomName}</TableCell>
+                                <TableCell>{getDecore(booking.Event?.Decore)} {getDecoreType(booking.Event?.Decore)}</TableCell>
+                                <TableCell>{booking.Event?.Menu?.MenuID && <Button sx={{ padding: 0, margin: 0 }} variant="text" onClick={() => openMenu(booking.Event?.Menu)}>Chi tiết Menu</Button>}</TableCell>
+                                <TableCell>
+                                    {booking.Payment ? (
+                                        <Button variant="text" sx={{ padding: 0, margin: 0 }} onClick={() => openPayment(booking?.Payment)}>Chi tiết thanh toán</Button>
+                                    ) : "Chưa thanh toán"}
+                                </TableCell>
+                                <TableCell>
+                                <IconButton onClick={() => handleDelete(booking.BookingID)}>
+                                        <Delete />
+                                    </IconButton>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
 
-            <MenuModal menu={menu} onClose={closeMenu} open={isMenuOpen} />
-            <PaymentModal paymentData={payment} onClose={closePayment} open={isPaymentOpen} />
-        </TableContainer>
+                <MenuModal menu={menu} onClose={closeMenu} open={isMenuOpen} />
+                <PaymentModal paymentData={payment} onClose={closePayment} open={isPaymentOpen} />
+            </TableContainer>
+        </Card>
     );
 };
 

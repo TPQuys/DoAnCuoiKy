@@ -1,5 +1,6 @@
 import axios from "../../utils/axiosConfig";
 import { createAxios } from "../../utils/createInstance";
+import { getRequireDayFailed, getRequireDayStart, getRequireDaySuccess, updateRequireDayFailed, updateRequireDayStart, updateRequireDaySuccess } from "../reducers/requireDay";
 import {
     getRoomsStart, getRoomsSuccess, getRoomsFailed,
     addRoomStart, addRoomSuccess, addRoomFailed,
@@ -107,5 +108,33 @@ export const deleteRoom = async (dispatch, roomId) => {
         console.error("Delete room failed:", error);
         toast.error("Không thể xóa phòng đã được đặt!");
         dispatch(deleteRoomFailed());
+    }
+};
+
+export const getRequireDay = async (dispatch) => {
+    const user = JSON.parse(sessionStorage.getItem("user"))?.user;
+    dispatch(getRequireDayStart);
+    let axiosJWT = createAxios(user);
+    try {
+        const res = await axiosJWT.get(`/v1/require_day`);
+        dispatch(getRequireDaySuccess(res.data));
+    } catch (error) {
+        console.error("Get require day failed:", error);
+        dispatch(getRequireDayFailed());
+    }
+};
+
+
+// Xóa phòng
+export const updateRequireDay = async (dispatch,numberDay) => {
+    const user = JSON.parse(sessionStorage.getItem("user"))?.user;
+    dispatch(updateRequireDayStart);
+    let axiosJWT = createAxios(user);
+    try {
+        const res = await axiosJWT.put(`/v1/require_day`,{numberDay});
+        dispatch(updateRequireDaySuccess(res.data));
+    } catch (error) {
+        console.error("Update require day failed:", error);
+        dispatch(updateRequireDayFailed());
     }
 };

@@ -1,4 +1,4 @@
-import {configureStore} from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./reducers/authSlice";
 import userReducer from "./reducers/userSlice"
 import roomReducer from "./reducers/roomSlice"
@@ -9,10 +9,11 @@ import menuReducer from "./reducers/menuSlice"
 import bookingReducer from "./reducers/bookingSlice"
 import paymentReducer from "./reducers/paymentSlice"
 import decorePriceReducer from "./reducers/decorePriceSlice"
+import requireDayReducer from "./reducers/requireDay"
 
 
 export default configureStore({
-    reducer:{
+    reducer: {
         auth: authReducer,
         users: userReducer,
         rooms: roomReducer,
@@ -23,5 +24,6 @@ export default configureStore({
         foods: foodReducer,
         drinks: drinkReducer,
         roomPrices: decorePriceReducer,
+        requireDay: requireDayReducer
     },
 });

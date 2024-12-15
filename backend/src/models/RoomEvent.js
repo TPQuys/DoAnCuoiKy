@@ -40,6 +40,11 @@ const RoomEvent = sequelize.define('RoomEvent', {
         type: DataTypes.TEXT,
         allowNull: true,
     },
+    RequireDay: {
+        type: DataTypes.INTEGER, 
+        defaultValue: 1,
+        allowNull: true,
+    },
     Status:{
         type: DataTypes.ENUM("OPEN","CLOSE"),
         defaultValue:"OPEN",

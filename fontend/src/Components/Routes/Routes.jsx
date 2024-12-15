@@ -16,7 +16,7 @@ import AdminPage from "../Admin/AdminPage"
 import Verified from "../Verified/Verified"
 import Menu from "../Menu/Menu"
 import { toast } from "react-toastify";
-import { getAllRooms } from "../../redux/actions/roomRequest";
+import { getAllRooms, getRequireDay } from "../../redux/actions/roomRequest";
 import { getAllDrink, getAllFood, getAllMenus } from "../../redux/actions/menuRequest";
 import { useDispatch } from "react-redux";
 import ResetPassword from "../ResetPassword/ResetPassword"
@@ -37,6 +37,7 @@ const AppRoutes = () => {
         getAllFood(dispatch)
         getAllDrink(dispatch)
         getDecorePrice(dispatch)
+        getRequireDay(dispatch)
         if(user1){
             if (user1?.user?.role==="ADMIN") {
                 getAllUsers(dispatch)

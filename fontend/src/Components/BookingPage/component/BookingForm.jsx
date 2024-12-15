@@ -14,7 +14,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { styled } from '@mui/material/styles';
 import { getRoomBooked } from '../../../redux/actions/eventRequest';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 // Tạo một component Paper có nền trong suốt
 const TransparentPaper = styled(Paper)({
@@ -39,10 +39,17 @@ const WhiteTextField = styled(({ ...props }) => <Field as={TextField} {...props}
 const EventForm = forwardRef(({ handleSubmit, setFrom, setTo }, ref) => {
     const [selectedTimes, setSelectedTimes] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
+    const requireDay = useSelector((state) => state.requireDay.numberDay)
+    const [numberDay, setNumberDay] = useState(1)
     useEffect(() => {
         mergeTimeSlots(selectedTimes);
     }, [selectedTimes, selectedDate]);
 
+    useEffect(() => {
+        if(requireDay){
+        setNumberDay(requireDay?.NumberDay)
+    }
+    }, requireDay)
 
     const handleChangeDate = (setFieldValue, name, value) => {
         setSelectedDate(value);
@@ -141,7 +148,7 @@ const EventForm = forwardRef(({ handleSubmit, setFrom, setTo }, ref) => {
         EventDate: null,
         Time: '',
     };
-
+    console.log(requireDay)
     // Định nghĩa schema cho validation
     const validationSchema = Yup.object().shape({
         EventType: Yup.string().required('Vui lòng chọn loại sự kiện'),
@@ -151,37 +158,7 @@ const EventForm = forwardRef(({ handleSubmit, setFrom, setTo }, ref) => {
             .integer('Số bàn phải là số nguyên'),
         EventDate: Yup.date()
             .required('Vui lòng chọn ngày')
-            .test(
-                'check-date',
-                'Ngày đặt không hợp lệ',
-                function (value) {
-                    const { TotalTable } = this.parent; // Lấy giá trị từ TotalTable
-                    if (!value) return false;
-
-                    const today = dayjs();
-                    const eventDate = dayjs(value);
-
-                    if (TotalTable > 30) {
-                        // Nếu số bàn > 30, kiểm tra ngày phải sau ít nhất 15 ngày
-                        if (!eventDate.isAfter(today.add(10, 'day'))) {
-                            return this.createError({
-                                path: 'EventDate',
-                                message: 'Ngày đặt phải trước 15 ngày với phòng trên 20 bàn',
-                            });
-                        }
-                    } else {
-                        // Nếu số bàn <= 30, kiểm tra ngày phải sau ít nhất 1 ngày
-                        if (!eventDate.isAfter(today.add(1, 'day'))) {
-                            return this.createError({
-                                path: 'EventDate',
-                                message: 'Ngày đặt phải trước 1 ngày ',
-                            });
-                        }
-                    }
-
-                    return true;
-                }
-            ),
+            .min(dayjs().add(numberDay, 'day'), `Ngày sự kiện phải đặt trước ${numberDay} ngày} `),
         Time: Yup.string().required('Vui lòng chọn thời gian'),
         Note: Yup.string(),
     });
@@ -215,7 +192,7 @@ const EventForm = forwardRef(({ handleSubmit, setFrom, setTo }, ref) => {
                                     <MenuItem value="OTHER">Khác</MenuItem>
                                 </WhiteTextField>
                             </Grid>
-                            <Grid item xs={2.5} sm={3}>
+                            <Grid item xs={2.5}>
                                 <WhiteTextField
                                     name="TotalTable"
                                     label="Tổng Số Bàn"
@@ -271,24 +248,24 @@ const EventForm = forwardRef(({ handleSubmit, setFrom, setTo }, ref) => {
                             <Grid item xs={1} alignContent='center'>
                                 <Button variant='contained' type='submit'>Tìm</Button>
                             </Grid>
-                        
+
                         </Grid>
                         {(selectedDate && values.Time === "CUSTOM") &&
-                                <Grid item xs={12}>
-                                    <Grid container spacing={1}>
-                                        {timeSlots.map((slot, index) => (
-                                            <Grid item key={index}>
-                                                <Button
-                                                    variant={selectedTimes.includes(`${slot.start} - ${slot.end}`) ? "contained" : "outlined"}
-                                                    onClick={() => toggleTimeSelection(`${slot.start} - ${slot.end}`)}
-                                                >
-                                                    {`${slot.start} - ${slot.end}`}
-                                                </Button>
-                                            </Grid>
-                                        ))}
-                                    </Grid>
+                            <Grid item xs={12}>
+                                <Grid container spacing={1}>
+                                    {timeSlots.map((slot, index) => (
+                                        <Grid item key={index}>
+                                            <Button
+                                                variant={selectedTimes.includes(`${slot.start} - ${slot.end}`) ? "contained" : "outlined"}
+                                                onClick={() => toggleTimeSelection(`${slot.start} - ${slot.end}`)}
+                                            >
+                                                {`${slot.start} - ${slot.end}`}
+                                            </Button>
+                                        </Grid>
+                                    ))}
                                 </Grid>
-                            }
+                            </Grid>
+                        }
 
                     </Form>
                 )}

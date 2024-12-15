@@ -3,12 +3,12 @@ import Header from "../Header/Header";
 import Form from "./component/BookingForm"
 import React, { useRef, useState } from "react";
 import { getAvailableRooms } from "../../redux/actions/roomRequest";
-import { Button, Grid, Link, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Button, Card, Grid, Link, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { addEvent } from "../../redux/actions/eventRequest";
 import { addBooking } from "../../redux/actions/bookingRequest";
 import { PostZaloApi } from "../../redux/actions/paymentRequest";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 const HomePage = () => {
     const formikRef = useRef(null);
     const dispatch = useDispatch();
@@ -37,56 +37,66 @@ const HomePage = () => {
                 <div className="booking-room-name">Nhập Thông Tin Sự Kiện</div>
                 <div className="booking-center">
                     <Form RoomEventID={null} setFrom={setFrom} setTo={setTo} ref={formikRef} handleSubmit={handleSubmit} maxTable={50} />
-                    <Grid container p={2}>
-                        {availableRooms?.map((item) => {
-                            if (item.Status === "OPEN") {
-                                return (
-                                    <Grid container key={item.RoomEventID} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '16px', marginBottom: '16px' }}>
-                                        {/* Hình ảnh bên trái */}
-                                        <Grid item xs={3} alignContent='center'>
-                                            <img
-                                                src={item.RoomImage}
-                                                alt="room"
-                                                style={{ width: "100%", borderRadius: "8px" }}
-                                            />
-                                        </Grid>
-                                        {/* Thông tin bên phải */}
-                                        <Grid item xs={7} justifyItems='left' pl={4}>
-                                            <Typography variant="h6" gutterBottom>
-                                                <Link to={`/`} className="room-content-title" style={{ textDecoration: 'none', color: '#64463c' }}>
-                                                    {item.RoomName}
-                                                </Link>
-                                            </Typography>
-                                            <Typography variant="body2" gutterBottom>
-                                                <strong>Kích thước:</strong> Chiều dài: {item.HeightRoom}m, Chiều rộng: {item.WidthRoom}m
-                                            </Typography>
-                                            <Typography variant="body2" gutterBottom>
-                                                <strong>Sức chứa:</strong> Số người: {item.Capacity}, Số bàn tối đa: {item.MaxTable}
-                                            </Typography>
-                                            <Typography
-                                                variant="body2"
-                                                component="div"
-                                                gutterBottom
-                                                align="left"
-                                                style={{ textAlign: 'left' }}
-                                            >
-                                                <strong>Mô tả:</strong> {item.Description}
-                                            </Typography>
 
-                                        </Grid>
-                                        <Grid item xs={2} justifyItems='left' alignContent='center'>
-                                            <Button
-                                                onClick={() => handleBooking(item)}
-                                                variant="contained"
-                                                sx={{ backgroundColor: '#64463c', color: '#fff', marginTop: '8px' }}
-                                            >
-                                                Đặt ngay
-                                            </Button>
-                                        </Grid>
-                                    </Grid>
-                                );
-                            }
-                        })}
+                    <Grid container sx={{ maxHeight: "700px", overflowY: "auto" }}>
+                        {(availableRooms && availableRooms.length > 0) &&
+                            availableRooms?.map((item) => {
+                                if (item.Status === "OPEN") {
+                                    return (
+                                        <Card sx={{p:3}}>
+                                            <Grid container key={item.RoomEventID} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '16px', marginBottom: '16px' }}>
+                                                {/* Hình ảnh bên trái */}
+                                                <Grid item xs={3} alignContent='center'>
+                                                    <img
+                                                        src={item.RoomImage}
+                                                        alt="room"
+                                                        style={{ width: "100%", borderRadius: "8px" }}
+                                                    />
+                                                </Grid>
+                                                {/* Thông tin bên phải */}
+                                                <Grid item xs={7} justifyItems='left' pl={4}>
+                                                    <Typography variant="h6" gutterBottom>
+                                                        <Link to={`/`} className="room-content-title" style={{ textDecoration: 'none', color: '#64463c' }}>
+                                                            {item.RoomName}
+                                                        </Link>
+                                                    </Typography>
+                                                    <Typography variant="body2" gutterBottom>
+                                                        <strong>Kích thước:</strong> Chiều dài: {item.HeightRoom}m, Chiều rộng: {item.WidthRoom}m
+                                                    </Typography>
+                                                    <Typography variant="body2" gutterBottom>
+                                                        <strong>Sức chứa:</strong> Số người: {item.Capacity}, Số bàn tối đa: {item.MaxTable}
+                                                    </Typography>
+                                                    <Typography
+                                                        variant="body2"
+                                                        component="div"
+                                                        gutterBottom
+                                                        align="left"
+                                                        style={{ textAlign: 'left' }}
+                                                    >
+                                                        <strong>Mô tả:</strong> {item.Description}
+                                                    </Typography>
+
+                                                </Grid>
+                                                <Grid item xs={2} justifyItems='center' alignContent='center' >
+                                                    <Typography variant="h5">
+                                                        Giá {item.Price.toLocaleString()} VND
+                                                    </Typography>
+                                                    <Button
+                                                        onClick={() => handleBooking(item)}
+                                                        variant="contained"
+                                                        sx={{ backgroundColor: '#64463c', color: '#fff', marginTop: '8px' }}
+                                                    >
+                                                        Đặt ngay
+                                                    </Button>
+                                                </Grid>
+                                            </Grid>
+                                        </Card>
+                                    );
+                                }
+                            }) || <Card sx={{ height: "700px", width: "100%", alignContent: "center" }}>
+                                Hãy nhập thông tin đặt chỗ để tìm kiếm nơi phù hợp với bạn
+                            </Card>
+                        }
                     </Grid>
                 </div>
             </div>
