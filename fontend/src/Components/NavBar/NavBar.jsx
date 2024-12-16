@@ -76,12 +76,12 @@ const NavBar = () => {
         <Link className="navbar-home"> <FaCalendarAlt /> Thêm </Link>
         <div className="dropdown-menu">
           <Link to="/menu">Menu</Link>
-           {/* <Link to="/discount" className="navbar-home"><FaTag /> Ưu đãi </Link> */}
+           <Link to="/room" className="navbar-home"><FaTag /> Phòng </Link>
       {/* <Link to="/news" className="navbar-home"><FaNewspaper /> Tin tức </Link> */}
       <Link to="/decore" className="navbar-home"><GiFlowers /> Trang trí </Link>
         </div>
       </div>
-      <Link to="/booking" className="navbar-home"><FaTag /> Đặt nhà hàng </Link>
+      <Link to="/booking" className="navbar-home"><FaTag /> Đặt chỗ ngay </Link>
 
       {user ? (
         user?.role!=="USER" ? (

@@ -69,17 +69,17 @@ const Bookings = ({ bookings }) => {
                 const endTime = new Date(booking.BookingTime).getTime() + 24 * 60 * 60 * 1000;
                 const currentTime = new Date().getTime();
                 const timeLeft = Math.max(0, Math.floor((endTime - currentTime) / 1000));
-                
+
                 newRemainingTimes[booking.BookingID] = timeLeft > 0
                     ? `${Math.floor(timeLeft / 3600)}:${String(Math.floor((timeLeft % 3600) / 60)).padStart(2, '0')}:${String(timeLeft % 60).padStart(2, '0')}`
                     : 'Lịch đặt đã hết hạn';
             });
             setRemainingTimes(newRemainingTimes);
         }, 1000);
-    
+
         return () => clearInterval(interval);
     }, [bookings]);
-    
+
 
     return (
         <TableContainer component={Paper} title="Lịch sử đặt sự kiện">
@@ -120,7 +120,14 @@ const Bookings = ({ bookings }) => {
                                 <TableCell>{booking.Event?.Menu?.MenuID && <Button sx={{ padding: 0, margin: 0 }} variant="text" onClick={() => openMenu(booking.Event?.Menu)}>Chi tiết Menu</Button>}</TableCell>
                                 <TableCell>
                                     {booking.Payment ?
-                                        <Button color="success" variant="text" sx={{ padding: 0, margin: 0 }} onClick={() => openPayment(booking?.Payment)}>Chi tiết thanh toán</Button>
+                                        <Button
+                                            color="success"
+                                            variant="text"
+                                            sx={{ padding: 0, margin: 0 }}
+                                            onClick={() => openPayment(booking?.Payment)}
+                                        >
+                                            Chi tiết thanh toán
+                                        </Button>
                                         : remainingTimes[booking.BookingID]?.includes("hết")
                                             ? <Button color="error">{remainingTimes[booking.BookingID]}</Button>
                                             : <Button onClick={() => handleClick(booking)}>Thanh toán ngay ({remainingTimes[booking.BookingID]})</Button>}
@@ -131,9 +138,9 @@ const Bookings = ({ bookings }) => {
                                             Xóa
                                         </Button> :
                                         booking.Rate ?
-                                            <Button variant="text" color="primary" onClick={() => openRateDetail(booking?.Rate)}>Xem đánh giá</Button>:
-                                            new Date (booking.Event.EventDate) > new Date() ?"":
-                                            <Button variant="text" color="info" onClick={() => handleOpen(booking?.BookingID)}>Đánh giá</Button>
+                                            <Button variant="text" color="primary" onClick={() => openRateDetail(booking?.Rate)}>Xem đánh giá</Button> :
+                                            new Date(booking.Event.EventDate) > new Date() ? "" :
+                                                <Button variant="text" color="info" onClick={() => handleOpen(booking?.BookingID)}>Đánh giá</Button>
                                     }
                                 </TableCell>
                             </TableRow>

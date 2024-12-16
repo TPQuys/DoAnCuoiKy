@@ -3,6 +3,7 @@ const Event = require('../models/Event');
 const Booking = require('../models/Booking');
 const Payment = require('../models/Payment');
 const RoomEvent = require('../models/RoomEvent');
+const User = require('../models/User');
 
 const eventRepository = {
     findAll: async () => {
@@ -171,13 +172,18 @@ const eventRepository = {
         });
     },
 
-    checkPendingBookings: async () => {
+    checkPendingBookings: async (userId) => {
         return await Booking.findAll({
             include: [
                 {
                     model: Payment,
                     attributes: ["PaymentID"]
-                }
+                },
+                {
+                    model: User,
+                    attributes: ["id"],
+                    where: { id: userId } // Điều kiện kiểm tra user.id = userId
+                },
             ],
             where: {
                 [Op.and]: [
@@ -191,6 +197,7 @@ const eventRepository = {
             }
         });
     },
+    
 
     create: async (eventData) => {
         return await Event.create(eventData);

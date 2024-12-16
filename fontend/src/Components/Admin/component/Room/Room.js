@@ -14,9 +14,9 @@ const Room = ({ rooms }) => {
     const [formData, setFormData] = useState({});
     const [editMode, setEditMode] = useState(false);
     const [selectedImage, setSelectedImage] = useState();
-    const [numberDay,setNumberDay] = useState(requireDay.NumberDay)
-
-    console.log(requireDay)
+    const [numberDay, setNumberDay] = useState(requireDay.NumberDay)
+    const [filterText, setFilterText] = useState('');
+    const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
 
     const handleOpenDialog = (room = null) => {
         if (room) {
@@ -43,6 +43,22 @@ const Room = ({ rooms }) => {
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
+
+    const filteredAndSortedRooms = rooms
+        ?.filter((room) =>
+            room.RoomName.toLowerCase().includes(filterText.toLowerCase()) ||
+            room.Description.toLowerCase().includes(filterText.toLowerCase())
+        )
+        ?.sort((a, b) => {
+            if (sortConfig.key) {
+                const direction = sortConfig.direction === 'asc' ? 1 : -1;
+                if (a[sortConfig.key] < b[sortConfig.key]) return -1 * direction;
+                if (a[sortConfig.key] > b[sortConfig.key]) return 1 * direction;
+                return 0;
+            }
+            return 0;
+        });
+
 
     const handleSubmit = async (data) => {
         try {
@@ -111,7 +127,7 @@ const Room = ({ rooms }) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rooms?.map((room) => (
+                            {filteredAndSortedRooms?.map((room) => (
                                 <TableRow key={room?.RoomEventID}>
                                     <TableCell><img src={room.RoomImage} height={100} width={140} alt={room.RoomName} /></TableCell>
                                     <TableCell>{room.RoomName}</TableCell>
@@ -146,9 +162,38 @@ const Room = ({ rooms }) => {
                         variant="outlined"
                         fullWidth
                         value={numberDay}
-                        onChange={(e)=>{setNumberDay(e.target.value)}}
+                        onChange={(e) => { setNumberDay(e.target.value) }}
                     />
-                    <Button onClick={(()=>updateRequireDay(dispatch,numberDay))}>Lưu</Button>
+                    <Button onClick={(() => updateRequireDay(dispatch, numberDay))}>Lưu</Button>
+
+                    <TextField
+
+                        fullWidth
+                        label="Tìm kiếm"
+                        variant="outlined"
+                        value={filterText}
+                        onChange={(e) => setFilterText(e.target.value)}
+                        placeholder="Nhập tên hoặc mô tả phòng..."
+                    />
+                    <TextField
+                        select
+                        label="Sắp xếp theo"
+                        SelectProps={{
+                            native: true,
+                        }}
+                        onChange={(e) => {
+                            const [key, direction] = e.target.value.split(':');
+                            setSortConfig({ key, direction });
+                        }}
+                    >
+                        <option value=""></option>
+                        <option value="RoomName:asc">Tên phòng (A-Z)</option>
+                        <option value="RoomName:desc">Tên phòng (Z-A)</option>
+                        <option value="Price:asc">Giá (Thấp đến Cao)</option>
+                        <option value="Price:desc">Giá (Cao đến Thấp)</option>
+                        <option value="Capacity:asc">Sức chứa (Thấp đến Cao)</option>
+                        <option value="Capacity:desc">Sức chứa (Cao đến Thấp)</option>
+                    </TextField>
                 </Card>
             </Grid>
             <RoomFormModal

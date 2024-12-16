@@ -5,7 +5,6 @@ const eventController = {
     // Tạo sự kiện mới
     createEvent: async (req, res) => {
         try {
-            console.log(req.body)
             const newEvent = await eventService.createEvent(req.body);
             res.status(201).json(newEvent);
         } catch (error) {

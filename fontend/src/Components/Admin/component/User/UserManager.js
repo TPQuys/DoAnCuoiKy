@@ -40,6 +40,7 @@ const UsersManagement = () => {
         }
         setSortConfig({ key, direction });
     };
+    
 
     const filteredUsers = users.filter(user =>
         user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -47,17 +48,18 @@ const UsersManagement = () => {
         user.phone?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+
     const sortedUsers = React.useMemo(() => {
         if (sortConfig.key) {
             return [...filteredUsers].sort((a, b) => {
-                let aValue = a[sortConfig.key];
-                let bValue = b[sortConfig.key];
+                let aValue = a[sortConfig.key]?.toLowerCase?.() || ""; // Đảm bảo không lỗi với null/undefined
+                let bValue = b[sortConfig.key]?.toLowerCase?.() || ""; // Đảm bảo không lỗi với null/undefined
                 return (aValue > bValue ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
             });
         }
         return filteredUsers;
     }, [filteredUsers, sortConfig]);
-
+    
     return (
         <Card sx={{p:3,gap:3}}>
             <TextField
@@ -77,25 +79,42 @@ const UsersManagement = () => {
             />
             <TableContainer component={Paper} sx={{ maxHeight: '700px', overflowY: 'auto' }}>
                 <Table >
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold' }}>Họ và tên</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold' }}>Số điện thoại</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold' }}>Ngày sinh</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold' }}>Role</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold' }}>
-                                <TableSortLabel
-                                    active={sortConfig.key === 'createdAt'}
-                                    direction={sortConfig.direction}
-                                    onClick={() => requestSort('createdAt')}
-                                >
-                                    Ngày tạo
-                                </TableSortLabel>
-                            </TableCell>
-                            <TableCell sx={{ fontWeight: 'bold' }}>Hành động</TableCell>
-                        </TableRow>
-                    </TableHead>
+                <TableHead>
+    <TableRow>
+        <TableCell sx={{ fontWeight: 'bold' }}>
+            <TableSortLabel
+                active={sortConfig.key === 'email'}
+                direction={sortConfig.direction}
+                onClick={() => requestSort('email')}
+            >
+                Email
+            </TableSortLabel>
+        </TableCell>
+        <TableCell sx={{ fontWeight: 'bold' }}>Họ và tên</TableCell>
+        <TableCell sx={{ fontWeight: 'bold' }}>Số điện thoại</TableCell>
+        <TableCell sx={{ fontWeight: 'bold' }}>Ngày sinh</TableCell>
+        <TableCell sx={{ fontWeight: 'bold' }}>
+            <TableSortLabel
+                active={sortConfig.key === 'role'}
+                direction={sortConfig.direction}
+                onClick={() => requestSort('role')}
+            >
+                Role
+            </TableSortLabel>
+        </TableCell>
+        <TableCell sx={{ fontWeight: 'bold' }}>
+            <TableSortLabel
+                active={sortConfig.key === 'createdAt'}
+                direction={sortConfig.direction}
+                onClick={() => requestSort('createdAt')}
+            >
+                Ngày tạo
+            </TableSortLabel>
+        </TableCell>
+        <TableCell sx={{ fontWeight: 'bold' }}>Hành động</TableCell>
+    </TableRow>
+</TableHead>
+
 
                     <TableBody>
                         {sortedUsers.map((user) => {

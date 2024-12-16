@@ -16,6 +16,7 @@ import TabPanel from '@mui/lab/TabPanel';
 import { getAllUsers } from "../../redux/actions/userRequest";
 import { getAllBooking } from "../../redux/actions/bookingRequest";
 import { getRate } from "../../redux/actions/rateRequest";
+import AdminChat from "./component/Chat/AdminChat";
 const UserPage = () => {
     const [value, setValue] = useState('1');
     const Booking = useSelector((state) => state.bookings.bookings)
@@ -29,7 +30,7 @@ const UserPage = () => {
         const getAllRate = async () => {
             const res = await getRate();
             console.log(res)
-        } 
+        }
         if (user.role === "ADMIN" || user.role === "HR") {
             getAllUsers(dispatch)
         }
@@ -48,10 +49,11 @@ const UserPage = () => {
                         <Box sx={{ borderBottom: 1, borderColor: 'divider', backgroundColor: "#fafaeb" }}>
                             <TabList onChange={handleChange} aria-label="lab API tabs example">
                                 <Tab label="Cá nhân" value="1" />
-                                {(user.role === "ADMIN" || user.role === "MANAGER" )&& <Tab label="Phòng" value="2" />}
+                                {(user.role === "ADMIN" || user.role === "MANAGER") && <Tab label="Phòng" value="2" />}
                                 {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Lịch sử đặt" value="3" />}
-                                {(user.role === "ADMIN" || user.role === "HR" )&& <Tab label="Người dùng" value="4" />}
+                                {(user.role === "ADMIN" || user.role === "HR") && <Tab label="Người dùng" value="4" />}
                                 {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Biểu đồ" value="5" />}
+                                {(user.role === "ADMIN" || user.role === "MANAGER") && <Tab label="Chat" value="6" />}
                             </TabList>
                         </Box>
                         <TabPanel value="1"><UserProfile /></TabPanel>
@@ -66,6 +68,7 @@ const UserPage = () => {
                             </Grid2>
 
                         </TabPanel>
+                        <TabPanel value="6"><AdminChat /></TabPanel>
 
                     </TabContext>
                     <Stack direction="row" >

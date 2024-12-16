@@ -11,7 +11,7 @@ import { addDecore } from '../../redux/actions/decoreRequest';
 import { PostZaloApi } from '../../redux/actions/paymentRequest';
 import { addEvent } from '../../redux/actions/eventRequest';
 import { addBooking } from '../../redux/actions/bookingRequest';
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 // Tạo một component Paper có nền trong suốt
 const TransparentPaper = styled(Paper)({
     padding: 16,
@@ -38,7 +38,7 @@ const EventDetails = () => {
     });
 
 
-    const { EventType, From, To, EventDate, Time, TotalTable, Note, SelectedTimes } = formData;
+    const { EventType, From, To, EventDate, Time, TotalTable, Note, SelectedTimes } = formData || {};
 
 
     const handleOpenModal = () => setOpenModal(true);
@@ -72,7 +72,7 @@ const EventDetails = () => {
             }, 0);
 
             const totalMenuPrice = foodTotalPrice + drinksTotalPrice;
-
+            console.log(From)
             // Tạo eventData với thông tin từ form và menu đã chọn
             const eventData = {
                 ...formData,
@@ -83,8 +83,8 @@ const EventDetails = () => {
                 TotalPrice: totalMenuPrice,
                 EventDate: new Date(EventDate.$d),
                 // EventDate: dayjs(EventDate).toDate(),
-                From: From !== "Invalid Date" ? new Date(From.$d) : null,
-                To: To !== "Invalid Date" ? new Date(To.$d) : null
+                From: From !== "Invalid Date" ? new Date(From) : null,
+                To: To !== "Invalid Date" ? new Date(To) : null
             };
             console.log(eventData)
 
@@ -125,7 +125,6 @@ const EventDetails = () => {
         );
     }
 
-
     return (
         <main className="room-container">
             <Header
@@ -136,9 +135,7 @@ const EventDetails = () => {
                 <div className="booking-room-name">Chi tiết sự kiện đã đặt</div>
                 <div className="booking-center">
                     <TransparentPaper>
-
                         <Grid container spacing={3}>
-
                             <Grid item xs={9} >
                                 <Card sx={{ marginBottom: 3 }}>
                                     <Grid container m={3}>
@@ -183,7 +180,7 @@ const EventDetails = () => {
                                 </Card>
                                 <Card sx={{ p: 3 }}>
                                     <Typography variant="h5" gutterBottom>
-                                        Dịch vụ thêm
+                                        Menu
                                     </Typography>
                                     <MenuSelect menus={menus} handleSelect={handleSelect} selected={selected} />
                                     <Button
@@ -195,6 +192,9 @@ const EventDetails = () => {
                                     </Button>
                                 </Card>
                                 <Card sx={{ p: 3 }}>
+                                    <Typography variant="h5" gutterBottom>
+                                        Trang trí
+                                    </Typography>
                                     <DecoreSelection
                                         price={deocrePrice}
                                         Decore={Decore}
@@ -222,14 +222,14 @@ const EventDetails = () => {
                                         <Grid item xs={12}>
                                             <Typography variant="subtitle1">Ngày:</Typography>
                                             <Typography>
-                                                {EventDate ? new Date(EventDate).toDateString() : 'N/A'}
+                                                {EventDate ? new Date(EventDate.$d).toLocaleDateString() : 'N/A'}
                                             </Typography>
                                         </Grid>
                                         <Grid item xs={12}>
                                             <Typography variant="subtitle1">Thời gian:</Typography>
                                             <Typography>
                                                 {Time === 'CUSTOM'
-                                                    ? SelectedTimes?.join(', ') || 'N/A'
+                                                    ? SelectedTimes?.join(', ') || `${new Date(From).toLocaleTimeString()} - ${new Date(To).toLocaleTimeString()}`
                                                     : Time === 'MORNING'
                                                         ? 'Buổi sáng (8:00-14:00)'
                                                         : Time === 'AFTERNOON'

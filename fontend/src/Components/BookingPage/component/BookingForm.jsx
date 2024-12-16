@@ -43,12 +43,17 @@ const EventForm = forwardRef(({ handleSubmit, setFrom, setTo }, ref) => {
     const [numberDay, setNumberDay] = useState(1)
     useEffect(() => {
         mergeTimeSlots(selectedTimes);
+        if (selectedTimes.length < 1) {
+            setFrom(null)
+            setTo(null)
+        }
+        console.log(selectedTimes)
     }, [selectedTimes, selectedDate]);
 
     useEffect(() => {
-        if(requireDay){
-        setNumberDay(requireDay?.NumberDay)
-    }
+        if (requireDay) {
+            setNumberDay(requireDay?.NumberDay)
+        }
     }, requireDay)
 
     const handleChangeDate = (setFieldValue, name, value) => {
@@ -148,7 +153,6 @@ const EventForm = forwardRef(({ handleSubmit, setFrom, setTo }, ref) => {
         EventDate: null,
         Time: '',
     };
-    console.log(requireDay)
     // Định nghĩa schema cho validation
     const validationSchema = Yup.object().shape({
         EventType: Yup.string().required('Vui lòng chọn loại sự kiện'),
@@ -178,32 +182,6 @@ const EventForm = forwardRef(({ handleSubmit, setFrom, setTo }, ref) => {
                     <Form>
                         <Grid container spacing={2} justifyItems='center' justifyContent={'center'}>
                             <Grid item xs={2.5}>
-                                <WhiteTextField
-                                    name="EventType"
-                                    select
-                                    label="Loại Sự Kiện"
-                                    fullWidth
-                                    error={touched.EventType && Boolean(errors.EventType)}
-                                    helperText={touched.EventType && errors.EventType}
-                                >
-                                    <MenuItem value="WEDDING">Đám Cưới</MenuItem>
-                                    <MenuItem value="CONFERENCE">Hội Nghị</MenuItem>
-                                    <MenuItem value="BIRTHDAY">Sinh nhật</MenuItem>
-                                    <MenuItem value="OTHER">Khác</MenuItem>
-                                </WhiteTextField>
-                            </Grid>
-                            <Grid item xs={2.5}>
-                                <WhiteTextField
-                                    name="TotalTable"
-                                    label="Tổng Số Bàn"
-                                    type="number"
-                                    fullWidth
-                                    error={touched.TotalTable && Boolean(errors.TotalTable)}
-                                    helperText={touched.TotalTable && errors.TotalTable}
-                                />
-                            </Grid>
-                            <Grid item xs={2.5}>
-
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <Field name="EventDate">
                                         {({ field }) => (
@@ -232,18 +210,46 @@ const EventForm = forwardRef(({ handleSubmit, setFrom, setTo }, ref) => {
                             </Grid>
                             <Grid item xs={2.5}>
                                 <WhiteTextField
+                                    name="TotalTable"
+                                    label="Tổng Số Bàn"
+                                    type="number"
+                                    disabled={selectedDate===null}
+                                    fullWidth
+                                    error={touched.TotalTable && Boolean(errors.TotalTable)}
+                                    helperText={touched.TotalTable && errors.TotalTable}
+                                />
+                            </Grid>
+                            <Grid item xs={2.5}>
+                                <WhiteTextField
                                     name="Time"
                                     select
                                     label="Thời gian"
                                     fullWidth
-                                    disabled={selectedDate === null}
+                                    disabled={values.TotalTable === ""}
                                     error={touched.Time && Boolean(errors.Time)}
                                     helperText={touched.Time && errors.Time}
                                 >
-                                    <MenuItem value="MORNING" >Buổi sáng (8:00-14:00)</MenuItem>
-                                    <MenuItem value="AFTERNOON" >Buổi chiều (16:00-23:00)</MenuItem>
-                                    <MenuItem value="ALLDAY" >Cả ngày</MenuItem>
-                                    <MenuItem value="CUSTOM">Tùy chỉnh</MenuItem>                                    </WhiteTextField>
+                                    {values.TotalTable >= 7 && <MenuItem value="MORNING" >Buổi sáng (8:00-14:00)</MenuItem>}
+                                    {values.TotalTable >= 7 && <MenuItem value="AFTERNOON" >Buổi chiều (16:00-23:00)</MenuItem>}
+                                    {values.TotalTable >= 7 && <MenuItem value="ALLDAY" >Cả ngày</MenuItem>}
+                                    {values.TotalTable < 7 && <MenuItem value="CUSTOM">Tùy chỉnh</MenuItem>}
+                                </WhiteTextField>
+                            </Grid>
+                            <Grid item xs={2.5}>
+                                <WhiteTextField
+                                    name="EventType"
+                                    select
+                                    label="Loại Sự Kiện"
+                                    fullWidth
+                                    disabled={values.Time===""}
+                                    error={touched.EventType && Boolean(errors.EventType)}
+                                    helperText={touched.EventType && errors.EventType}
+                                >
+                                     {values.TotalTable >= 7 && <MenuItem value="WEDDING">Đám Cưới</MenuItem>}
+                                    <MenuItem value="CONFERENCE">Hội Nghị</MenuItem>
+                                    <MenuItem value="BIRTHDAY">Sinh nhật</MenuItem>
+                                    <MenuItem value="OTHER">Khác</MenuItem>
+                                </WhiteTextField>
                             </Grid>
                             <Grid item xs={1} alignContent='center'>
                                 <Button variant='contained' type='submit'>Tìm</Button>

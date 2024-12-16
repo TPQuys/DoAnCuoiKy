@@ -27,6 +27,11 @@ const Payment = sequelize.define('Payment', {
             key: 'BookingID'
         }
     },
+
+    Invoice: {
+        type: DataTypes.BLOB,
+        allowNull: true
+    },
     
     PaymentMethod: {
         type: DataTypes.ENUM('CREDITCARD', 'DEBITCARD', 'PAYPAL', 'BANKTRANSFER'),
