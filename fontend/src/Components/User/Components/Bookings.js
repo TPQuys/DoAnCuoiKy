@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { useDispatch, useSelector } from "react-redux";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { getBookingByUser, deleteBookingUser } from "../../../redux/actions/bookingRequest";
 import { addRate } from "../../../redux/actions/rateRequest";
@@ -9,10 +9,13 @@ import PaymentModal from "./PaymentModal";
 import AddRatingModal from "./AddRatingModal";
 import RateDetailModal from "./RateDetailModal";
 import { formatDate, formatDateTime, getDecore, getDecoreType, getEventType, getRangeTime, getTime } from './FormatFunction';
+import EditEventModal from "./EditEventModal";
+import { Delete, Edit } from "@mui/icons-material";
 
 const Bookings = ({ bookings }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const menus = useSelector((state) => state.menus?.menus);
     const [modalOpen, setModalOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isPaymentOpen, setIsPaymentOpen] = useState(false);
@@ -22,6 +25,8 @@ const Bookings = ({ bookings }) => {
     const [rateDetail, setRateDetail] = useState(null); // Dữ liệu chi tiết đánh giá
     const [isRateModalOpen, setIsRateModalOpen] = useState(false); // Trạng thái mở modal chi tiết đánh giá
     const [remainingTimes, setRemainingTimes] = useState({}); // Lưu thời gian còn lại cho mỗi booking
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [isEditOpen, setIsEditOpen] = useState(false);
 
     const handleClick = (booking) => {
         sessionStorage.setItem("booking", JSON.stringify(booking));
@@ -60,6 +65,17 @@ const Bookings = ({ bookings }) => {
         setRateDetail(null);
         setIsRateModalOpen(false);
     };
+
+    const openEditModal = (event,booking) => {
+        setSelectBooking(booking)
+        setSelectedEvent(event);
+        setIsEditOpen(true);
+    };
+
+    const closeEditModal = () => {
+        setIsEditOpen(false);
+    };
+
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -133,20 +149,44 @@ const Bookings = ({ bookings }) => {
                                             : <Button onClick={() => handleClick(booking)}>Thanh toán ngay ({remainingTimes[booking.BookingID]})</Button>}
                                 </TableCell>
                                 <TableCell>
-                                    {!booking.Payment ?
-                                        <Button variant="text" color="error" onClick={() => handleDelete(booking?.BookingID)}>
-                                            Xóa
-                                        </Button> :
-                                        booking.Rate ?
-                                            <Button variant="text" color="primary" onClick={() => openRateDetail(booking?.Rate)}>Xem đánh giá</Button> :
-                                            new Date(booking.Event.EventDate) > new Date() ? "" :
-                                                <Button variant="text" color="info" onClick={() => handleOpen(booking?.BookingID)}>Đánh giá</Button>
-                                    }
+                                    <IconButton
+                                        disabled={booking.Payment}
+                                        onClick={() => handleDelete(booking.BookingID)}
+                                        sx={{
+                                            color: booking.Payment ? 'rgba(255, 0, 0, 0.5)' : 'error.main', // Nhạt màu khi disabled
+                                            '&:hover': {
+                                                backgroundColor: booking.Payment ? 'transparent' : 'rgba(255, 0, 0, 0.1)', // Giảm độ sáng khi hover trên nút disabled
+                                            },
+                                        }}
+                                    >
+                                        <Delete />
+                                    </IconButton>
+                                    <IconButton
+                                        disabled={booking.Payment}
+                                        onClick={() => openEditModal(booking.Event,booking)}
+                                        sx={{
+                                            color: booking.Payment ? 'rgba(0, 0, 255, 0.5)' : 'primary.main', // Nhạt màu khi disabled
+                                            '&:hover': {
+                                                backgroundColor: booking.Payment ? 'transparent' : 'rgba(0, 0, 255, 0.1)', // Giảm độ sáng khi hover trên nút disabled
+                                            },
+                                        }}
+                                    >
+                                        <Edit />
+                                    </IconButton>
                                 </TableCell>
                             </TableRow>
                         ))}
                 </TableBody>
             </Table>
+            {selectedEvent && (
+                <EditEventModal
+                    open={isEditOpen}
+                    onClose={closeEditModal}
+                    menus={menus}
+                    eventData={selectedEvent}
+                    booking={selectedBooking}
+                />
+            )}
             <AddRatingModal booking={selectedBooking} open={modalOpen} onClose={handleClose} onSubmit={handleSubmit} />
             <MenuModal menu={menu} onClose={closeMenu} open={isMenuOpen} />
             <PaymentModal paymentData={payment} onClose={closePayment} open={isPaymentOpen} />

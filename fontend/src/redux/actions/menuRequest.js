@@ -63,12 +63,14 @@ export const getAllDrink = async (dispatch) => {
 };
 
 // Thêm menu
-export const addMenu = async (dispatch, menu) => {
+export const addMenu = async (dispatch, menu,update) => {
     dispatch(addMenuStart());
     try {
         const res = await axios.post("/v1/menu", menu);
         dispatch(addMenuSuccess({...res.data,Name:"Menu mới"})); 
-        toast.success("Thêm menu thành công!");
+        if(!update){
+            toast.success("Thêm menu thành công!");
+        }
         return res.data
     } catch (error) {
         console.error("Add menu failed:", error);

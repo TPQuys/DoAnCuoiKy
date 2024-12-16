@@ -205,6 +205,7 @@ const eventRepository = {
 
     update: async (eventId, updatedData) => {
         const event = await eventRepository.findById(eventId);
+        console.log(updatedData)
         if (!event) throw new Error("Sự kiện không tồn tại.");
         return await event.update(updatedData);
     },

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TableSortLabel, Select, MenuItem, InputLabel, FormControl, Card, TextField, Grid, IconButton } from '@mui/material';
 import { deleteBooking, getAllBooking } from "../../../../redux/actions/bookingRequest";
 import MenuModal from "./Component.js/MenuModal";
 import PaymentModal from "./Component.js/PaymentModal";
 import { Delete, Menu as MenuIcon, Payment as PaymentIcon, Edit } from '@mui/icons-material';  // Import icons
+import EditEventModal from "./Component.js/EditEventModal";
 const formatDate = (date) => {
     if (date) {
         const day = String(date.getDate()).padStart(2, '0');
@@ -83,6 +84,7 @@ const getDecoreType = (decore) => {
 }
 
 const Bookings = ({ bookings, rooms }) => {
+    const menus = useSelector((state) => state.menus?.menus);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isPaymentOpen, setIsPaymentOpen] = useState(false);
     const [menu, setMenu] = useState({});
@@ -90,6 +92,9 @@ const Bookings = ({ bookings, rooms }) => {
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
     const [selectedRoom, setSelectedRoom] = useState("");
     const [searchQuery, setSearchQuery] = useState("");  // Thêm state cho tìm kiếm
+    const [isEditOpen, setIsEditOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [selectBooking, setSelectBooking] = useState(null)
 
     const dispatch = useDispatch();
 
@@ -103,6 +108,16 @@ const Bookings = ({ bookings, rooms }) => {
             await deleteBooking(dispatch, bookingID);
             getAllBooking(dispatch);
         }
+    };
+
+    const openEditModal = (event, booking) => {
+        setSelectBooking(booking)
+        setSelectedEvent(event);
+        setIsEditOpen(true);
+    };
+
+    const closeEditModal = () => {
+        setIsEditOpen(false);
     };
 
     const sortedBookings = React.useMemo(() => {
@@ -152,7 +167,7 @@ const Bookings = ({ bookings, rooms }) => {
     };
 
     return (
-        <Card sx={{p:3}}>
+        <Card sx={{ p: 3 }}>
             <Grid container spacing={2} marginBottom={2}>
                 <Grid item xs={6}>
                     <TextField
@@ -257,15 +272,45 @@ const Bookings = ({ bookings, rooms }) => {
                                     ) : "Chưa thanh toán"}
                                 </TableCell>
                                 <TableCell>
-                                <IconButton onClick={() => handleDelete(booking.BookingID)}>
+                                    <IconButton
+                                        disabled={booking.Payment}
+                                        onClick={() => handleDelete(booking.BookingID)}
+                                        sx={{
+                                            color: booking.Payment ? 'rgba(255, 0, 0, 0.5)' : 'error.main', // Nhạt màu khi disabled
+                                            '&:hover': {
+                                                backgroundColor: booking.Payment ? 'transparent' : 'rgba(255, 0, 0, 0.1)', // Giảm độ sáng khi hover trên nút disabled
+                                            },
+                                        }}
+                                    >
                                         <Delete />
                                     </IconButton>
+                                    <IconButton
+                                        disabled={booking.Payment}
+                                        onClick={() => openEditModal(booking.Event, booking)}
+                                        sx={{
+                                            color: booking.Payment ? 'rgba(0, 0, 255, 0.5)' : 'primary.main', // Nhạt màu khi disabled
+                                            '&:hover': {
+                                                backgroundColor: booking.Payment ? 'transparent' : 'rgba(0, 0, 255, 0.1)', // Giảm độ sáng khi hover trên nút disabled
+                                            },
+                                        }}
+                                    >
+                                        <Edit />
+                                    </IconButton>
                                 </TableCell>
+
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
-
+                {selectedEvent && (
+                    <EditEventModal
+                        booking={selectBooking}
+                        open={isEditOpen}
+                        onClose={closeEditModal}
+                        menus={menus}
+                        eventData={selectedEvent}
+                    />
+                )}
                 <MenuModal menu={menu} onClose={closeMenu} open={isMenuOpen} />
                 <PaymentModal paymentData={payment} onClose={closePayment} open={isPaymentOpen} />
             </TableContainer>

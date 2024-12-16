@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const middlewareController = require("../middlewares/middlewareController");
 const {
     addDecore,
     getAllDecores,
@@ -20,7 +21,7 @@ router.get('/decore_price', getDecorePrice);
 // router.get('/:decoreId', getDecoreById);
 
 // Route cập nhật Decore theo ID
-router.put('/:decoreId', updateDecore);
+router.put('/:decoreId',middlewareController.verifyToken ,updateDecore);
 
 // Route xóa Decore theo ID
 router.delete('/:decoreId', deleteDecore);

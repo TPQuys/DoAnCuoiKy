@@ -47,6 +47,7 @@ export const updateEvent = async (dispatch, eventId, eventData) => {
         const res = await axiosJWT.put(`/v1/event/${eventId}`, eventData);
         dispatch(updateEventSuccess(res.data));
         toast.success("Cập nhật sự kiện thành công!");
+        return res.data
     } catch (error) {
         console.error("Cập nhật sự kiện thất bại:", error);
         toast.error("Không thể cập nhật sự kiện!");
