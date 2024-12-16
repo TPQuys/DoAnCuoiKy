@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton, Grid } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { getBookingByUser, deleteBookingUser } from "../../../redux/actions/bookingRequest";
 import { addRate } from "../../../redux/actions/rateRequest";
@@ -16,6 +16,7 @@ const Bookings = ({ bookings }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const menus = useSelector((state) => state.menus?.menus);
+    const user = useSelector((state) => state.auth.login.currentUser);
     const [modalOpen, setModalOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isPaymentOpen, setIsPaymentOpen] = useState(false);
@@ -45,14 +46,15 @@ const Bookings = ({ bookings }) => {
         }
     };
 
-    const handleOpen = (bookingID) => {
-        setSelectBooking(bookingID);
+    const handleOpen = (booking) => {
+        setSelectBooking(booking);
         setModalOpen(true);
     };
     const handleClose = () => setModalOpen(false);
 
-    const handleSubmit = (data) => {
-        const res = addRate(dispatch, data);
+    const handleSubmit = async (data) => {
+        const res = await addRate(dispatch, data);
+        await getBookingByUser(dispatch)
         console.log("Submitted Data:", res.data);
     };
 
@@ -66,7 +68,7 @@ const Bookings = ({ bookings }) => {
         setIsRateModalOpen(false);
     };
 
-    const openEditModal = (event,booking) => {
+    const openEditModal = (event, booking) => {
         setSelectBooking(booking)
         setSelectedEvent(event);
         setIsEditOpen(true);
@@ -149,30 +151,27 @@ const Bookings = ({ bookings }) => {
                                             : <Button onClick={() => handleClick(booking)}>Thanh toán ngay ({remainingTimes[booking.BookingID]})</Button>}
                                 </TableCell>
                                 <TableCell>
-                                    <IconButton
-                                        disabled={booking.Payment}
-                                        onClick={() => handleDelete(booking.BookingID)}
-                                        sx={{
-                                            color: booking.Payment ? 'rgba(255, 0, 0, 0.5)' : 'error.main', // Nhạt màu khi disabled
-                                            '&:hover': {
-                                                backgroundColor: booking.Payment ? 'transparent' : 'rgba(255, 0, 0, 0.1)', // Giảm độ sáng khi hover trên nút disabled
-                                            },
-                                        }}
-                                    >
-                                        <Delete />
-                                    </IconButton>
-                                    <IconButton
-                                        disabled={booking.Payment}
-                                        onClick={() => openEditModal(booking.Event,booking)}
-                                        sx={{
-                                            color: booking.Payment ? 'rgba(0, 0, 255, 0.5)' : 'primary.main', // Nhạt màu khi disabled
-                                            '&:hover': {
-                                                backgroundColor: booking.Payment ? 'transparent' : 'rgba(0, 0, 255, 0.1)', // Giảm độ sáng khi hover trên nút disabled
-                                            },
-                                        }}
-                                    >
-                                        <Edit />
-                                    </IconButton>
+                                    {!booking.Payment ?
+                                        <Grid textAlign={"center"}>
+                                            <IconButton
+                                                disabled={booking.Payment}
+                                                onClick={() => handleDelete(booking.BookingID)}
+                                            >
+                                                <Delete color="error" />
+                                            </IconButton>
+                                            <IconButton
+                                                disabled={booking.Payment}
+                                                onClick={() => openEditModal(booking.Event, booking)}
+                                            >
+                                                <Edit color="primary" />
+                                            </IconButton>
+                                        </Grid> :
+                                        booking.Rate ?
+                                            <Button variant="text" color="primary" onClick={() => openRateDetail(booking?.Rate)}>Xem đánh giá</Button> :
+                                            new Date(booking.Event.EventDate) > new Date() ? "" :
+                                                <Button variant="text" color="info" onClick={() => handleOpen(booking)}>Đánh giá</Button>
+                                    }
+
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -187,7 +186,7 @@ const Bookings = ({ bookings }) => {
                     booking={selectedBooking}
                 />
             )}
-            <AddRatingModal booking={selectedBooking} open={modalOpen} onClose={handleClose} onSubmit={handleSubmit} />
+            <AddRatingModal booking={selectedBooking} open={modalOpen} onClose={handleClose} onSubmit={handleSubmit} user={user} />
             <MenuModal menu={menu} onClose={closeMenu} open={isMenuOpen} />
             <PaymentModal paymentData={payment} onClose={closePayment} open={isPaymentOpen} />
             <RateDetailModal rate={rateDetail} open={isRateModalOpen} onClose={closeRateDetail} />

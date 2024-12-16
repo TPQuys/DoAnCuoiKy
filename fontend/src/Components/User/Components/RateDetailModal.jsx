@@ -20,14 +20,24 @@ const RateDetailModal = ({ rate, open, onClose }) => {
     <Modal open={open} onClose={onClose} aria-labelledby="rate-detail-modal">
       <Box sx={style}>
         <Typography variant="h6" gutterBottom>Chi tiết đánh giá</Typography>
-        <Box sx={{ textAlign: "center",m:3 }}>
-        <Rating
+        <Box sx={{ display: "flex", justifyContent: "space-between", m: 3 }}>
+          Phòng:
+          <Rating
             name="Rate"
             disabled={true}
             value={rate.Rate}
             size="large"
           />
-          </Box>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-between", m: 3 }}>
+          Dịch vụ:
+          <Rating
+            name="RateService"
+            disabled={true}
+            value={rate.RateService}
+            size="large"
+          />
+        </Box>
         <Typography><strong>Bình luận:</strong> {rate.Comment || "Không có"}</Typography>
         <Box sx={{ textAlign: "right", mt: 6 }}>
           <Button onClick={onClose} variant="contained">Đóng</Button>

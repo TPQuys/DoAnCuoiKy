@@ -54,7 +54,6 @@ const getDecorePrice = async (req, res) => {
         if (!decore) {
             return res.status(404).json({ message: "Decore price not found" });
         }
-        console.log(decore)
         res.status(200).json(decore);
     } catch (error) {
         console.error("Error fetching decore:", error);

@@ -92,7 +92,7 @@ const PaymentPage = () => {
             <div className="payment-body">
                 <div className='flex'>
                     <div className='payment-room'>
-                        <h3>Nhà hàng: {event.RoomEvent?.RoomName}</h3>
+                        <h3>Nơi tổ chức: {event.RoomEvent?.RoomName}</h3>
                         <h4>Giá: {(event.RoomEvent?.Price)?.toLocaleString()} VND</h4>
                         <img src={event.RoomEvent?.RoomImage} className='payment-img' alt="Room-img"></img>
                     </div>

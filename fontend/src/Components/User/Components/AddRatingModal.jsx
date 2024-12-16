@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Modal,
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Rating,
-} from "@mui/material";
+import { Modal, Box, Typography, TextField, Button, Rating } from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -20,16 +13,28 @@ const style = {
   borderRadius: "8px",
 };
 
-const AddRatingModal = ({ open, onClose, onSubmit, booking }) => {
+const AddRatingModal = ({ open, onClose, onSubmit, booking, user }) => {
+  // State to hold form data
   const [formData, setFormData] = useState({
     Rate: 0,
+    RateService: 0,
+    Email: user?.user?.email || "", // Ensure user email is available
     Comment: "",
-    BookingID: booking
+    BookingID: booking?.BookingID || "",
+    RoomEventID: booking?.Event?.RoomEvent?.RoomEventID || "",
   });
 
+  // Update form data when the booking or user changes
   useEffect(() => {
-    setFormData({ ...formData, BookingID: booking })
-  }, [booking])
+    if (booking) {
+      setFormData((prev) => ({
+        ...prev,
+        BookingID: booking?.BookingID,
+        RoomEventID: booking?.Event?.RoomEvent?.RoomEventID,
+        Email:user?.user?.email
+      }));
+    }
+  }, [booking,user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,19 +51,41 @@ const AddRatingModal = ({ open, onClose, onSubmit, booking }) => {
     }));
   };
 
+  const handleRatingServiceChange = (event, newValue) => {
+    setFormData((prev) => ({
+      ...prev,
+      RateService: newValue,
+    }));
+  };
+
   const handleSubmit = () => {
-    onSubmit(formData);
-    setFormData({ Rate: 0, Comment: "", BookingID: booking });
-    onClose();
+    // Check if necessary fields are filled before submitting
+    if (formData.Rate === 0 || formData.RateService === 0) {
+      alert("Please provide ratings for both overall experience and service.");
+      return;
+    }
+    
+    console.log(formData); // For debugging, you can log formData here
+    onSubmit(formData); // Call the onSubmit prop with the form data
+    setFormData({
+      Rate: 0,
+      RateService: 0,
+      Comment: "",
+      BookingID: "",
+      RoomEventID: "",
+    }); // Reset form data after submit
+    onClose(); // Close the modal after submit
   };
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="add-rating-modal">
       <Box sx={style}>
         <Typography id="add-rating-modal" variant="h6" component="h2" gutterBottom>
-          Đánh giá dịch vụ
+          Đánh giá
         </Typography>
-        <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+        Phòng:
           <Rating
             name="Rate"
             value={formData.Rate}
@@ -66,7 +93,17 @@ const AddRatingModal = ({ open, onClose, onSubmit, booking }) => {
             size="large"
           />
         </Box>
-      
+
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+          Dịch vụ:
+          <Rating
+            name="RateService"
+            value={formData.RateService}
+            onChange={handleRatingServiceChange}
+            size="large"
+          />
+        </Box>
+
         <TextField
           name="Comment"
           label="Bình luận"
@@ -81,10 +118,10 @@ const AddRatingModal = ({ open, onClose, onSubmit, booking }) => {
 
         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
           <Button onClick={onClose} sx={{ mr: 1 }} variant="outlined">
-            Cancel
+            Hủy
           </Button>
           <Button onClick={handleSubmit} variant="contained">
-            Submit
+            Gửi
           </Button>
         </Box>
       </Box>

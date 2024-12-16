@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Paper, Typography, Grid, Box, Card, Link, Button } from '@mui/material';
+import { Paper, Typography, Grid, Box, Card, Link, Button, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useLocation } from 'react-router-dom';
 import Header from '../Header/Header';
@@ -31,14 +31,18 @@ const EventDetails = () => {
     const [selected, setSelected] = useState(null);
     const [openModal, setOpenModal] = useState(false);
     const [isDisabled, setIsDisabled] = useState(false);
+    const [note, setNote] = useState('')
     const [Decore, setDecore] = useState({
         LobbyDecore: true,
         StageDecore: true,
         TableDecore: true,
     });
 
-
-    const { EventType, From, To, EventDate, Time, TotalTable, Note, SelectedTimes } = formData || {};
+    const caution = [
+        "- Các thông tin về loại sự kiện, ngày tổ chức, thời gian tổ chức và tổng số bàn sẽ không thể thay đổi sau khi đặt",
+        "- Hãy thanh toán trong vòng 24 giờ trước khi đơn đặt hết hạn"
+    ]
+    const { EventType, From, To, EventDate, Time, TotalTable, SelectedTimes } = formData || {};
 
 
     const handleOpenModal = () => setOpenModal(true);
@@ -56,11 +60,7 @@ const EventDetails = () => {
         console.log(new Date(EventDate.$d))
         setIsDisabled(true);
         if (formData) {
-
-
             const decore = await addDecore(dispatch, { ...Decore, DecorePriceID: selectedPrice.DecorePriceID })
-
-
             // Lấy thông tin menu đã chọn
             const selectedMenu = menus.find(menu => menu.MenuID === selected);
             const foodTotalPrice = selectedMenu?.Food.reduce((total, food) => {
@@ -72,7 +72,6 @@ const EventDetails = () => {
             }, 0);
 
             const totalMenuPrice = foodTotalPrice + drinksTotalPrice;
-            console.log(From)
             // Tạo eventData với thông tin từ form và menu đã chọn
             const eventData = {
                 ...formData,
@@ -82,15 +81,15 @@ const EventDetails = () => {
                 EventType: formData.EventType,
                 TotalPrice: totalMenuPrice,
                 EventDate: new Date(EventDate.$d),
+                Note: note,
                 // EventDate: dayjs(EventDate).toDate(),
                 From: From !== "Invalid Date" ? new Date(From) : null,
                 To: To !== "Invalid Date" ? new Date(To) : null
             };
-            console.log(eventData)
-
             try {
                 const newEvent = await addEvent(dispatch, eventData);
                 if (newEvent && user) {
+                    console.log(newEvent)
                     const newBooking = await addBooking(dispatch,
                         {
                             EventID: newEvent.EventID,
@@ -216,37 +215,37 @@ const EventDetails = () => {
                                 >
                                     <Grid container spacing={2}>
                                         <Grid item xs={12}>
-                                            <Typography variant="subtitle1">Loại sự kiện:</Typography>
-                                            <Typography>{EventType}</Typography>
+                                            <Typography textAlign={'left'} variant="subtitle1">Loại sự kiện: {EventType}</Typography>
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <Typography variant="subtitle1">Ngày:</Typography>
-                                            <Typography>
-                                                {EventDate ? new Date(EventDate.$d).toLocaleDateString() : 'N/A'}
-                                            </Typography>
+                                            <Typography textAlign={'left'} variant="subtitle1">Ngày: {EventDate ? new Date(EventDate.$d).toLocaleDateString() : 'N/A'}</Typography>
+
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <Typography variant="subtitle1">Thời gian:</Typography>
-                                            <Typography>
-                                                {Time === 'CUSTOM'
-                                                    ? SelectedTimes?.join(', ') || `${new Date(From).toLocaleTimeString()} - ${new Date(To).toLocaleTimeString()}`
-                                                    : Time === 'MORNING'
-                                                        ? 'Buổi sáng (8:00-14:00)'
-                                                        : Time === 'AFTERNOON'
-                                                            ? 'Buổi chiều (16:00-23:00)'
-                                                            : 'Cả ngày'}
-                                            </Typography>
+                                            <Typography textAlign={'left'} variant="subtitle1">Thời gian:     {Time === 'CUSTOM'
+                                                ? SelectedTimes?.join(', ') || `${new Date(From).toLocaleTimeString()} - ${new Date(To).toLocaleTimeString()}`
+                                                : Time === 'MORNING'
+                                                    ? 'Buổi sáng (8:00-14:00)'
+                                                    : Time === 'AFTERNOON'
+                                                        ? 'Buổi chiều (16:00-23:00)'
+                                                        : 'Cả ngày'}</Typography>
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <Typography variant="subtitle1">Tổng số bàn:</Typography>
-                                            <Typography>{TotalTable}</Typography>
+                                            <Typography textAlign={'left'} variant="subtitle1">Tổng số bàn: {TotalTable}</Typography>
                                         </Grid>
-                                        {Note && (
-                                            <Grid item xs={12}>
-                                                <Typography variant="subtitle1">Ghi chú:</Typography>
-                                                <Typography>{Note}</Typography>
-                                            </Grid>
-                                        )}
+
+                                        <Grid item xs={12}>
+                                            <TextField
+                                                name="TotalTable"
+                                                label="Ghi chú"
+                                                fullWidth
+                                                multiline
+                                                rows={4}
+                                                onChange={(e) => setNote(e.target.value)} // Truy cập giá trị từ event
+                                            />
+
+                                        </Grid>
+
                                     </Grid>
                                 </Card>
                                 <Card
@@ -256,8 +255,10 @@ const EventDetails = () => {
                                         marginBottom: '30px'
                                     }}
                                 >
-                                    <Typography variant="subtitle1">Lưu ý:</Typography>
-                                    <Typography>- Hãy thanh toán trong vòng 24 giờ trước khi đơn đặt hết hạn</Typography>
+                                    <Typography variant="h5" fontWeight={600} m={1}>Lưu ý</Typography>
+                                    {caution.map((item) => (
+                                        <Typography textAlign='left' m={2}>{item}</Typography>
+                                    ))}
                                 </Card>
                                 <Card
                                     style={{
@@ -269,6 +270,9 @@ const EventDetails = () => {
                                     <Button
                                         onClick={handleBooking}
                                         disabled={isDisabled}
+                                        variant='contained'
+                                        color='primary'
+                                        fullWidth
                                     >
                                         Đặt ngay
                                     </Button>

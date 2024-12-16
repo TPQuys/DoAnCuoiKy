@@ -4,6 +4,7 @@ import HomePage from "../Home/HomePage";
 import Login from "../Login/Login";
 import Register from "../Register/Register";
 import Room from "../Rooms/Room";
+import RoomDetailPage from "../Rooms/RoomDetailPage";
 import BookingPage from "../BookingPage/BookingPage";
 import BookingDetail from "../BookingPage/BookingDetail";
 import EventPage from "../EventPage/EventPage";
@@ -74,6 +75,7 @@ const AppRoutes = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/room" element={<Room />} />
+                    <Route path="/room/:id" element={<RoomDetailPage />} />
                     <Route path="/booking/detail" element={<BookingDetail />} />
                     <Route path="/booking" element={<BookingPage />} />
                     <Route path="/payment" element={<PaymentPage />} />
