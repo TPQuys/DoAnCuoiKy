@@ -7,13 +7,11 @@ const eventService = {
 
     createEvent: async (eventData) => {
         const { RoomEventID, EventDate, Time, From, To, userId } = eventData;
-        console.log(eventData)
         if (Time === "CUSTOM") {
             if (From === null) {
                 throw new Error("Hãy chọn giờ tổ chức")
             }
         }
-        try {
             const BookingPending = await eventRepository.checkPendingBookings(userId)
             if (BookingPending.length > 0) {
                 throw new Error("Bạn có đơn đặt chưa thanh toán, hãy thanh toán hoặc hủy bỏ trước khi đặt đơn mới!")
@@ -35,9 +33,6 @@ const eventService = {
             // Nếu không có sự kiện trùng, tiếp tục tạo mới sự kiện
             const newEvent = await eventRepository.create(eventData);
             return newEvent;
-        }catch(e){
-            console.log(e)
-        }
     },
 
     updateEvent: async (eventId, updatedData) => {

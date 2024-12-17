@@ -8,7 +8,7 @@ const eventController = {
             const newEvent = await eventService.createEvent(req.body);
             res.status(201).json(newEvent);
         } catch (error) {
-            console.log(error)
+            console.error(error)
             res.status(500).json({ message: error.message });
         }
     },
