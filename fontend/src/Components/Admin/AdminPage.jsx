@@ -16,7 +16,7 @@ import TabPanel from '@mui/lab/TabPanel';
 import { getAllUsers } from "../../redux/actions/userRequest";
 import { getAllBooking } from "../../redux/actions/bookingRequest";
 import { getRate } from "../../redux/actions/rateRequest";
-import AdminChat from "./component/Chat/AdminChat";
+import ChatPage from "./component/Chat/ChatPage";
 const UserPage = () => {
     const [value, setValue] = useState('1');
     const Booking = useSelector((state) => state.bookings.bookings)
@@ -52,7 +52,7 @@ const UserPage = () => {
                             {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Lịch sử đặt" value="3" />}
                             {(user.role === "ADMIN" || user.role === "HR") && <Tab label="Người dùng" value="4" />}
                             {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Biểu đồ" value="5" />}
-                            {/* {(user.role === "ADMIN" || user.role === "MANAGER") && <Tab label="Chat" value="6" />} */}
+                            {(user.role === "ADMIN" || user.role === "MANAGER") && <Tab label="Chat" value="6" />}
                         </TabList>
                     </Box>
                     <TabPanel value="1"><UserProfile /></TabPanel>
@@ -67,7 +67,7 @@ const UserPage = () => {
                         </Grid2>
 
                     </TabPanel>
-                    <TabPanel value="6"><AdminChat /></TabPanel>
+                    <TabPanel value="6"><ChatPage /></TabPanel>
 
                 </TabContext>
                 <Stack direction="row" >

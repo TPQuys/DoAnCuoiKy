@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import HomePage from "../Home/HomePage";
+import ChatPage from "../Admin/component/Chat/ChatPage";
 import Login from "../Login/Login";
 import Register from "../Register/Register";
 import Room from "../Rooms/Room";

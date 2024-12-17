@@ -10,6 +10,7 @@ const MenuDrinks = require("../models/MenuDrinks")
 const MenuFoods = require("../models/MenuFoods")
 const Rate = require("../models/Rate")
 const RequireDay = require("../models/RequireDay")
+const Chat = require("../models/Chat")
 
 // Thêm mới user
 const createUser = async (req, res) => {

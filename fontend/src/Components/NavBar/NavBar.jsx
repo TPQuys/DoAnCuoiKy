@@ -16,6 +16,7 @@ import { IoCloseCircle } from "react-icons/io5";
 import { GiFlowers } from "react-icons/gi";
 import TawkMessengerReact from '@tawk.to/tawk-messenger-react';
 import { Avatar } from "@mui/material";
+import Chat from "../Chat/Chat";
 const NavBar = () => {
   const user = useSelector((state) => state.auth.login.currentUser)?.user;
   const [accessToken] = useState(user?.accessToken);
@@ -96,11 +97,12 @@ const NavBar = () => {
           </>
         ) : (
           <>
-            {user?.email && <TawkMessengerReact
+          <Chat user={user}/>
+            {/* {user?.email && <TawkMessengerReact
               propertyId="674b27722480f5b4f5a62a5d"
               widgetId="1idup45v4"
               onLoad={onLoad} />
-            }
+            } */}
             <div className="navbar-dropdown">
               <Link to="/user/info" className="navbar-home">
               <Avatar sx={{ width: "25px", height: "25px", margin: 1, display:'inline-flex'}} src={user?.avatar} />
