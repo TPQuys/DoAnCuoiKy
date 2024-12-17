@@ -1,11 +1,9 @@
 import React, { forwardRef, useEffect, useState } from 'react';
-import { ScrollView, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { ScrollView, TextInput, TouchableOpacity, View, StyleSheet, Text } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import {
-    TextInput,
     HelperText,
-    Text,
     Button
 } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -85,10 +83,10 @@ const EventForm = ({ handleSubmit, setFrom, setTo }) => {
     };
 
     const initialValues = {
-        EventType: 'WEDDING',
-        TotalTable: '40',
-        EventDate: new Date('2025-01-24'),
-        Time: 'MORNING',
+        EventType: '',
+        TotalTable: '',
+        EventDate: '',
+        Time: '',
     };
 
     const validationSchema = Yup.object().shape({
@@ -112,7 +110,7 @@ const EventForm = ({ handleSubmit, setFrom, setTo }) => {
                     handleSubmit(values);
                 }}
             >
-                {({ handleChange, handleBlur, setFieldValue, values, errors, touched, handleSubmit}) => (
+                {({ handleChange, handleBlur, setFieldValue, values, errors, touched, handleSubmit }) => (
                     <>
                         <Text style={styles.label}>Ngày</Text>
                         <TouchableOpacity
@@ -121,6 +119,9 @@ const EventForm = ({ handleSubmit, setFrom, setTo }) => {
                         >
                             <Text>{values.EventDate ? dayjs(values.EventDate).format('DD/MM/YYYY') : 'Chọn ngày'}</Text>
                         </TouchableOpacity>
+                        {errors.EventDate && touched.EventDate && (
+                            <HelperText type="error">{errors.EventDate}</HelperText>
+                        )}
                         {showDatePicker && (
                             <DateTimePicker
                                 mode="date"
@@ -132,16 +133,17 @@ const EventForm = ({ handleSubmit, setFrom, setTo }) => {
                                         handleChangeDate(setFieldValue, 'EventDate', date);
                                     }
                                 }}
-                            />
-                        )}
 
+                            />
+
+                        )}
+                        <Text style={styles.label}>Tổng số bàn</Text>
                         <TextInput
                             label="Tổng Số Bàn"
                             keyboardType="number-pad"
                             value={values.TotalTable}
                             onChangeText={handleChange('TotalTable')}
                             onBlur={handleBlur('TotalTable')}
-                            error={touched.TotalTable && !!errors.TotalTable}
                             style={styles.input}
                         />
                         {errors.TotalTable && touched.TotalTable && (
@@ -149,45 +151,48 @@ const EventForm = ({ handleSubmit, setFrom, setTo }) => {
                         )}
 
                         <Text style={styles.label}>Loại Sự Kiện</Text>
-                        <Picker
-                            selectedValue={values.EventType}
-                            onValueChange={handleChange('EventType')}
-                            style={styles.input}
-                        >
-                            <Picker.Item label="Chọn loại sự kiện" value="" />
-                            <Picker.Item label="Đám Cưới" value="WEDDING" />
-                            <Picker.Item label="Hội Nghị" value="CONFERENCE" />
-                            <Picker.Item label="Sinh nhật" value="BIRTHDAY" />
-                            <Picker.Item label="Khác" value="ORTHER" />
-                        </Picker>
-                        {touched.EventType && errors.EventType && (
-                            <Text style={styles.errorText}>{errors.EventType}</Text>
-                        )}
-
+                        <View style={styles.pickerWrapper}>
+                            <Picker
+                                selectedValue={values.EventType}
+                                onValueChange={handleChange('EventType')}
+                                style={styles.picker} // Chỉ áp dụng cho style bên trong picker
+                            >
+                                <Picker.Item label="Chọn loại sự kiện" value="" />
+                                <Picker.Item label="Đám Cưới" value="WEDDING" />
+                                <Picker.Item label="Hội Nghị" value="CONFERENCE" />
+                                <Picker.Item label="Sinh nhật" value="BIRTHDAY" />
+                                <Picker.Item label="Khác" value="ORTHER" />
+                            </Picker>
+                        </View>
                         {errors.EventType && touched.EventType && (
                             <HelperText type="error">{errors.EventType}</HelperText>
                         )}
                         <Text style={styles.label}>Thời gian</Text>
-                        <Picker
-                            selectedValue={values.Time}
-                            onValueChange={handleChange('Time')}
-                            style={styles.input}
-                        >
-                            <Picker.Item label="Chọn thời gian" value="" />
-                            <Picker.Item
-                                label="Buổi sáng (8:00-14:00)"
-                                value="MORNING"
-                            />
-                            <Picker.Item
-                                label="Buổi chiều(16:00-23:00)"
-                                value="AFTERNOON"
-                            />
-                            <Picker.Item
-                                label="Cả ngày"
-                                value="ALLDAY"
-                            />
-                            <Picker.Item label="Tùy chỉnh" value="CUSTOM" style={{ color: 'black' }} />
-                        </Picker>
+                        <View style={styles.pickerWrapper}>
+                            <Picker
+                                selectedValue={values.Time}
+                                onValueChange={handleChange('Time')}
+                                style={styles.picker}
+                            >
+                                <Picker.Item label="Chọn thời gian" value="" />
+                                <Picker.Item
+                                    label="Buổi sáng (8:00-14:00)"
+                                    value="MORNING"
+                                />
+                                <Picker.Item
+                                    label="Buổi chiều(16:00-23:00)"
+                                    value="AFTERNOON"
+                                />
+                                <Picker.Item
+                                    label="Cả ngày"
+                                    value="ALLDAY"
+                                />
+                                <Picker.Item label="Tùy chỉnh" value="CUSTOM" />
+                            </Picker>
+                        </View>
+                        {errors.Time && touched.Time && (
+                            <HelperText type="error">{errors.Time}</HelperText>
+                        )}
                         {values.Time === "CUSTOM" && <>
                             <Text style={{ marginBottom: 8 }}>Chọn Thời Gian:</Text>
                             {timeSlots.map((slot, index) => (
@@ -202,7 +207,7 @@ const EventForm = ({ handleSubmit, setFrom, setTo }) => {
                             ))}
                         </>}
                         <Button mode="contained" style={styles.submitButton} onPress={handleSubmit}>
-                            Timf
+                            Tìm
                         </Button>
                     </>
                 )}
@@ -219,6 +224,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 4,
         marginBottom: 16,
+        height: 40
     },
     errorText: {
         color: 'red',
@@ -236,6 +242,18 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 8,
+    },
+    pickerWrapper: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 4,
+        backgroundColor: 'white',
+        marginBottom: 16,
+        height: 40,
+        justifyContent: "center"
+    },
+    picker: {
+        color: 'black', // Màu chữ bên trong picker
     },
 });
 

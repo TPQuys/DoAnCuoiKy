@@ -94,13 +94,15 @@ const HomePage = () => {
                     DecoreID: newDecore.DecoreID,
                     EventType: formValues.EventType,
                     TotalTable: formValues.TotalTable,
-                    EventDate: new Date(formValues.EventDate).toLocaleDateString(),
+                    EventDate: new Date(formValues.EventDate),
                     Time: formValues.Time,
                     TotalPrice: totalMenuPrice,
                     Note: formValues.Note,
-                    From: from,
-                    To: to,
+                    From: new Date(from),
+                    To: new Date(to),
                 };
+
+                console.log(eventData)
 
                 try {
                     const newEvent = await addEvent(dispatch, eventData, user);

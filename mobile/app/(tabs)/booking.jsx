@@ -3,9 +3,7 @@ import { Text, View, Image, ScrollView, TouchableOpacity, Alert, StyleSheet } fr
 import { getAvailableRooms } from "@/redux/actions/roomRequest";
 import { useRouter } from "expo-router";
 import EventFrom from '@/components/EventFrom'
-import { getAllDrink, getAllFood, getAllMenus } from "@/redux/actions/menuRequest";
 import { useDispatch } from "react-redux";
-import { getDecorePrice } from "@/redux/actions/decoreRequest";
 const HomePage = () => {
     const dispatch = useDispatch()
     const router = useRouter();
@@ -13,10 +11,6 @@ const HomePage = () => {
     const [to, setTo] = useState(null);
     const [availableRooms, setAvailableRooms] = useState(null);
     const [formData, setFormData] = useState({});
-    getAllMenus(dispatch);
-    getAllFood(dispatch);
-    getAllDrink(dispatch);
-    getDecorePrice(dispatch)
     const handleSubmit = async (values) => {
         if (values?.Time === "CUSTOM" && from === null) {
             return;
@@ -31,8 +25,8 @@ const HomePage = () => {
         router.push({
             pathname: '/(booking)/detail',
             params: { formData: JSON.stringify(formData), room: JSON.stringify(room) }
-          });
-      };
+        });
+    };
 
     return (
         <ScrollView style={styles.container}>
@@ -103,78 +97,75 @@ const HomePage = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
+        marginTop:20,
+        backgroundColor: "#f9f9f9",
     },
     body: {
-        padding: 16,
+        marginTop: 20,
+        paddingHorizontal: 12,
     },
     roomName: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: "bold",
-        marginBottom: 16,
-    },
-    roomListContainer: {
-        maxHeight: 700,
-        overflowY: "auto",
-        minHeight: 600,
+        textAlign: "center",
+        marginBottom: 20,
+        color: "#333",
     },
     roomCard: {
-        marginBottom: 16,
-        padding: 16,
-        borderWidth: 1,
-        borderColor: "#ddd",
-        borderRadius: 8,
+        marginBottom: 20,
+        borderRadius: 12,
         backgroundColor: "#fff",
-    },
-    roomCardContent: {
-        flexDirection: "row",
-    },
-    roomImageContainer: {
-        width: "30%",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 6,
+        elevation: 3,
+        overflow: "hidden",
     },
     roomImage: {
         width: "100%",
-        height: 120,
-        borderRadius: 8,
+        height: 150, // Giảm chiều cao để phù hợp màn hình nhỏ
     },
     roomDetails: {
-        paddingLeft: 16,
-        flex: 1,
+        padding: 12,
     },
     roomTitle: {
         fontSize: 18,
         fontWeight: "bold",
-        marginBottom: 8,
+        marginBottom: 6,
+        color: "#64463c",
     },
     roomInfo: {
         fontSize: 14,
+        color: "#555",
         marginBottom: 4,
     },
     bold: {
         fontWeight: "bold",
-    },
-    roomDescription: {
-        fontSize: 14,
+        color: "#333",
     },
     roomPriceContainer: {
+        paddingHorizontal: 12,
+        paddingBottom: 12,
         alignItems: "center",
-        justifyContent: "center",
-        marginTop: 8,
     },
     roomPrice: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: "bold",
+        color: "#d65a31",
+        marginBottom: 8,
     },
     bookButton: {
         backgroundColor: "#64463c",
-        padding: 12,
-        marginTop: 8,
-        borderRadius: 4,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 6,
+        alignItems: "center",
     },
     bookButtonText: {
         color: "#fff",
+        fontSize: 14,
         fontWeight: "bold",
-        textAlign: "center",
     },
     noRoomContainer: {
         alignItems: "center",
@@ -183,16 +174,17 @@ const styles = StyleSheet.create({
     },
     noRoomImage: {
         width: "100%",
-        height: 250,
-        borderRadius: 16,
+        height: 200,
+        borderRadius: 12,
     },
     noRoomText: {
-        fontSize: 24,
+        fontSize: 18,
         fontWeight: "bold",
-        color: "white",
-        position: "absolute",
-        bottom: "20%",
+        textAlign: "center",
+        color: "#555",
+        marginTop: 16,
     },
 });
+
 
 export default HomePage;

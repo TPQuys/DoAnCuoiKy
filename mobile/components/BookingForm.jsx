@@ -32,6 +32,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
     useEffect(() => {
         const fetchRoomBooked = async () => {
             if (selectedDate) {
+                console.log(new Date(selectedDate))
                 try {
                     const res = await getRoomBooked(RoomEventID, selectedDate, user);
                     console.log(res)

@@ -20,7 +20,6 @@ export default function TabLayout() {
     getAllDrink(dispatch);
     getBookingByUser(dispatch, user);
     getDecorePrice(dispatch);
-    
   }, [dispatch, user]);
 
   return (
@@ -40,10 +39,19 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+        <Tabs.Screen
         name="room"
         options={{
-          title: 'Đặt phòng',
+          title: 'Phòng',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'business' : 'business-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="booking"
+        options={{
+          title: 'Đặt ngay',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'book' : 'book-outline'} color={color} />
           ),
