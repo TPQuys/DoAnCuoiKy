@@ -4,18 +4,12 @@ import Form from "./component/BookingForm"
 import React, { useRef, useState } from "react";
 import { getAvailableRooms } from "../../redux/actions/roomRequest";
 import { Button, Card, Grid, Link, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import { addEvent } from "../../redux/actions/eventRequest";
-import { addBooking } from "../../redux/actions/bookingRequest";
-import { PostZaloApi } from "../../redux/actions/paymentRequest";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 const HomePage = () => {
     const formikRef = useRef(null);
-    const dispatch = useDispatch();
     const navigate = useNavigate()
-    const user = useSelector((state) => state.auth.login.currentUser);
-    const rooms = useSelector((state) => state.rooms?.rooms);
     const [from, setFrom] = useState(null);
     const [to, setTo] = useState(null);
     const [availableRooms, setAvailableRooms] = useState(null)

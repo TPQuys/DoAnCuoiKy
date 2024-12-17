@@ -27,6 +27,7 @@ const roomEventController = {
     // Tạo RoomEvent mới
     findAvailableRooms: async (req, res) => {
         try {
+            console.log(req.body)
             const { TotalTable ,EventDate, Time, From, To } = req.body.values
             const availableRooms = await roomEventService.findAvailableRooms(EventDate, Time, From, To,TotalTable);
             res.status(201).json(availableRooms);  // Trả về RoomEvent mới được tạo

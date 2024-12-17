@@ -19,7 +19,7 @@ router.delete("/:id", middlewareController.verifyTokenAdmin, roomController.dele
 // Cập nhật phòng theo ID có hình ảnh
 router.put('/:id/image', upload.single('imageRoom'),middlewareController.verifyTokenManager, roomController.uploadRoom)
 
-router.post("/available",middlewareController.verifyToken ,roomController.findAvailableRooms);
+router.post("/available" ,roomController.findAvailableRooms);
 
 //thêm room
 router.post('/', upload.single('imageRoom'),middlewareController.verifyTokenManager, roomController.addRoom)

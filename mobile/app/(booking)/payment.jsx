@@ -142,9 +142,7 @@ const PaymentPage = () => {
     const resetLinkPayment = async () => {
         if (newBooking) {
             const zaloApi = await PostZaloApi(dispatch, newBooking, user);
-            console.log(zaloApi.data)
             if (zaloApi?.data?.order_url) {
-                console.log(zaloApi?.data?.order_url)
                 setNewBooking({ ...newBooking, PaymentLink: zaloApi.data.order_url })
                 setIsDisable(false)
             }
