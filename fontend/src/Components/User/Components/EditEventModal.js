@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Grid, Card, Typography, CardContent, Checkbox, ListItem, ListItemText, Button, FormControl, Select, MenuItem, ToggleButton } from "@mui/material";
+import { Modal, Grid, Card, Typography, CardContent, Checkbox, ListItem, ListItemText, Button, FormControl, Select, MenuItem, ToggleButton, Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { addMenu } from "../../../redux/actions/menuRequest"
 import { toast } from "react-toastify";
@@ -9,7 +9,7 @@ import { getBookingByUser } from "../../../redux/actions/bookingRequest";
 import { Check, TableRestaurant } from "@mui/icons-material";
 import { updateDecore } from "../../../redux/actions/decoreRequest";
 
-const EditEventModal = ({ open, onClose, eventData,booking }) => {
+const EditEventModal = ({ open, onClose, eventData, booking }) => {
     const foods = useSelector((state) => state.foods?.foods);
     const drinks = useSelector((state) => state.drinks?.drinks);
     const price = useSelector((state) => state.roomPrices?.roomPrices)
@@ -122,7 +122,7 @@ const EditEventModal = ({ open, onClose, eventData,booking }) => {
         // Thực hiện các bước tiếp theo nếu có sự khác biệt
         if (foodChanged || drinksChanged) {
             const menuData = {
-                Food: selectedFood, 
+                Food: selectedFood,
                 Drinks: selectedDrinks,
             };
 
@@ -148,7 +148,7 @@ const EditEventModal = ({ open, onClose, eventData,booking }) => {
             console.log("Không có thay đổi trong menu, không thực hiện thêm hành động nào.");
         }
         if (isChange) {
-            await PostZaloApi(dispatch,booking)
+            await PostZaloApi(dispatch, booking)
             await getBookingByUser(dispatch);
         }
         onClose();
@@ -157,96 +157,168 @@ const EditEventModal = ({ open, onClose, eventData,booking }) => {
 
     return (
         <Modal open={open} onClose={onClose}>
-            <Card sx={{ p: 3, maxWidth: "80%", maxHeight: "80%", mx: "auto", overflowY: "scroll" }}>
+            <Card sx={{ p: 3, mt: "2%", maxWidth: "90%", maxHeight: "80%", mx: "auto", overflowY: "scroll" }}>
                 <Grid container spacing={3} justifyContent='center'>
                     <Grid item xs={12} sm={4} md={4}>
-                        <Card variant="outlined">
+                        <Card variant="outlined" sx={{ p: 2 }}>
                             <CardContent>
-                                <div>
-                                    <Typography>
-                                        <strong>Món ăn:</strong>
-                                    </Typography>
-                                    {selectedFood?.map((foodId, idx) => (
-                                        <Typography variant="body2" key={idx} sx={{ textAlign: 'left', borderBottom: '1px solid #ddd', paddingBottom: '5px' }}>
+                                {/* Món ăn đã chọn */}
+                                <Typography
+                                    variant="h6"
+                                    sx={{ textAlign: "center", fontWeight: "bold"}}
+                                >
+                                    Thực đơn
+                                </Typography>
+                                <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 1 }}>
+                                    Món ăn đã chọn:
+                                </Typography>
+                                {selectedFood?.length > 0 ? (
+                                    selectedFood.map((foodId, idx) => (
+                                        <Typography
+                                            key={idx}
+                                            variant="body2"
+                                            sx={{
+                                                textAlign: "left",
+                                                borderBottom: "1px solid #ddd",
+                                                pb: 1,
+                                                mb: 1,
+                                            }}
+                                        >
                                             {foods.find((food) => food.FoodID === foodId)?.Name}
                                         </Typography>
-                                    ))}
-                                </div>
-                                <div>
-                                    <Typography>
-                                        <strong>Đồ uống:</strong>
+                                    ))
+                                ) : (
+                                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                                        Không có món ăn nào được chọn.
                                     </Typography>
-                                    {selectedDrinks?.map((drinkId, idx) => (
-                                        <Typography variant="body2" key={idx} sx={{ textAlign: 'left', borderBottom: '1px solid #ddd', paddingBottom: '5px' }}>
+                                )}
+
+                                {/* Đồ uống đã chọn */}
+                                <Typography variant="subtitle1" sx={{ fontWeight: "bold", mt: 2, mb: 1 }}>
+                                    Đồ uống đã chọn:
+                                </Typography>
+                                {selectedDrinks?.length > 0 ? (
+                                    selectedDrinks.map((drinkId, idx) => (
+                                        <Typography
+                                            key={idx}
+                                            variant="body2"
+                                            sx={{
+                                                textAlign: "left",
+                                                borderBottom: "1px solid #ddd",
+                                                pb: 1,
+                                                mb: 1,
+                                            }}
+                                        >
                                             {drinks.find((drink) => drink.DrinkID === drinkId)?.Name}
                                         </Typography>
-                                    ))}
-                                </div>
+                                    ))
+                                ) : (
+                                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                                        Không có đồ uống nào được chọn.
+                                    </Typography>
+                                )}
                             </CardContent>
-                            <Typography variant="h6" color="textSecondary" sx={{ textAlign: 'left', paddingX: '10px' }}>
+
+                            {/* Giá Menu */}
+                            <Typography
+                                variant="h6"
+                                color="textSecondary"
+                                sx={{ textAlign: "center", fontWeight: "bold", mt: 2 }}
+                            >
                                 {`Giá: ${totalMenuPrice.toLocaleString()} VND/bàn`}
                             </Typography>
 
-                            <Grid container spacing={2} justifyContent="center" marginTop={2} >
-                                <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        {/* <InputLabel>Chọn loại giá</InputLabel> */}
-                                        <Select
-                                            sx={{ backgroundColor: "white" }}
-                                            value={selectedType}
-                                            onChange={handlePriceTypeChange}
-                                        >
-                                            <MenuItem value={"BASIC"}>Cơ bản</MenuItem>
-                                            <MenuItem value={'ADVANCED'}>Nầng cao</MenuItem>
-                                            <MenuItem value={'PREMIUM'}>Cao cấp</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
+                            <Typography
+                                variant="h6"
+                                sx={{ textAlign: "center", fontWeight: "bold", mt: 2 }}
+                            >
+                                Trang trí
+                            </Typography>
 
+                            {/* Chọn loại giá */}
+                            <FormControl fullWidth sx={{ mt: 2 }}>
+                                <Select
+                                    value={selectedType}
+                                    onChange={handlePriceTypeChange}
+                                    displayEmpty
+                                    sx={{
+                                        backgroundColor: "white",
+                                        borderRadius: 1,
+                                    }}
+                                >
+                                    <MenuItem value={"BASIC"}>Cơ bản</MenuItem>
+                                    <MenuItem value={"ADVANCED"}>Nâng cao</MenuItem>
+                                    <MenuItem value={"PREMIUM"}>Cao cấp</MenuItem>
+                                </Select>
+                            </FormControl>
+
+                            {/* Các tùy chọn trang trí */}
+                            <Grid container spacing={2} sx={{ mt: 2 }}>
                                 {decoreOptions.map((option) => (
                                     <Grid item xs={12} key={option.name}>
-                                        <Card
+                                        <Box
                                             sx={{
-                                                maxWidth: 300,
-                                                transition: "0.3s",
-                                                textAlign: "center",
-                                                margin: "auto",
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                alignItems: "center",
+                                                p: 1,
+                                                border: "1px solid #ddd",
+                                                borderRadius: 1,
+                                                backgroundColor: option.selected ? "#f5f5f5" : "#fff",
+                                                transition: "background-color 0.3s",
                                             }}
                                         >
-                                            <CardContent>
-                                                <Typography variant="h6" align="center" sx={{ fontWeight: "bold", mt: 1 }}>
-                                                    {option.label}
-                                                </Typography>
-                                                <Typography variant="body1" align="center" sx={{ fontWeight: "bold", mt: 1 }}>
-                                                    {option.price}
-                                                </Typography>
-                                                <ToggleButton
-                                                    value={option.name}
-                                                    selected={option.selected}
-                                                    onChange={() => handleToggle(option.name)}
-                                                    sx={{
-                                                        width: "100%",
-                                                        backgroundColor: option.selected ? "#64463c" : "#f5f5f5",
-                                                        color: option.selected ? "#fff" : "#64463c",
-                                                        borderRadius: "5px",
-                                                        mt: 2,
-                                                        "&:hover": {
-                                                            backgroundColor: option.selected ? "#52382f" : "#ebebeb",
-                                                        },
-                                                    }}
-                                                >
-                                                    {option.selected ? <Check sx={{ fontSize: 25 }} /> : "Chọn"}
-                                                </ToggleButton>
-                                            </CardContent>
-                                        </Card>
+                                            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                                                {option.label}
+                                            </Typography>
+                                            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                                                {option.price}
+                                            </Typography>
+                                            <ToggleButton
+                                                value={option.name}
+                                                selected={option.selected}
+                                                onChange={() => handleToggle(option.name)}
+                                                sx={{
+                                                    height: 30,
+                                                    width: "auto",
+                                                    minWidth: 60,
+                                                    backgroundColor: option.selected ? "#64463c" : "#f5f5f5",
+                                                    color: option.selected ? "#fff" : "#64463c",
+                                                    borderRadius: 1,
+                                                    "&:hover": {
+                                                        backgroundColor: option.selected ? "#52382f" : "#ebebeb",
+                                                    },
+                                                }}
+                                            >
+                                                {option.selected ? <Check sx={{ fontSize: 20 }} /> : "Chọn"}
+                                            </ToggleButton>
+                                        </Box>
                                     </Grid>
                                 ))}
                             </Grid>
+
+                            {/* Nút Lưu */}
+                            <Button
+                                variant="contained"
+                                fullWidth
+                                sx={{
+                                    mt: 3,
+                                    py: 1,
+                                    fontWeight: "bold",
+                                    textTransform: "none",
+                                }}
+                                onClick={handleSubmit}
+                            >
+                                Lưu
+                            </Button>
                         </Card>
-                        <Button onClick={handleSubmit}>Lưu</Button>
                     </Grid>
+
                     <Grid item xs={12} sm={8} md={8}>
                         <Card>
+                            <Typography m={2}>
+                                <strong>Danh sách món ăn:</strong>
+                            </Typography>
                             <Grid container>
                                 {foods.map((food) => (
                                     <Grid item xs={4} key={food.FoodID}>
@@ -263,6 +335,9 @@ const EditEventModal = ({ open, onClose, eventData,booking }) => {
                         </Card>
 
                         <Card>
+                            <Typography m={2}>
+                                <strong>Danh sách đồ uống:</strong>
+                            </Typography>
                             <Grid container>
                                 {drinks.map((drink) => (
                                     <Grid item xs={6} key={drink.DrinkID}>

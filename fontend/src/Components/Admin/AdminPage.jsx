@@ -44,36 +44,34 @@ const UserPage = () => {
         <main className='room-container'>
             <Header background="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/user-header.webp?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC91c2VyLWhlYWRlci53ZWJwIiwiaWF0IjoxNzI5ODY1NDgwLCJleHAiOjE3NjE0MDE0ODB9.skF1ZqXKPkSYiMKxkwb_KaZETbIpPrffb9M8bMj893U&t=2024-10-25T14%3A11%3A18.654Z" title="ADMIN" />
             <div className="room-body">
-                <div className="booking-center">
-                    <TabContext value={value}>
-                        <Box sx={{ borderBottom: 1, borderColor: 'divider', backgroundColor: "#fafaeb" }}>
-                            <TabList onChange={handleChange} aria-label="lab API tabs example">
-                                <Tab label="Cá nhân" value="1" />
-                                {(user.role === "ADMIN" || user.role === "MANAGER") && <Tab label="Phòng" value="2" />}
-                                {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Lịch sử đặt" value="3" />}
-                                {(user.role === "ADMIN" || user.role === "HR") && <Tab label="Người dùng" value="4" />}
-                                {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Biểu đồ" value="5" />}
-                                {(user.role === "ADMIN" || user.role === "MANAGER") && <Tab label="Chat" value="6" />}
-                            </TabList>
-                        </Box>
-                        <TabPanel value="1"><UserProfile /></TabPanel>
-                        <TabPanel value="2"><Room rooms={rooms} /></TabPanel>
-                        <TabPanel value="3"><Bookings bookings={Booking} rooms={rooms} /></TabPanel>
-                        <TabPanel value="4"><User /></TabPanel>
-                        <TabPanel value="5">
-                            <PaymentChart bookings={Booking} />
-                            <Grid2 container sx={{ gap: "20px" }}>
-                                <RoomChart bookings={Booking} />
-                                <PaymentSuccessChart bookings={Booking} />
-                            </Grid2>
+                <TabContext value={value}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider', backgroundColor: "#fafaeb" }}>
+                        <TabList onChange={handleChange} aria-label="lab API tabs example">
+                            <Tab label="Cá nhân" value="1" />
+                            {(user.role === "ADMIN" || user.role === "MANAGER") && <Tab label="Phòng" value="2" />}
+                            {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Lịch sử đặt" value="3" />}
+                            {(user.role === "ADMIN" || user.role === "HR") && <Tab label="Người dùng" value="4" />}
+                            {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Biểu đồ" value="5" />}
+                            {/* {(user.role === "ADMIN" || user.role === "MANAGER") && <Tab label="Chat" value="6" />} */}
+                        </TabList>
+                    </Box>
+                    <TabPanel value="1"><UserProfile /></TabPanel>
+                    <TabPanel value="2"><Room rooms={rooms} /></TabPanel>
+                    <TabPanel value="3"><Bookings bookings={Booking} rooms={rooms} /></TabPanel>
+                    <TabPanel value="4"><User /></TabPanel>
+                    <TabPanel value="5">
+                        <PaymentChart bookings={Booking} />
+                        <Grid2 container sx={{ gap: "20px" }}>
+                            <RoomChart bookings={Booking} />
+                            <PaymentSuccessChart bookings={Booking} />
+                        </Grid2>
 
-                        </TabPanel>
-                        <TabPanel value="6"><AdminChat /></TabPanel>
+                    </TabPanel>
+                    <TabPanel value="6"><AdminChat /></TabPanel>
 
-                    </TabContext>
-                    <Stack direction="row" >
-                    </Stack>
-                </div>
+                </TabContext>
+                <Stack direction="row" >
+                </Stack>
             </div>
         </main>
 

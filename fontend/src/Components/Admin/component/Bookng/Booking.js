@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TableSortLabel, Select, MenuItem, InputLabel, FormControl, Card, TextField, Grid, IconButton } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TableSortLabel, Select, MenuItem, InputLabel, FormControl, Card, TextField, Grid, IconButton, InputAdornment } from '@mui/material';
 import { deleteBooking, getAllBooking } from "../../../../redux/actions/bookingRequest";
 import MenuModal from "./Component.js/MenuModal";
 import PaymentModal from "./Component.js/PaymentModal";
-import { Delete, Menu as MenuIcon, Payment as PaymentIcon, Edit } from '@mui/icons-material';  // Import icons
+import { Delete, Menu as MenuIcon, Payment as PaymentIcon, Edit, Height } from '@mui/icons-material';  // Import icons
 import EditEventModal from "./Component.js/EditEventModal";
+import SearchIcon from '@mui/icons-material/Search';
 const formatDate = (date) => {
     if (date) {
         const day = String(date.getDate()).padStart(2, '0');
@@ -95,6 +96,8 @@ const Bookings = ({ bookings, rooms }) => {
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [selectBooking, setSelectBooking] = useState(null)
+    const [selectedMonth, setSelectedMonth] = useState("");
+    const [selectedYear, setSelectedYear] = useState("");
 
     const dispatch = useDispatch();
 
@@ -133,21 +136,38 @@ const Bookings = ({ bookings, rooms }) => {
             );
         }
 
+        // Lọc theo phòng
         if (selectedRoom) {
             filteredBookings = filteredBookings.filter(booking => booking.Event.RoomEvent?.RoomName === selectedRoom);
         }
 
+        // Lọc theo tháng
+        if (selectedMonth) {
+            filteredBookings = filteredBookings.filter(booking => {
+                const bookingMonth = new Date(booking.BookingTime).getMonth() + 1;
+                return bookingMonth === parseInt(selectedMonth);
+            });
+        }
+
+        // Lọc theo năm
+        if (selectedYear) {
+            filteredBookings = filteredBookings.filter(booking => {
+                const bookingYear = new Date(booking.BookingTime).getFullYear();
+                return bookingYear === parseInt(selectedYear);
+            });
+        }
+
+        // Sắp xếp nếu cần
         if (sortConfig.key) {
             const sorted = [...filteredBookings].sort((a, b) => {
                 let aValue = a[sortConfig.key];
                 let bValue = b[sortConfig.key];
 
-                // Kiểm tra nếu đang sắp xếp theo 'EventDate' hoặc 'BookingTime'
                 if (sortConfig.key === 'EventDate') {
                     aValue = new Date(a.Event.EventDate);
                     bValue = new Date(b.Event.EventDate);
                 } else if (sortConfig.key === 'BookingTime') {
-                    aValue = new Date(a.BookingTime);  // Sử dụng 'BookingTime' ở đây
+                    aValue = new Date(a.BookingTime);
                     bValue = new Date(b.BookingTime);
                 }
 
@@ -155,8 +175,9 @@ const Bookings = ({ bookings, rooms }) => {
             });
             return sorted;
         }
+
         return filteredBookings;
-    }, [bookings, sortConfig, selectedRoom, searchQuery]);  // Thêm searchQuery vào dependencies
+    }, [bookings, sortConfig, selectedRoom, searchQuery, selectedMonth, selectedYear]);  // Thêm selectedMonth và selectedYear
 
     const requestSort = (key) => {
         let direction = 'asc';
@@ -168,19 +189,50 @@ const Bookings = ({ bookings, rooms }) => {
 
     return (
         <Card sx={{ p: 3 }}>
-            <Grid container spacing={2} marginBottom={2}>
-                <Grid item xs={6}>
+            <Grid container spacing={3} justifyContent={"space-around"} marginBottom={3}>
+                <Grid item xs={12}>
                     <TextField
                         label="Tìm kiếm"
                         variant="outlined"
-                        fullWidth
                         margin="normal"
                         value={searchQuery}
+                        fullWidth
                         onChange={(e) => setSearchQuery(e.target.value)}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                        }}
+                        sx={{
+                            marginBottom: 0,
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px', // Tăng border-radius
+                                height: '45px', // Giảm chiều cao
+                            },
+                            '& .MuiInputLabel-root': {
+                                fontSize: '0.875rem', // Giảm kích thước label
+                            },
+                        }}
                     />
                 </Grid>
-                <Grid item xs={6}>
-                    <FormControl fullWidth variant="outlined" margin="normal">
+                <Grid item xs={4}>
+                    <FormControl
+                        fullWidth
+                        variant="outlined"
+                        margin="normal"
+                        sx={{
+                            marginTop: 0,
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px', // Tăng border-radius
+                                height: '45px', // Giảm chiều cao
+                            },
+                            '& .MuiInputLabel-root': {
+                                fontSize: '0.875rem', // Giảm kích thước label
+                            },
+                        }}
+                    >
                         <InputLabel id="select-room-label">Chọn nhà hàng</InputLabel>
                         <Select
                             labelId="select-room-label"
@@ -197,7 +249,76 @@ const Bookings = ({ bookings, rooms }) => {
                         </Select>
                     </FormControl>
                 </Grid>
+                <Grid item xs={4}>
+                    <FormControl
+                        fullWidth
+                        variant="outlined"
+                        margin="normal"
+                        sx={{
+                            marginTop: 0,
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                                height: '45px',
+                            },
+                            '& .MuiInputLabel-root': {
+                                fontSize: '0.875rem',
+                            },
+                        }}
+                    >
+                        <InputLabel id="select-month-label">Chọn tháng</InputLabel>
+                        <Select
+                            labelId="select-month-label"
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(e.target.value)}
+                            label="Chọn tháng"
+                        >
+                            <MenuItem value="">
+                                <em>Tất cả</em>
+                            </MenuItem>
+                            {[...Array(12)].map((_, i) => (
+                                <MenuItem key={i + 1} value={i + 1}>
+                                    {`Tháng ${i + 1}`}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={4}>
+                    <FormControl
+                        fullWidth
+                        variant="outlined"
+                        margin="normal"
+                        sx={{
+                            marginTop: 0,
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                                height: '45px',
+                            },
+                            '& .MuiInputLabel-root': {
+                                fontSize: '0.875rem',
+                            },
+                        }}
+                    >
+                        <InputLabel id="select-year-label">Chọn năm</InputLabel>
+                        <Select
+                            labelId="select-year-label"
+                            value={selectedYear}
+                            onChange={(e) => setSelectedYear(e.target.value)}
+                            label="Chọn năm"
+                        >
+                            <MenuItem value="">
+                                <em>Tất cả</em>
+                            </MenuItem>
+                            {[2023, 2024, 2025].map((year) => (
+                                <MenuItem key={year} value={year}>
+                                    {year}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
             </Grid>
+
 
             <TableContainer component={Paper} title="Lịch sử đặt sự kiện" sx={{ maxHeight: '700px', overflowY: 'auto' }}>
                 <Table stickyHeader aria-label="simple table">

@@ -1,11 +1,12 @@
 import React from "react";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton, Card, Grid, FormControl, TextField, Typography } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton, Card, Grid, FormControl, TextField, Typography, InputAdornment } from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
 import { addRoom, deleteRoom, updateRequireDay, updateRoomHaveImage, updateRoomNoImage } from "../../../../redux/actions/roomRequest"; // Đảm bảo đường dẫn đúng
 import { useState } from "react";
 import RoomFormModal from './RoomModal'; // Đảm bảo đường dẫn đúng
 import { toast } from "react-toastify";
 import EditIcon from '@mui/icons-material/Edit';
+import SearchIcon from '@mui/icons-material/Search';
 
 const Room = ({ rooms }) => {
     const dispatch = useDispatch();
@@ -107,7 +108,7 @@ const Room = ({ rooms }) => {
     };
 
     return (
-        <Grid container sx={{ height: '100%' }}>
+        <Grid container sx={{ height: '100%'}}>
             <Grid item xs={10} sx={{ display: 'flex', flexDirection: 'column' }}>
                 <TableContainer component={Paper} title="Danh sách phòng" sx={{ maxHeight: '700px', overflowY: 'auto', flex: 1 }}>
                     <Table stickyHeader aria-label="simple table">
@@ -152,32 +153,46 @@ const Room = ({ rooms }) => {
                 <Button sx={{ marginTop: "20px" }} variant="contained" color="primary" onClick={() => handleOpenDialog()}>Thêm phòng</Button>
             </Grid>
             <Grid item xs={2} sx={{ display: 'flex', flexDirection: 'column' }}>
-
                 <Card sx={{ flex: 1, p: 2 }}>
                     <Typography variant="h4" gutterBottom>
                         Thiết lập chung
                     </Typography>
-                    <TextField
-                        label="Số ngày yêu cầu đặt trước chung"
-                        variant="outlined"
-                        fullWidth
-                        value={numberDay}
-                        onChange={(e) => { setNumberDay(e.target.value) }}
-                    />
-                    <Button onClick={(() => updateRequireDay(dispatch, numberDay))}>Lưu</Button>
+                    <Grid container marginBottom={2}>
+                        <Grid item xs={8}>
+                            <TextField
+                                label="Số ngày yêu cầu đặt trước"
+                                variant="outlined"
+                                fullWidth
+                                value={numberDay}
+                                onChange={(e) => { setNumberDay(e.target.value) }}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Button onClick={(() => updateRequireDay(dispatch, numberDay))}>Lưu</Button>
+                        </Grid>
+                    </Grid>
+
 
                     <TextField
-
+                        sx={{ mb: 2 }}
                         fullWidth
                         label="Tìm kiếm"
                         variant="outlined"
                         value={filterText}
                         onChange={(e) => setFilterText(e.target.value)}
-                        placeholder="Nhập tên hoặc mô tả phòng..."
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                        }}
                     />
                     <TextField
+                        sx={{ mb: 2 }}
                         select
                         label="Sắp xếp theo"
+                        fullWidth
                         SelectProps={{
                             native: true,
                         }}
