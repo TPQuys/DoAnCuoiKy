@@ -20,7 +20,7 @@ const RoomEventBarChart = ({ bookings }) => {
     sortedBookings.map((item) => {
       const date = new Date(item.Event?.EventDate)
       if (item.Payment !== null) {
-        const row = { month: date.getMonth() + 1 + '-' + date.getFullYear(), RoomName: item.Event.RoomEvent.RoomName }
+        const row = { month: date.getMonth() + 1 + '-' + date.getFullYear(), RoomName: item?.Event?.RoomEvent?.RoomName }
         roomData.push(row)
       }
     })

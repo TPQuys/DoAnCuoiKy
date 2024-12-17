@@ -39,16 +39,21 @@ const getAllRooms = async (req, res) => {
 
 const getAllMessage = async (req, res) => {
     try {
-        // Tìm tất cả các tin nhắn thuộc Room cụ thể
+        // Tìm 20 tin nhắn cuối cùng trong Room, sắp xếp theo thời gian giảm dần
         const chats = await Chat.findAll({
-            where: { room: req.params.id }
+            where: { room: req.params.id },
+            order: [['createAt', 'DESC']],  // Sắp xếp theo thời gian tin nhắn
+            limit: 20, // Giới hạn số lượng tin nhắn trả về
         });
-        res.status(200).json(chats);
+
+        // Đảo ngược lại để hiển thị tin nhắn từ cũ đến mới
+        res.status(200).json(chats.reverse());
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: error.message });
     }
 };
+
 
 const handleSocketConnection = (socket, io) => {
     console.log('A user connected: ' + socket.id);
