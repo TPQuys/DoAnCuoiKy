@@ -3,12 +3,16 @@ const router = express.Router();
 const middlewareController = require("../middlewares/middlewareController");
 const {
     getAllMessage,
-    getAllRooms
+    getAllRooms,
+    addMessage
 } = require('../controllers/chatController');
 
 
 router.get('/room',middlewareController.verifyTokenAdmin,getAllRooms);
 // Route thêm mới Decore
-router.get('/:id', getAllMessage);
+router.get('/:id',middlewareController.verifyToken, getAllMessage);
+
+router.post('/',middlewareController.verifyToken, addMessage);
+
 
 module.exports = router;

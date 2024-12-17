@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Box, TextField, Button, IconButton, Typography, Avatar } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import io from 'socket.io-client';
-import { getAllMessage } from '../../redux/actions/chatRequest';
+import { addMessage, getAllMessage } from '../../redux/actions/chatRequest';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -19,16 +19,17 @@ const Chat = ({ user }) => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+
     useEffect(() => {
-        const getMessage = async () => {
-            if (user.email) {
-                const res = await getAllMessage(user.email);
-                if (res) {
-                    setMessages(res?.slice(-30)); // Lấy 30 tin nhắn mới nhất
-                }
+        const getAllMessages = async () => {
+            const res = await getAllMessage(user.email);
+            if (res) {
+                // Sắp xếp lại các tin nhắn theo thời gian tạo (createAt)
+                const sortedMessages = res.sort((a, b) => new Date(a.createAt) - new Date(b.createAt));
+                setMessages(sortedMessages);
             }
         };
-        getMessage();
+        getAllMessages();
     }, [user]);
 
     useEffect(() => {
@@ -62,8 +63,9 @@ const Chat = ({ user }) => {
             const messageData = {
                 email: user?.email,
                 message: message,
-                fromId: user?.id
+                fromId: user?.id,
             };
+            addMessage({ ...messageData, room: user?.email, createAt: new Date() })
             socket.emit('sendMessageToRoom', { FromID: user?.id, room: user?.email, message: messageData });
             setMessage('');
         }
@@ -77,22 +79,22 @@ const Chat = ({ user }) => {
         <>
             {/* Nút để mở/đóng chat */}
             <Button
-            onClick={toggleChatWindow}
-            sx={{
-                position: 'fixed',
-                bottom: '10px',
-                right: '10px',
-                backgroundColor: '#00796b',
-                color: '#fff',
-                borderRadius: '50%',  // Đảm bảo border-radius là 50% để nút tròn
-                height: '60px',  // Kích thước chiều cao của nút
-                width: '60px',  // Kích thước chiều rộng của nút, để nút có dạng tròn
-                boxShadow: 3,
-                '&:hover': { backgroundColor: '#004d40' },
-            }}
-        >
-            {isOpen ? <CloseIcon /> : <ChatBubbleOutlineIcon />}
-        </Button>
+                onClick={toggleChatWindow}
+                sx={{
+                    position: 'fixed',
+                    bottom: '10px',
+                    right: '10px',
+                    backgroundColor: '#00796b',
+                    color: '#fff',
+                    borderRadius: '50%',  // Đảm bảo border-radius là 50% để nút tròn
+                    height: '60px',  // Kích thước chiều cao của nút
+                    width: '60px',  // Kích thước chiều rộng của nút, để nút có dạng tròn
+                    boxShadow: 3,
+                    '&:hover': { backgroundColor: '#004d40' },
+                }}
+            >
+                {isOpen ? <CloseIcon /> : <ChatBubbleOutlineIcon />}
+            </Button>
 
             {/* Giao diện chat */}
             {isOpen && (

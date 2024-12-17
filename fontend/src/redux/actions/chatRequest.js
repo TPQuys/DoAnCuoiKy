@@ -26,3 +26,16 @@ export const getAllRoomChat = async () => {
         console.error(error)
     }
 };
+
+export const addMessage = async (data) => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    let axiosJWT = createAxios(user);
+
+    try {
+        const res = await axiosJWT.post(`/v1/chat/`,data);
+        console.log(res.data)
+        return res.data
+    } catch (error) {
+        console.error(error)
+    }
+};

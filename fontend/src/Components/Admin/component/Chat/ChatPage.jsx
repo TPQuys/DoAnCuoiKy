@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Button, TextField, Typography, List, ListItem, Divider, Avatar, Card } from '@mui/material';
 import io from 'socket.io-client';
-import { getAllMessage, getAllRoomChat } from '../../../../redux/actions/chatRequest';
+import { addMessage, getAllMessage, getAllRoomChat } from '../../../../redux/actions/chatRequest';
 
 // Tạo kết nối socket với server
 const socket = io('http://localhost:8000');
@@ -14,7 +14,7 @@ const ChatApp = () => {
     const [role, setRole] = useState('USER');
     const [selectedRoom, setSelectedRoom] = useState('');
     const [rooms, setRooms] = useState([]);
-    
+
     // Tham chiếu đến Box chứa tin nhắn
     const messagesContainerRef = useRef(null);
 
@@ -36,18 +36,26 @@ const ChatApp = () => {
         socket.emit('registerUser', user?.email);
 
         socket.on('receiveMessage', (message) => {
-            setMessages((prevMessages) => [...prevMessages, message]);
+            if (message.email === selectedRoom || message.email === user.email) {
+                setMessages((prevMessages) => [...prevMessages, message]);
+            }
         });
 
         socket.on('roomList', (roomList) => {
-            setRooms(roomList);
+            // Kiểm tra và thêm các phòng trong roomList nhưng không có trong rooms
+            const newRooms = roomList.filter(room => !rooms.includes(room));
+
+            // Nếu có phòng mới, thêm chúng vào rooms
+            if (newRooms.length > 0) {
+                setRooms(prevRooms => [...prevRooms, ...newRooms]);
+            }
         });
 
         return () => {
             socket.off('receiveMessage');
             socket.off('roomList');
         };
-    }, [role, user]);
+    }, [role, user, selectedRoom]);
 
     useEffect(() => {
         // Cuộn xuống dưới khi tin nhắn thay đổi
@@ -56,6 +64,19 @@ const ChatApp = () => {
         }
     }, [messages]);
 
+    useEffect(() => {
+        const getAllMessages = async () => {
+            const res = await getAllMessage(selectedRoom);
+            if (res) {
+                // Sắp xếp lại các tin nhắn theo thời gian tạo (createAt)
+                const sortedMessages = res.sort((a, b) => new Date(a.createAt) - new Date(b.createAt));
+                setMessages(sortedMessages);
+            }
+        };
+        getAllMessages();
+    }, [selectedRoom]);
+
+
     const sendMessageToRoom = () => {
         if (message && selectedRoom) {
             const messageData = {
@@ -63,6 +84,7 @@ const ChatApp = () => {
                 message: message,
                 room: selectedRoom,
             };
+            addMessage({ ...messageData, room: selectedRoom, createAt: new Date() })
             socket.emit('sendMessageToRoom', { room: selectedRoom, message: messageData });
             setMessage('');
         }
@@ -70,10 +92,7 @@ const ChatApp = () => {
 
     const handleSelectRoom = async (room) => {
         setSelectedRoom(room);
-        const res = await getAllMessage(room)
-        if (res) {
-            setMessages(res)
-        }
+
     };
 
     return (
@@ -88,26 +107,29 @@ const ChatApp = () => {
                 {role === 'ADMIN' ? (
                     <Card sx={{ height: '600px', overflowY: 'scroll' }}>
                         <List sx={{ padding: '0' }}>
-                            {rooms.map((room, index) => (
-                                <ListItem
-                                    button
-                                    key={index}
-                                    onClick={() => handleSelectRoom(room)}
-                                    selected={selectedRoom === room}
-                                    sx={{
-                                        backgroundColor: selectedRoom === room ? '#e3f2fd' : 'transparent',
-                                        borderRadius: '8px',
-                                        marginBottom: '10px',
-                                        '&:hover': {
-                                            backgroundColor: '#e0f7fa',
-                                        },
-                                    }}
-                                >
-                                    <Typography sx={{ color: '#00796b', fontWeight: '500' }}>
-                                        {room}
-                                    </Typography>
-                                </ListItem>
-                            ))}
+                            {rooms
+                                .filter(room => room !== user?.email) // Lọc phòng trùng với user.email
+                                .map((room, index) => (
+                                    <ListItem
+                                        button
+                                        key={index}
+                                        onClick={() => handleSelectRoom(room)}
+                                        selected={selectedRoom === room}
+                                        sx={{
+                                            backgroundColor: selectedRoom === room ? '#e3f2fd' : 'transparent',
+                                            borderRadius: '8px',
+                                            marginBottom: '10px',
+                                            '&:hover': {
+                                                backgroundColor: '#e0f7fa',
+                                            },
+                                        }}
+                                    >
+                                        <Typography sx={{ color: '#00796b', fontWeight: '500' }}>
+                                            {room}
+                                        </Typography>
+                                    </ListItem>
+                                ))}
+
                         </List>
                     </Card>
                 ) : (

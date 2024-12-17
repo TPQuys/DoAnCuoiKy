@@ -6,13 +6,14 @@ let adminSocket = null;  // Lưu trữ kết nối của Admin
 let userSockets = {};    // Lưu trữ socket của các user theo email
 let rooms = [];
 
-const addMessage = async (data) => {
+const addMessage = async (req, res) => {
     try {
-        const res = await Chat.create(data);
+        const newChat = await Chat.create(req.body);
+        res.status(200).json( newChat );
     } catch (e) {
         console.error(e)
+        res.status(500).json({ message: e.message });
     }
-
 }
 
 const getAllRooms = async (req, res) => {
@@ -80,7 +81,7 @@ const handleSocketConnection = (socket, io) => {
     // Gửi tin nhắn từ user lên phòng và thông báo Admin
     socket.on('sendMessageFromUser', (data) => {
         const { room, message, fromId } = data;
-
+        console.log(message)
         // Lưu tin nhắn vào database
         addMessage({ ...message, room, fromId });
 
@@ -92,15 +93,12 @@ const handleSocketConnection = (socket, io) => {
             adminSocket.emit('receiveMessage', message);
         }
 
-        console.log(`Message sent by user ${fromId} to room ${room}: ${message.message}`);
+        console.log(`Message sent by user ${message.email} to room ${room}: ${message.message}`);
     });
 
     // Gửi tin nhắn tới tất cả người dùng trong phòng (Admin gửi tin)
     socket.on('sendMessageToRoom', (data) => {
-        const { room, message, fromId } = data;
-
-        // Lưu tin nhắn vào database
-        addMessage({ ...message, room, fromId });
+        const { room, message } = data;
 
         // Gửi tin nhắn đến phòng của user
         io.to(room).emit('receiveMessage', message);
@@ -110,7 +108,7 @@ const handleSocketConnection = (socket, io) => {
             adminSocket.emit('receiveMessage', message);
         }
 
-        console.log(`Message sent by user ${fromId} to room ${room}: ${message.message}`);
+        console.log(`Message sent by user ${message.email} to room ${room}: ${message.message}`);
     });
 
 
@@ -135,5 +133,6 @@ const handleSocketConnection = (socket, io) => {
 module.exports = {
     handleSocketConnection,
     getAllMessage,
-    getAllRooms
+    getAllRooms,
+    addMessage
 };
