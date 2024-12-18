@@ -51,9 +51,9 @@ const eventService = {
         return await eventRepository.findById(eventId);
     },
 
-    getRoomBooked: async (EventDate) => {
+    getRoomBooked: async (RoomEventID, EventDate) => {
         try {
-            const res = await eventRepository.findByRoom(EventDate);
+            const res = await eventRepository.findByRoomAndDate(RoomEventID, EventDate);
             console.log(res)
             return res
 

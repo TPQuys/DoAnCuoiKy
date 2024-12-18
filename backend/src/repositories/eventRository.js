@@ -172,6 +172,44 @@ const eventRepository = {
         });
     },
 
+    findByRoomAndDate: async (RoomEventID, EventDate) => {
+        return await Event.findAll({
+            include: [
+                {
+                    model: Booking,
+                    attributes: ["BookingTime"],
+                    include: [
+                        {
+                            model: Payment,
+                            attributes: ["PaymentID"]
+                        }
+                    ]
+                }
+            ],
+            attributes: ['Time', "From", "To", "EventDate"],
+            where: {
+                RoomEventID,
+                [Op.and]: [
+                    Sequelize.where(
+                        Sequelize.fn('DATE', Sequelize.col('EventDate')),
+                        '=',
+                        Sequelize.fn('DATE', EventDate)
+                    ),
+                    {
+                        [Op.or]: [
+                            Sequelize.where(
+                                Sequelize.literal(`"Booking"."BookingTime" + INTERVAL '1 day'`),
+                                '>',
+                                Sequelize.literal('NOW()')
+                            ),
+                            { '$Booking.Payment.PaymentID$': { [Op.ne]: null } }
+                        ]
+                    }
+                ]
+            }
+        });
+    },
+
     checkPendingBookings: async (userId) => {
         return await Booking.findAll({
             include: [

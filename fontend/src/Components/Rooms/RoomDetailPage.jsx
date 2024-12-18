@@ -1,11 +1,12 @@
 import { useLocation } from "react-router-dom";
 import { Card, Grid, Typography, Box, Divider, Button } from "@mui/material";
 import Header from "../Header/Header";
+import {  useNavigate } from "react-router-dom";
 
 const RoomDetailPage = () => {
     const location = useLocation();
     const roomDetail = location.state?.roomDetail; // Lấy thông tin phòng từ state
-
+    const navigate = useNavigate()
     if (!roomDetail) {
         return <Typography variant="h5" color="error" align="center">Không tìm thấy thông tin phòng.</Typography>;
     }
@@ -90,9 +91,9 @@ const RoomDetailPage = () => {
                             variant="contained"
                             color="primary"
                             sx={{ fontSize: '1rem', borderRadius: '8px', padding: '10px 20px', textTransform: 'none' }}
-                            onClick={() => window.history.back()}
+                            onClick={() => navigate(`/room_booking/${roomDetail.RoomEventID}`)}
                         >
-                            Quay lại
+                            Đặt ngay
                         </Button>
                     </Grid>
                 </Card>

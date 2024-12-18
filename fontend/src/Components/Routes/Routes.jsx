@@ -7,6 +7,7 @@ import Register from "../Register/Register";
 import Room from "../Rooms/Room";
 import RoomDetailPage from "../Rooms/RoomDetailPage";
 import BookingPage from "../BookingPage/BookingPage";
+import RoomBooking from "../BookingPage/RoomBooking";
 import BookingDetail from "../BookingPage/BookingDetail";
 import EventPage from "../EventPage/EventPage";
 import PaymentPage from "../Payment/PaymentPage";
@@ -79,6 +80,7 @@ const AppRoutes = () => {
                     <Route path="/room/:id" element={<RoomDetailPage />} />
                     <Route path="/booking/detail" element={<BookingDetail />} />
                     <Route path="/booking" element={<BookingPage />} />
+                    <Route path="/room_booking/:roomId" element={<RoomBooking />} />
                     <Route path="/payment" element={<PaymentPage />} />
                     <Route path="/user" element={<UserPage />} />
                     <Route path="/user/info" element={<UserInfoPage />} />
