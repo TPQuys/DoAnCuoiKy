@@ -21,6 +21,7 @@ const HomePage = () => {
             return
         }
         const finalData = { ...values, From: from, To: to };
+        console.log(finalData)
         setFormData(finalData)
         const res = await getAvailableRooms(finalData)
         setAvailableRooms(res)

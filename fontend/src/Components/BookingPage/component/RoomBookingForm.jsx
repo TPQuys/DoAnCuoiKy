@@ -48,15 +48,18 @@ const EventForm = forwardRef(({ requireDay, handleSubmit, maxTable, setFrom, set
     const [numberDay, setNumberDay] = useState(1)
     const [availableRoom, setAvailableRoom] = useState([])
     const getAvailableRoom = async (value) => {
+        console.log(value)
         const res = await getAvailableRooms(value)
         console.log(res)
         setAvailableRoom(res)
     }
+
     useEffect(() => {
         if (requireDay) {
             setNumberDay(requireDay?.NumberDay)
         }
     }, [requireDay])
+
     useEffect(() => {
         mergeTimeSlots(selectedTimes);
     }, [selectedTimes, selectedDate]);
@@ -292,7 +295,7 @@ const EventForm = forwardRef(({ requireDay, handleSubmit, maxTable, setFrom, set
                                                         helperText: touched.EventDate && errors.EventDate,
                                                     },
                                                 }}
-                                                onAccept ={(value) => handleChangeDate(setFieldValue, field.name, value)}
+                                                onAccept={(value) => handleChangeDate(setFieldValue, field.name, value)}
                                                 format='DD/MM/YYYY'
                                             />
                                         )}
@@ -334,8 +337,21 @@ const EventForm = forwardRef(({ requireDay, handleSubmit, maxTable, setFrom, set
                                             <Grid item key={index}>
                                                 <Button
                                                     variant={selectedTimes.includes(`${slot.start} - ${slot.end}`) ? "contained" : "outlined"}
-                                                    onClick={() => toggleTimeSelection(`${slot.start} - ${slot.end}`)}
-                                                    disabled={isSlotDisabled(slot.start, slot.end, bookedSlots)} // Disable nếu slot bị trùng
+                                                    onClick={() => {
+                                                        if (isSlotDisabled(slot.start, slot.end, bookedSlots)) {
+                                                            const date = new Date(selectedDate.$d).setHours(7,0,0,0)
+                                                            const ISODate = new Date(date)
+                                                            const slotStartTime = new Date(ISODate.toISOString().split('T')[0] + `T${slot.start}:00.000+07:00`);
+                                                            const slotEndTime = new Date(ISODate.toISOString().split('T')[0] + `T${slot.end}:00.000Z`);
+
+                                                            getAvailableRoom({ ...values, Time: "CUSTOM", From: slotStartTime, To: slotEndTime })
+                                                            toast.warn("Phòng này đã được đặt vào khung giờ này! Hãy chọn khung giờ khác hoặc chọn phòng khác")
+                                                        } else {
+                                                            toggleTimeSelection(`${slot.start} - ${slot.end}`)
+                                                            setAvailableRoom([])
+                                                        }
+                                                    }}
+                                                    sx={{ backgroundColor: isSlotDisabled(slot.start, slot.end, bookedSlots) ? "lightgray" : "" }}
                                                 >
                                                     {`${slot.start} - ${slot.end}`}
                                                 </Button>
