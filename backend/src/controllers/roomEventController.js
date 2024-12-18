@@ -28,8 +28,8 @@ const roomEventController = {
     findAvailableRooms: async (req, res) => {
         try {
             console.log(req.body)
-            const { TotalTable ,EventDate, Time, From, To } = req.body.values
-            const availableRooms = await roomEventService.findAvailableRooms(EventDate, Time, From, To,TotalTable);
+            const { TotalTable, EventDate, Time, From, To } = req.body.values
+            const availableRooms = await roomEventService.findAvailableRooms(EventDate, Time, From, To, TotalTable);
             res.status(201).json(availableRooms);  // Trả về RoomEvent mới được tạo
         } catch (error) {
             console.error(error)
@@ -110,8 +110,8 @@ const roomEventController = {
         }
     },
     updateRequireDay: async (req, res) => {
-        const { numberDay } = req.body; // Lấy dữ liệu từ body
-    
+        const { numberDay, caution, alldayRate } = req.body; // Lấy dữ liệu từ body
+
         try {
             // Tìm row đầu tiên trong bảng RequireDay
             const response = await RequireDay.findOne();
@@ -120,14 +120,14 @@ const roomEventController = {
             if (!response) {
                 return res.status(404).json({ message: "Không tìm thấy row để cập nhật." });
             }
-    
-            // Cập nhật row đã tìm được
-            const updated = await response.update({NumberDay:numberDay})
 
-             console.log(updated)
-    
+            // Cập nhật row đã tìm được
+            const updated = await response.update({ NumberDay: numberDay, Caution: caution, AlldayRate: alldayRate })
+
+            console.log(updated)
+
             if (updated) {
-                res.status(200).json( updated );
+                res.status(200).json(updated);
             } else {
                 res.status(500).json({ message: "Cập nhật thất bại." });
             }
@@ -139,7 +139,7 @@ const roomEventController = {
     getRequireDay: async (req, res) => {
         try {
             const response = await RequireDay.findOne();
-    
+
             if (response) {
                 res.status(200).json(response);
             } else {
@@ -151,5 +151,5 @@ const roomEventController = {
         }
     },
 }
-    
+
 module.exports = roomEventController;

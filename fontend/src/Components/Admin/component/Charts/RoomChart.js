@@ -1,50 +1,56 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
-import { Card, Grid2 } from '@mui/material';
+import { Card, Grid as Grid2, MenuItem, Select } from '@mui/material';
 import { axisClasses } from '@mui/x-charts';
 
-
-
 const RoomEventBarChart = ({ bookings }) => {
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Năm hiện tại
+
+  const handleYearChange = (event) => {
+    setSelectedYear(event.target.value); // Cập nhật năm được chọn
+  };
 
   const getData = () => {
-
     const sortedBookings = [...bookings].sort((a, b) => {
       const dateA = new Date(a.Event?.EventDate);
       const dateB = new Date(b.Event?.EventDate);
-      return dateA - dateB; // Sắp xếp tăng dần (nhỏ -> lớn)
+      return dateA - dateB;
     });
 
-
-    let roomData = []
-    sortedBookings.map((item) => {
-      const date = new Date(item.Event?.EventDate)
+    let roomData = [];
+    sortedBookings.forEach((item) => {
+      const date = new Date(item.Event?.EventDate);
       if (item.Payment !== null) {
-        const row = { month: date.getMonth() + 1 + '-' + date.getFullYear(), RoomName: item?.Event?.RoomEvent?.RoomName }
-        roomData.push(row)
+        const row = { 
+          month: date.getMonth() + 1, 
+          year: date.getFullYear(), 
+          RoomName: item?.Event?.RoomEvent?.RoomName 
+        };
+        roomData.push(row);
       }
-    })
+    });
 
-    const result = roomData.reduce((acc, curr) => {
-      const existingItem = acc.find(item => item.RoomName === curr.RoomName && item.month === curr.month);
+    const filteredData = roomData.filter((item) => item.year === selectedYear); // Lọc theo năm được chọn
+
+    const result = filteredData.reduce((acc, curr) => {
+      const existingItem = acc.find(
+        (item) => item.RoomName === curr.RoomName && item.month === curr.month
+      );
       if (existingItem) {
-        existingItem.Count = (existingItem.Count || 0) + 1
+        existingItem.Count = (existingItem.Count || 0) + 1;
       } else {
-        acc.push({ ...curr, Count: 1 })
+        acc.push({ ...curr, Count: 1 });
       }
       return acc;
-    }, [])
+    }, []);
 
-    console.log(result)
-    return result
-  }
+    return result;
+  };
 
+  const data = getData();
 
-  const data = getData()
-
-  // Chuẩn bị dữ liệu cho biểu đồ
-  const months = [...new Set(data.map((item) => item.month))]; // Danh sách tháng (1, 2,...)
-  const rooms = [...new Set(data.map((item) => item.RoomName))]; // Danh sách phòng (RoomA, RoomB,...)
+  const months = [...new Set(data.map((item) => item.month))]; // Danh sách tháng
+  const rooms = [...new Set(data.map((item) => item.RoomName))]; // Danh sách phòng
 
   const seriesData = rooms.map((room) => {
     return {
@@ -56,16 +62,31 @@ const RoomEventBarChart = ({ bookings }) => {
     };
   });
 
+  // Lấy danh sách năm có trong dữ liệu
+  const years = [...new Set(bookings.map((item) => new Date(item.Event?.EventDate).getFullYear()))];
+
   return (
     <Card style={{ flex: 1, height: "500px", minWidth: "500px" }}>
-      <Grid2 sx={{ height: "90px", padding: "10px" }}>
+      <Grid2 container justifyContent="space-between" alignItems="center" sx={{ padding: "10px" }}>
         <h2 style={{ textAlign: 'center' }}>Số lượng phòng được đặt theo tháng</h2>
+        <Select 
+          value={selectedYear} 
+          onChange={handleYearChange}
+          size="small"
+          style={{ width: 120 }}
+        >
+          {years.map((year) => (
+            <MenuItem key={year} value={year}>
+              {year}
+            </MenuItem>
+          ))}
+        </Select>
       </Grid2>
       <BarChart
-        series={seriesData} // Gán dữ liệu động vào series
+        series={seriesData}
         xAxis={[
           {
-            data: months.map((month) => `Tháng ${month}`), // Trục X là các tháng
+            data: months.map((month) => `Tháng ${month}`),
             label: 'Tháng',
             scaleType: 'band',
           },

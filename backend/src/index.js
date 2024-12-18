@@ -54,11 +54,11 @@ const server = app.listen(process.env.PORT || 8000, () => {
 
 const io = socketIo(server, {
     cors: {
-        origin: "http://localhost:3000", // Cho phép client từ địa chỉ này kết nối
-        methods: ["GET", "POST"],
+      origin: "*", // Cho phép tất cả các origin kết nối
+      methods: ["GET", "POST"],
     }
-});
-
+  });
+  
 // Import và sử dụng module chatController.js
 const { handleSocketConnection } = require('./controllers/chatController');
 

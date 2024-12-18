@@ -29,6 +29,7 @@ const WhiteTextField = styled(({ ...props }) => <Field as={TextField} {...props}
         color: 'black',
         backgroundColor: 'white',
         borderRadius: 4,
+        height:52
     },
     '& .MuiOutlinedInput-notchedOutline': {
         borderColor: 'rgba(0, 0, 0, 0.23)',
@@ -191,6 +192,7 @@ const EventForm = forwardRef(({ handleSubmit, setFrom, setTo }, ref) => {
                                                     '& .MuiInputBase-input': {
                                                         color: 'black',
                                                         backgroundColor: 'white',
+                                                        height:20,
                                                     }
                                                 }}
                                                 label="Ngày"

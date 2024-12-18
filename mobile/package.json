@@ -52,6 +52,7 @@
     "react-native-webview": "13.8.6",
     "react-redux": "^9.1.2",
     "redux": "^5.0.1",
+    "socket.io-client": "^4.8.1",
     "yup": "^1.4.0"
   },
   "devDependencies": {

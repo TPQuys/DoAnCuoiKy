@@ -16,6 +16,8 @@ const Room = ({ rooms }) => {
     const [editMode, setEditMode] = useState(false);
     const [selectedImage, setSelectedImage] = useState();
     const [numberDay, setNumberDay] = useState(requireDay.NumberDay)
+    const [caution, setCaution] = useState(requireDay.Caution)
+    const [alldayRate, setAlldayRate] = useState(requireDay.AlldayRate)
     const [filterText, setFilterText] = useState('');
     const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
 
@@ -108,7 +110,7 @@ const Room = ({ rooms }) => {
     };
 
     return (
-        <Grid container sx={{ height: '100%'}}>
+        <Grid container sx={{ height: '100%' }}>
             <Grid item xs={10} sx={{ display: 'flex', flexDirection: 'column' }}>
                 <TableContainer component={Paper} title="Danh sách phòng" sx={{ maxHeight: '700px', overflowY: 'auto', flex: 1 }}>
                     <Table stickyHeader aria-label="simple table">
@@ -155,24 +157,8 @@ const Room = ({ rooms }) => {
             <Grid item xs={2} sx={{ display: 'flex', flexDirection: 'column' }}>
                 <Card sx={{ flex: 1, p: 2 }}>
                     <Typography variant="h4" gutterBottom>
-                        Thiết lập chung
+                        Chức năng
                     </Typography>
-                    <Grid container marginBottom={2}>
-                        <Grid item xs={8}>
-                            <TextField
-                                label="Số ngày yêu cầu đặt trước"
-                                variant="outlined"
-                                fullWidth
-                                value={numberDay}
-                                onChange={(e) => { setNumberDay(e.target.value) }}
-                            />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <Button onClick={(() => updateRequireDay(dispatch, numberDay))}>Lưu</Button>
-                        </Grid>
-                    </Grid>
-
-
                     <TextField
                         sx={{ mb: 2 }}
                         fullWidth
@@ -209,6 +195,44 @@ const Room = ({ rooms }) => {
                         <option value="Capacity:asc">Sức chứa (Thấp đến Cao)</option>
                         <option value="Capacity:desc">Sức chứa (Cao đến Thấp)</option>
                     </TextField>
+                    <Typography mt={3} variant="h4" gutterBottom>
+                        Thiết lập chung
+                    </Typography>
+                    <Grid container marginBottom={2} spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Số ngày yêu cầu đặt trước"
+                                variant="outlined"
+                                fullWidth
+                                value={numberDay}
+                                onChange={(e) => { setNumberDay(e.target.value) }}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Hế số đặt cả ngày"
+                                variant="outlined"
+                                fullWidth
+                                value={alldayRate}
+                                onChange={(e) => { setAlldayRate(e.target.value) }}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Luư ý khi đặt"
+                                variant="outlined"
+                                fullWidth
+                                value={caution}
+                                rows={6}
+                                multiline
+                                onChange={(e) => { setCaution(e.target.value) }}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Button onClick={(() => updateRequireDay(dispatch, numberDay,caution,alldayRate))}>Lưu</Button>
+                        </Grid>
+                    </Grid>
+
                 </Card>
             </Grid>
             <RoomFormModal

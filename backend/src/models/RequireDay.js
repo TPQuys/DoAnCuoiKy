@@ -8,10 +8,20 @@ const RequireDay = sequelize.define('RequireDay', {
         primaryKey: true
     },
     NumberDay: {
-        type: DataTypes.INTEGER, // Sử dụng kiểu UUID
-        defaultValue: 1, // Tạo UUID tự động
+        type: DataTypes.INTEGER, 
+        defaultValue: 1,
         allowNull:false
     },
+    Caution: {
+        type: DataTypes.TEXT, 
+        defaultValue: '', 
+        allowNull:false
+    },
+    AlldayRate: {
+        type: DataTypes.INTEGER, 
+        defaultValue: 2,
+        allowNull:false
+    }
 },{
     timestamps: false 
 });

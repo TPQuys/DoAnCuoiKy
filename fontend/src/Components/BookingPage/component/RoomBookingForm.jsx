@@ -265,6 +265,7 @@ const EventForm = forwardRef(({ requireDay, handleSubmit, maxTable, setFrom, set
                             {maxTable > 5 &&
                                 <Grid item xs={12} sm={6}>
                                     <WhiteTextField
+                                        disabled={values.EventType === ""}
                                         name="TotalTable"
                                         label="Tổng Số Bàn"
                                         type="number"
@@ -287,6 +288,7 @@ const EventForm = forwardRef(({ requireDay, handleSubmit, maxTable, setFrom, set
                                                         backgroundColor: 'white',
                                                     }
                                                 }}
+                                                disabled={values.TotalTable === ""}
                                                 label="Ngày"
                                                 value={field.value}
                                                 slotProps={{
@@ -318,8 +320,8 @@ const EventForm = forwardRef(({ requireDay, handleSubmit, maxTable, setFrom, set
                                         name="Time"
                                         select
                                         label="Thời gian"
+                                        disabled={values.EventDate === null}
                                         fullWidth
-                                        disabled={selectedDate === null}
                                         error={touched.Time && Boolean(errors.Time)}
                                         helperText={touched.Time && errors.Time}
                                     >
@@ -339,7 +341,7 @@ const EventForm = forwardRef(({ requireDay, handleSubmit, maxTable, setFrom, set
                                                     variant={selectedTimes.includes(`${slot.start} - ${slot.end}`) ? "contained" : "outlined"}
                                                     onClick={() => {
                                                         if (isSlotDisabled(slot.start, slot.end, bookedSlots)) {
-                                                            const date = new Date(selectedDate.$d).setHours(7,0,0,0)
+                                                            const date = new Date(selectedDate.$d).setHours(7, 0, 0, 0)
                                                             const ISODate = new Date(date)
                                                             const slotStartTime = new Date(ISODate.toISOString().split('T')[0] + `T${slot.start}:00.000+07:00`);
                                                             const slotEndTime = new Date(ISODate.toISOString().split('T')[0] + `T${slot.end}:00.000Z`);

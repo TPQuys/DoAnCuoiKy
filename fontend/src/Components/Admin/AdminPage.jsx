@@ -5,13 +5,13 @@ import Bookings from "./component/Bookng/Booking";
 import User from "./component/User/UserManager";
 import UserProfile from "./component/Profile/UserProfile";
 import PaymentSuccessChart from "./component/Charts/PaymentSuccesChart";
-import RoomChart from "./component/Charts/RoomChart";
+import RoomChart from "./component/Charts/RoomChartByDay";
 import PaymentChart from "./component/Charts/PaymentChart";
 import { useDispatch, useSelector } from "react-redux";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
-import { Box, Grid2, Stack, } from '@mui/material';
+import { Box, Grid, Grid2, Stack, } from '@mui/material';
 import TabPanel from '@mui/lab/TabPanel';
 import { getAllUsers } from "../../redux/actions/userRequest";
 import { getAllBooking } from "../../redux/actions/bookingRequest";
@@ -61,14 +61,16 @@ const UserPage = () => {
                     <TabPanel value="4"><User /></TabPanel>
                     <TabPanel value="5">
                         <PaymentChart bookings={Booking} />
-                        <Grid2 container sx={{ gap: "20px" }}>
-                            <RoomChart bookings={Booking} />
-                            <PaymentSuccessChart bookings={Booking} />
-                        </Grid2>
-
+                        <Grid container spacing={2}>
+                            <Grid item xs={8}>
+                                <RoomChart bookings={Booking} />
+                            </Grid>
+                            <Grid item xs={4}>
+                                <PaymentSuccessChart bookings={Booking} />
+                            </Grid>
+                        </Grid>
                     </TabPanel>
                     <TabPanel value="6"><ChatPage /></TabPanel>
-
                 </TabContext>
                 <Stack direction="row" >
                 </Stack>

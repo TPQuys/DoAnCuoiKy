@@ -114,7 +114,7 @@ export const deleteRoom = async (dispatch, roomId) => {
 
 export const getRequireDay = async (dispatch) => {
     const user = JSON.parse(sessionStorage.getItem("user"))?.user;
-    dispatch(getRequireDayStart);
+    dispatch(getRequireDayStart());
     let axiosJWT = createAxios(user);
     try {
         const res = await axiosJWT.get(`/v1/require_day`);
@@ -127,12 +127,14 @@ export const getRequireDay = async (dispatch) => {
 
 
 // Xóa phòng
-export const updateRequireDay = async (dispatch,numberDay) => {
+export const updateRequireDay = async (dispatch,numberDay,caution,alldayRate) => {
     const user = JSON.parse(sessionStorage.getItem("user"))?.user;
-    dispatch(updateRequireDayStart);
+    console.log({numberDay})
+    dispatch(updateRequireDayStart());
     let axiosJWT = createAxios(user);
     try {
-        const res = await axiosJWT.put(`/v1/require_day`,{numberDay});
+        const res = await axiosJWT.put(`/v1/require_day`,{numberDay,caution,alldayRate});
+        toast.success("Cập nhập thành công")
         dispatch(updateRequireDaySuccess(res.data));
     } catch (error) {
         console.error("Update require day failed:", error);

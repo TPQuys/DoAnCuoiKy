@@ -9,7 +9,7 @@ let rooms = [];
 const addMessage = async (req, res) => {
     try {
         const newChat = await Chat.create(req.body);
-        res.status(200).json( newChat );
+        res.status(200).json(newChat);
     } catch (e) {
         console.error(e)
         res.status(500).json({ message: e.message });
@@ -18,11 +18,14 @@ const addMessage = async (req, res) => {
 
 const getAllRooms = async (req, res) => {
     try {
-        // Truy vấn danh sách các room duy nhất
+        // Truy vấn danh sách các room với thời gian tạo mới nhất
         const rooms = await Chat.findAll({
             attributes: [
-                [Chat.sequelize.fn('DISTINCT', Chat.sequelize.col('room')), 'room']
+                'room',
+                [Chat.sequelize.fn('MAX', Chat.sequelize.col('createAt')), 'latestCreateAt']
             ],
+            group: ['room'],
+            order: [[Chat.sequelize.fn('MAX', Chat.sequelize.col('createAt')), 'DESC']],
             raw: true
         });
 
@@ -36,6 +39,7 @@ const getAllRooms = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 
 const getAllMessage = async (req, res) => {

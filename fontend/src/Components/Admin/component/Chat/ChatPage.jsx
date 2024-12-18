@@ -23,10 +23,10 @@ const ChatApp = () => {
             const res = await getAllRoomChat();
             if (res) {
                 setRooms(res?.rooms);
+                setSelectedRoom('');
             }
         };
         getAllRoomsChat();
-        setSelectedRoom(user?.email);
     }, [user]);
 
     useEffect(() => {
@@ -189,6 +189,12 @@ const ChatApp = () => {
                         placeholder="Nhập tin nhắn"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault(); // Ngăn hành động mặc định (ví dụ: xuống dòng)
+                                sendMessageToRoom(); // Gọi hàm gửi tin nhắn
+                            }
+                        }}
                         sx={{ marginRight: '10px', borderRadius: '20px' }}
                     />
                     <Button

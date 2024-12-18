@@ -175,18 +175,24 @@ const Chat = ({ user }) => {
                             placeholder="Type a message"
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault(); // Ngăn hành động mặc định (ví dụ: xuống dòng)
+                                    handleSendMessage(); // Gọi hàm gửi tin nhắn
+                                }
+                            }}
                             sx={{
                                 marginRight: '8px',
                                 '& .MuiInputBase-root': {
-                                    height: '40px', // Điều chỉnh chiều cao của input
+                                    height: '40px',
                                 },
                                 '& .MuiOutlinedInput-notchedOutline': {
-                                    borderRadius: '20px', // Để bo tròn góc nếu muốn
-                                }
+                                    borderRadius: '20px',
+                                },
                             }}
                             inputProps={{
                                 style: {
-                                    height: '40px', // Đảm bảo chiều cao input là 40px
+                                    height: '40px',
                                 },
                             }}
                         />

@@ -114,12 +114,11 @@ const Bookings = ({ bookings, rooms }) => {
 
     return (
         <Card sx={{ p: 3 }}>
-            <Grid container spacing={3} justifyContent={"space-around"} marginBottom={3}>
-                <Grid item xs={8}>
+            <Grid container spacing={3} justifyContent={"space-between"} marginBottom={3}>
+                <Grid item xs={3}>
                     <TextField
                         label="Tìm kiếm"
                         variant="outlined"
-                        margin="normal"
                         value={searchQuery}
                         fullWidth
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -133,25 +132,17 @@ const Bookings = ({ bookings, rooms }) => {
                         sx={{
                             marginBottom: 0,
                             '& .MuiOutlinedInput-root': {
-                                borderRadius: '12px', // Tăng border-radius
-                                height: '45px', // Giảm chiều cao
+                                borderRadius: '12px',
+                                height: '45px',
                             },
                             '& .MuiInputLabel-root': {
-                                fontSize: '0.875rem', // Giảm kích thước label
+                                fontSize: '0.875rem',
                             },
                         }}
                     />
+
                 </Grid>
-                <Grid xs={4}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => exportToExcel(bookings)}
-                        sx={{mt:5}}
-                    >
-                        Xuất Excel
-                    </Button>
-                </Grid>
+
                 <Grid item xs={3}>
                     <FormControl
                         fullWidth
@@ -218,6 +209,7 @@ const Bookings = ({ bookings, rooms }) => {
                         </Select>
                     </FormControl>
                 </Grid>
+
                 <Grid item xs={3}>
                     <FormControl
                         fullWidth
@@ -252,7 +244,16 @@ const Bookings = ({ bookings, rooms }) => {
                         </Select>
                     </FormControl>
                 </Grid>
-             
+                <Grid xs={12} >
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => exportToExcel(bookings)}
+                        sx={{ mt: 5 }}
+                    >
+                        Xuất Excel
+                    </Button>
+                </Grid>
             </Grid>
 
             <TableContainer component={Paper} title="Lịch sử đặt sự kiện" sx={{ maxHeight: '700px', overflowY: 'auto' }}>

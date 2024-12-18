@@ -1,9 +1,8 @@
 import { createAxios } from "../../utils/createInstance";
 
-export const getAllMessage = async ( Room) => {
-    const user = JSON.parse(sessionStorage.getItem("user"));
+export const getAllMessage = async ( Room,user) => {
     let axiosJWT = createAxios(user);
-
+    console.log(user,Room)
     try {
         const res = await axiosJWT.get(`/v1/chat/${Room}`);
         console.log(res.data)
@@ -13,8 +12,7 @@ export const getAllMessage = async ( Room) => {
     }
 };
 
-export const getAllRoomChat = async () => {
-    const user = JSON.parse(sessionStorage.getItem("user"));
+export const getAllRoomChat = async (user) => {
     let axiosJWT = createAxios(user);
 
     try {
@@ -26,8 +24,7 @@ export const getAllRoomChat = async () => {
     }
 };
 
-export const addMessage = async (data) => {
-    const user = JSON.parse(sessionStorage.getItem("user"));
+export const addMessage = async (data,user) => {
     let axiosJWT = createAxios(user);
 
     try {

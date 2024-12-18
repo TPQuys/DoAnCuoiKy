@@ -7,7 +7,7 @@ export const addRate = async (dispatch, RateData) => {
     let axiosJWT = createAxios(user);
     try {
         const res = await axiosJWT.post("/v1/rate", RateData);
-        toast.success("Thêm đánh giá thành công. Hãy thanh toán trước khi hết hạn!");
+        toast.success("Thêm đánh giá thành công.");
         return res.data
     } catch (error) {
         console.error("Thêm đánh giá thất bại:", error.response.data.message);
@@ -21,10 +21,10 @@ export const getRate = async () => {
     let axiosJWT = createAxios(user);
     try {
         const res = await axiosJWT.get("/v1/rate/all");
-        return res.data
+        return res?.data
     } catch (error) {
-        console.error("Lấy đánh giá thất bại:", error.response.data.message);
-        toast.error(error.response.data.message);
+        console.error("Lấy đánh giá thất bại:", error.response?.data?.message);
+        toast.error(error.response?.data?.message);
     }
 };
 

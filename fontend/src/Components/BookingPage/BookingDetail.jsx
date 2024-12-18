@@ -24,6 +24,7 @@ const EventDetails = () => {
     const location = useLocation();
     const dispatch = useDispatch();
     const menus = useSelector((state) => state.menus?.menus);
+    const caution = useSelector((state) => state.requireDay?.numberDay?.Caution) || ''
     const user = useSelector((state) => state.auth.login.currentUser);
     const deocrePrice = useSelector((state) => state.roomPrices?.roomPrices)
     const [selectedPrice, setSelectedPrice] = useState()
@@ -38,10 +39,6 @@ const EventDetails = () => {
         TableDecore: true,
     });
 
-    const caution = [
-        "- Các thông tin về loại sự kiện, ngày tổ chức, thời gian tổ chức và tổng số bàn sẽ không thể thay đổi sau khi đặt",
-        "- Hãy thanh toán trong vòng 24 giờ trước khi đơn đặt hết hạn"
-    ]
     const { EventType, From, To, EventDate, Time, TotalTable, SelectedTimes } = formData || {};
 
 
@@ -55,6 +52,12 @@ const EventDetails = () => {
     const handleSelect = (value) => {
         setSelected((prevSelected) => (prevSelected === value ? null : value));
     };
+
+    function convertToArray(text) {
+        const result =  text.split('/').filter(item => item.trim() !== '');
+        console.log(result)
+        return result
+    }
 
     const handleBooking = async () => {
         console.log(new Date(EventDate.$d))
@@ -257,7 +260,7 @@ const EventDetails = () => {
                                     }}
                                 >
                                     <Typography variant="h5" fontWeight={600} m={1}>Lưu ý</Typography>
-                                    {caution.map((item) => (
+                                    {convertToArray(caution)?.map((item) => (
                                         <Typography textAlign='left' m={2}>{item}</Typography>
                                     ))}
                                 </Card>

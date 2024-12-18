@@ -53,7 +53,7 @@ const PaymentChart = ({ bookings }) => {
     };
 
     return (
-        <Card sx={{ height: "500px", flex: 1, minWidth: "500px" }}>
+        <Card sx={{ height: "600px", flex: 1 }}>
             <Grid2 sx={{ height: "90px", padding: "10px" }}>
                 <h2 style={{ textAlign: 'center' }}>Tỉ lệ thanh toán thành công</h2>
             </Grid2>
