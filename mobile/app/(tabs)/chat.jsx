@@ -5,7 +5,8 @@ import io from 'socket.io-client';
 import { addMessage, getAllMessage } from '@/redux/actions/chatRequest';
 import { useSelector } from 'react-redux';
 
-const socket = io('http://192.168.2.144:8000');
+// const socket = io('http://192.168.2.144:8000');
+const socket = io('https://doancuoiky-1.onrender.com');
 
 const Chat = () => {
     const curentUser = useSelector((state) => state.auth.login.currentUser);
