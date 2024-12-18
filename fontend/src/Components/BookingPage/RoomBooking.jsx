@@ -40,10 +40,12 @@ const HomePage = () => {
     const room = rooms.find(item => item.RoomEventID === roomId)
     const user = useSelector((state) => state.auth.login.currentUser);
     const deocrePrice = useSelector((state) => state.roomPrices?.roomPrices)
+    const requireDay = useSelector((state) => state.requireDay.numberDay)
+
     const [selectedPrice, setSelectedPrice] = useState()
 
     useEffect(() => {
-        if(room?.MaxTable<5){
+        if (room?.MaxTable < 5) {
             setDecore({
                 LobbyDecore: false,
                 StageDecore: false,
@@ -93,11 +95,11 @@ const HomePage = () => {
                     MenuID: selected,
                     DecoreID: decore.DecoreID,
                     EventType: formValues.EventType,
-                    TotalTable: room.MaxTable>5?formValues.TotalTable:1,
+                    TotalTable: room.MaxTable > 5 ? formValues.TotalTable : 1,
                     EventDate: formValues.EventDate,
-                    Time: room.MaxTable>5?formValues.Time:"CUSTOM",
-                    From:from,
-                    To:to,
+                    Time: room.MaxTable > 5 ? formValues.Time : "CUSTOM",
+                    From: from,
+                    To: to,
                     TotalPrice: totalMenuPrice,
                     Note: formValues.Note
                     // Thêm thông tin giá tổng
@@ -169,7 +171,7 @@ const HomePage = () => {
                 </div>
                 <div className="booking-room-name">Nhập Thông Tin Sự Kiện</div>
                 <div className="booking-center">
-                    <Form RoomEventID={roomId} setFrom={setFrom} setTo={setTo} ref={formikRef} handleSubmit={handleSubmit} maxTable={room?.MaxTable} />
+                    <Form requireDay={requireDay} RoomEventID={roomId} setFrom={setFrom} setTo={setTo} ref={formikRef} handleSubmit={handleSubmit} maxTable={room?.MaxTable} />
                 </div>
                 {room?.MaxTable > 5 &&
 

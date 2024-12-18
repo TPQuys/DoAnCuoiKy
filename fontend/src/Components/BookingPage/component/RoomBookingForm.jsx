@@ -2,11 +2,14 @@ import React, { forwardRef, useEffect, useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import {
+    Box,
     Button,
+    Card,
     Grid,
     MenuItem,
     Paper,
     TextField,
+    Typography,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -14,7 +17,10 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { styled } from '@mui/material/styles';
 import { getRoomBooked } from '../../../redux/actions/eventRequest';
-
+import { getAvailableRooms } from '../../../redux/actions/roomRequest';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import Recommad from './Recommand'
 // Tạo một component Paper có nền trong suốt
 const TransparentPaper = styled(Paper)({
     padding: 16,
@@ -34,10 +40,23 @@ const WhiteTextField = styled(({ ...props }) => <Field as={TextField} {...props}
     }
 });
 
-const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEventID }, ref) => {
+const EventForm = forwardRef(({ requireDay, handleSubmit, maxTable, setFrom, setTo, RoomEventID }, ref) => {
+    const navigate = useNavigate()
     const [selectedTimes, setSelectedTimes] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedDate, setSelectedDate] = useState('');
     const [bookedSlots, setBookedSlots] = useState([]);
+    const [numberDay, setNumberDay] = useState(1)
+    const [availableRoom, setAvailableRoom] = useState([])
+    const getAvailableRoom = async (value) => {
+        const res = await getAvailableRooms(value)
+        console.log(res)
+        setAvailableRoom(res)
+    }
+    useEffect(() => {
+        if (requireDay) {
+            setNumberDay(requireDay?.NumberDay)
+        }
+    }, [requireDay])
     useEffect(() => {
         mergeTimeSlots(selectedTimes);
     }, [selectedTimes, selectedDate]);
@@ -47,7 +66,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
             if (selectedDate) {
                 try {
                     console.log(RoomEventID)
-                    const res = await getRoomBooked({RoomEventID,EventDate: new Date(selectedDate)});
+                    const res = await getRoomBooked({ RoomEventID, EventDate: new Date(selectedDate) });
                     console.log(res)
                     if (res) {
                         setBookedSlots(res)
@@ -127,6 +146,16 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
 
     const disableAllDay = bookedTimes?.includes('MORNING') || bookedTimes?.includes('AFTERNOON');
 
+    const disableByTime = (time) => {
+        if (time === "ALLDAY") {
+            return bookedTimes?.includes('MORNING') || bookedTimes?.includes('AFTERNOON')
+        }
+        else {
+            return bookedTimes?.includes(time);
+        }
+    }
+
+
 
     const timeSlots = generateTimeSlots(8, 23, 1); // Khoảng 1 giờ, từ 8h sáng đến 11h tối
 
@@ -196,37 +225,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
             .max(maxTable, `Số bàn tối đa là ${maxTable}`),
         EventDate: Yup.date()
             .required('Vui lòng chọn ngày')
-            .test(
-                'check-date',
-                'Ngày đặt không hợp lệ',
-                function (value) {
-                    const { TotalTable } = this.parent; // Lấy giá trị từ TotalTable
-                    if (!value) return false;
-
-                    const today = dayjs();
-                    const eventDate = dayjs(value);
-
-                    if (TotalTable > 30) {
-                        // Nếu số bàn > 30, kiểm tra ngày phải sau ít nhất 15 ngày
-                        if (!eventDate.isAfter(today.add(15, 'day'))) {
-                            return this.createError({
-                                path: 'EventDate',
-                                message: 'Ngày đặt phải trước 15 ngày ',
-                            });
-                        }
-                    } else {
-                        // Nếu số bàn <= 30, kiểm tra ngày phải sau ít nhất 1 ngày
-                        if (!eventDate.isAfter(today.add(1, 'day'))) {
-                            return this.createError({
-                                path: 'EventDate',
-                                message: 'Ngày đặt phải trước 1 ngày ',
-                            });
-                        }
-                    }
-
-                    return true;
-                }
-            ),
+            .min(dayjs().add(numberDay, 'day'), `Ngày sự kiện phải đặt trước ${numberDay} ngày} `),
         Time: Yup.string().required('Vui lòng chọn thời gian'),
         Note: Yup.string(),
     });
@@ -242,7 +241,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                 }}
                 innerRef={ref} // Nhận ref từ HomePage
             >
-                {({ errors, touched, setFieldValue }) => (
+                {({ errors, touched, setFieldValue, values }) => (
                     <Form>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
@@ -293,7 +292,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                                                         helperText: touched.EventDate && errors.EventDate,
                                                     },
                                                 }}
-                                                onChange={(value) => handleChangeDate(setFieldValue, field.name, value)}
+                                                onAccept ={(value) => handleChangeDate(setFieldValue, field.name, value)}
                                                 format='DD/MM/YYYY'
                                             />
                                         )}
@@ -303,6 +302,16 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                             {maxTable > 5 &&
                                 <Grid item xs={12} sm={6}>
                                     <WhiteTextField
+                                        onChange={(e) => {
+                                            if (disableByTime(e.target.value)) {
+                                                getAvailableRoom({ ...values, Time: e.target.value })
+                                                toast.warn("Phòng này đã được đặt vào khung giờ này! Hãy chọn khung giờ khác hoặc chọn phòng khác")
+                                            } else {
+                                                setFieldValue("Time", e.target.value)
+                                                setAvailableRoom([])
+                                            }
+
+                                        }}
                                         name="Time"
                                         select
                                         label="Thời gian"
@@ -311,9 +320,9 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                                         error={touched.Time && Boolean(errors.Time)}
                                         helperText={touched.Time && errors.Time}
                                     >
-                                        <MenuItem value="MORNING" disabled={bookedTimes?.includes('MORNING') || bookedTimes?.includes('ALLDAY')}>Buổi sáng</MenuItem>
-                                        <MenuItem value="AFTERNOON" disabled={bookedTimes?.includes('AFTERNOON') || bookedTimes?.includes('ALLDAY')}>Buổi chiều</MenuItem>
-                                        <MenuItem value="ALLDAY" disabled={disableAllDay}>Cả ngày</MenuItem>
+                                        <MenuItem value="MORNING" style={{ color: disableByTime('MORNING') ? "lightgray" : "black" }}>Buổi sáng</MenuItem>
+                                        <MenuItem value="AFTERNOON" style={{ color: disableByTime('AFTERNOON') }} >Buổi chiều</MenuItem>
+                                        <MenuItem value="ALLDAY" style={{ color: disableAllDay ? "lightgray" : "black" }}>Cả ngày</MenuItem>
                                         {maxTable < 5 && <MenuItem value="CUSTOM">Tùy chỉnh</MenuItem>}
                                     </WhiteTextField>
                                 </Grid>
@@ -350,7 +359,9 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                     </Form>
                 )}
             </Formik>
-        </TransparentPaper>
+            <Recommad availableRoom={availableRoom} navigate={navigate} >
+            </Recommad>
+        </TransparentPaper >
     );
 });
 

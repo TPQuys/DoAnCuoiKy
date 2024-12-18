@@ -19,7 +19,6 @@ const Chat = ({ user }) => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-
     useEffect(() => {
         const getAllMessages = async () => {
             const res = await getAllMessage(user.email);
@@ -58,6 +57,13 @@ const Chat = ({ user }) => {
         scrollToBottom();
     }, [messages]);
 
+    // Scroll xuống khi mở chat window
+    useEffect(() => {
+        if (isOpen) {
+            scrollToBottom();
+        }
+    }, [isOpen]);
+
     const handleSendMessage = () => {
         if (message.trim()) {
             const messageData = {
@@ -65,7 +71,7 @@ const Chat = ({ user }) => {
                 message: message,
                 fromId: user?.id,
             };
-            addMessage({ ...messageData, room: user?.email, createAt: new Date() })
+            addMessage({ ...messageData, room: user?.email, createAt: new Date() });
             socket.emit('sendMessageToRoom', { FromID: user?.id, room: user?.email, message: messageData });
             setMessage('');
         }
