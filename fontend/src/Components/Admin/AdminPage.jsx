@@ -51,7 +51,7 @@ const UserPage = () => {
                             {(user.role === "ADMIN" || user.role === "MANAGER") && <Tab label="Phòng" value="2" />}
                             {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Lịch sử đặt" value="3" />}
                             {(user.role === "ADMIN" || user.role === "HR") && <Tab label="Người dùng" value="4" />}
-                            {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Biểu đồ" value="5" />}
+                            {(user.role === "ADMIN" || user.role === "ACCOUNTANT") && <Tab label="Thống kê" value="5" />}
                             {(user.role === "ADMIN" || user.role === "MANAGER") && <Tab label="Chat" value="6" />}
                         </TabList>
                     </Box>

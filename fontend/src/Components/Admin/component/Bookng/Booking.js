@@ -8,7 +8,7 @@ import { Delete, Menu as MenuIcon, Payment as PaymentIcon, Edit, Height } from '
 import EditEventModal from "./Component.js/EditEventModal";
 import SearchIcon from '@mui/icons-material/Search';
 import { exportToExcel } from './Component.js/exportBooking'
-import {formatDate,formatDateTime,getDecore,getDecoreType,getEventType,getRangeTime,getTime} from './Component.js/FormatFunction'
+import { formatDate, formatDateTime, getDecore, getDecoreType, getEventType, getRangeTime, getTime } from './Component.js/FormatFunction'
 const Bookings = ({ bookings, rooms }) => {
     const menus = useSelector((state) => state.menus?.menus);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -115,7 +115,7 @@ const Bookings = ({ bookings, rooms }) => {
     return (
         <Card sx={{ p: 3 }}>
             <Grid container spacing={3} justifyContent={"space-around"} marginBottom={3}>
-                <Grid item xs={12}>
+                <Grid item xs={8}>
                     <TextField
                         label="Tìm kiếm"
                         variant="outlined"
@@ -142,7 +142,17 @@ const Bookings = ({ bookings, rooms }) => {
                         }}
                     />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid xs={4}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => exportToExcel(bookings)}
+                        sx={{mt:5}}
+                    >
+                        Xuất Excel
+                    </Button>
+                </Grid>
+                <Grid item xs={3}>
                     <FormControl
                         fullWidth
                         variant="outlined"
@@ -174,7 +184,7 @@ const Bookings = ({ bookings, rooms }) => {
                         </Select>
                     </FormControl>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                     <FormControl
                         fullWidth
                         variant="outlined"
@@ -208,7 +218,7 @@ const Bookings = ({ bookings, rooms }) => {
                         </Select>
                     </FormControl>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                     <FormControl
                         fullWidth
                         variant="outlined"
@@ -242,17 +252,8 @@ const Bookings = ({ bookings, rooms }) => {
                         </Select>
                     </FormControl>
                 </Grid>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => exportToExcel(bookings)}
-                    sx={{ marginBottom: 3 }}
-                >
-                    Xuất Excel
-                </Button>
-
+             
             </Grid>
-
 
             <TableContainer component={Paper} title="Lịch sử đặt sự kiện" sx={{ maxHeight: '700px', overflowY: 'auto' }}>
                 <Table stickyHeader aria-label="simple table">

@@ -42,54 +42,54 @@ const HomePage = () => {
                         {availableRooms?.length > 0 ? (
                             availableRooms.map((item) =>
                                 item.Status === "OPEN" ? (
-                                   <Card sx={{ p: 3, width: "100%", }}>
-                                            <Grid container key={item.RoomEventID} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '16px', marginBottom: '16px' }}>
-                                                {/* Hình ảnh bên trái */}
-                                                <Grid item xs={3} alignContent='center'>
-                                                    <img
-                                                        src={item.RoomImage}
-                                                        alt="room"
-                                                        style={{ width: "100%", borderRadius: "8px" }}
-                                                    />
-                                                </Grid>
-                                                {/* Thông tin bên phải */}
-                                                <Grid item xs={7} justifyItems='left' pl={4}>
-                                                    <Typography variant="h6" gutterBottom>
-                                                        <Link to={`/`} className="room-content-title" style={{ textDecoration: 'none', color: '#64463c' }}>
-                                                            {item.RoomName}
-                                                        </Link>
-                                                    </Typography>
-                                                    <Typography variant="body2" gutterBottom>
-                                                        <strong>Kích thước:</strong> Chiều dài: {item.HeightRoom}m, Chiều rộng: {item.WidthRoom}m
-                                                    </Typography>
-                                                    <Typography variant="body2" gutterBottom>
-                                                        <strong>Sức chứa:</strong> Số người: {item.Capacity}, Số bàn tối đa: {item.MaxTable}
-                                                    </Typography>
-                                                    <Typography
-                                                        variant="body2"
-                                                        component="div"
-                                                        gutterBottom
-                                                        align="left"
-                                                        style={{ textAlign: 'left' }}
-                                                    >
-                                                        <strong>Mô tả:</strong> {item.Description}
-                                                    </Typography>
-
-                                                </Grid>
-                                                <Grid item xs={2} justifyItems='center' alignContent='center' >
-                                                    <Typography variant="h5">
-                                                        Giá {item.Price.toLocaleString()} VND
-                                                    </Typography>
-                                                    <Button
-                                                        onClick={() => handleBooking(item)}
-                                                        variant="contained"
-                                                        sx={{ backgroundColor: '#64463c', color: '#fff', marginTop: '8px' }}
-                                                    >
-                                                        Đặt ngay
-                                                    </Button>
-                                                </Grid>
+                                    <Card sx={{ p: 3, width: "100%", }}>
+                                        <Grid container key={item.RoomEventID} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '16px', marginBottom: '16px' }}>
+                                            {/* Hình ảnh bên trái */}
+                                            <Grid item xs={3} alignContent='center'>
+                                                <img
+                                                    src={item.RoomImage}
+                                                    alt="room"
+                                                    style={{ width: "100%", borderRadius: "8px" }}
+                                                />
                                             </Grid>
-                                        </Card>
+                                            {/* Thông tin bên phải */}
+                                            <Grid item xs={7} justifyItems='left' pl={4}>
+                                                <Typography variant="h6" gutterBottom>
+                                                    <Link to={`/`} className="room-content-title" style={{ textDecoration: 'none', color: '#64463c' }}>
+                                                        {item.RoomName}
+                                                    </Link>
+                                                </Typography>
+                                                <Typography variant="body2" gutterBottom>
+                                                    <strong>Kích thước:</strong> Chiều dài: {item.HeightRoom}m, Chiều rộng: {item.WidthRoom}m
+                                                </Typography>
+                                                <Typography variant="body2" gutterBottom>
+                                                    <strong>Sức chứa:</strong> Số người: {item.Capacity}, Số bàn tối đa: {item.MaxTable}
+                                                </Typography>
+                                                <Typography
+                                                    variant="body2"
+                                                    component="div"
+                                                    gutterBottom
+                                                    align="left"
+                                                    style={{ textAlign: 'left' }}
+                                                >
+                                                    <strong>Mô tả:</strong> {item.Description}
+                                                </Typography>
+
+                                            </Grid>
+                                            <Grid item xs={2} justifyItems='center' alignContent='center' >
+                                                <Typography variant="h5">
+                                                    Giá {item.Price.toLocaleString()} VND
+                                                </Typography>
+                                                <Button
+                                                    onClick={() => handleBooking(item)}
+                                                    variant="contained"
+                                                    sx={{ backgroundColor: '#64463c', color: '#fff', marginTop: '8px' }}
+                                                >
+                                                    Đặt ngay
+                                                </Button>
+                                            </Grid>
+                                        </Grid>
+                                    </Card>
                                 ) : null
                             )
                         ) : (
@@ -99,15 +99,29 @@ const HomePage = () => {
                                     alt=""
                                     height="600px"
                                     width="1000px"
-                                    style={{ backgroundPosition: "auto", borderRadius: 30 }}
+                                    style={{ backgroundPosition: "auto", borderRadius: 30, opacity: 0.6 }}
                                 />
                                 <Typography
                                     variant="h4"
-                                    sx={{ fontWeight: 600, color: "white", bottom: "300px", position: "relative" }}
+                                    sx={{ fontWeight: 600, color: "black", bottom: "400px", position: "relative" }}
                                 >
-                                    {availableRooms === null
-                                        ? "Hãy nhập thông tin để tìm kiếm phòng phù hợp"
-                                        : "Rất tiếc hiện không có địa điểm phù hợp với bạn"}
+                                    {availableRooms === null ? (
+                                        <>
+                                            Hãy nhập thông tin để tìm kiếm phòng phù hợp
+                                        </>
+                                    ) : (
+                                        <div style={{bottom:40}}>
+                                       
+                                            <div>
+                                                Rất tiếc hiện không có địa điểm phù hợp với bạn
+                                            </div>
+                                            <img
+                                                src="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/public/Event/location-not-found-svgrepo-com.svg"
+                                                alt="Location Not Found"
+                                                style={{ width: "150px", marginTop: "20px" }}
+                                            />
+                                        </div>
+                                    )}
                                 </Typography>
                             </Card>
                         )}
