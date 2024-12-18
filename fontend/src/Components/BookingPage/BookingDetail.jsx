@@ -31,7 +31,7 @@ const EventDetails = () => {
     const [selected, setSelected] = useState(null);
     const [openModal, setOpenModal] = useState(false);
     const [isDisabled, setIsDisabled] = useState(false);
-    const [note, setNote] = useState('')
+    const [note, setNote] = useState(formData.Note)
     const [Decore, setDecore] = useState({
         LobbyDecore: true,
         StageDecore: true,
@@ -236,7 +236,8 @@ const EventDetails = () => {
 
                                         <Grid item xs={12}>
                                             <TextField
-                                                name="TotalTable"
+                                                value={note}
+                                                name="Note"
                                                 label="Ghi chú"
                                                 fullWidth
                                                 multiline
