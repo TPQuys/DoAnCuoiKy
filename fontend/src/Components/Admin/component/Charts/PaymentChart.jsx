@@ -53,17 +53,22 @@ const PaymentChart = ({ bookings }) => {
       return acc;
     }, []);
 
-    return result;
+    // Sắp xếp theo tháng và năm
+    return result.sort((a, b) => {
+      const [monthA, yearA] = a.month.split('-').map(Number);
+      const [monthB, yearB] = b.month.split('-').map(Number);
+      return yearA === yearB ? monthA - monthB : yearA - yearB;
+    });
   };
 
   // Xử lý dữ liệu khi `bookings` hoặc `year` thay đổi
   useEffect(() => {
     const result = getPayment(year);
 
-    // Lấy danh sách tháng từ dữ liệu đã xử lý
+    // Lấy danh sách tháng đã sắp xếp
     const uniqueMonths = result.map((item) => item.month);
-    setData(result);
-    setMonths(uniqueMonths);
+    setData(result); // Cập nhật dữ liệu biểu đồ
+    setMonths(uniqueMonths); // Cập nhật danh sách tháng
   }, [bookings, year]);
 
   const handleYearChange = (event) => {
