@@ -41,33 +41,33 @@ const AppRoutes = () => {
         getAllDrink(dispatch)
         getDecorePrice(dispatch)
         getRequireDay(dispatch)
-        if(user1){
-            if (user1?.user?.role==="ADMIN") {
+        if (user1) {
+            if (user1?.user?.role === "ADMIN") {
                 getAllUsers(dispatch)
             }
         }
-    }, [dispatch,user1]);
+    }, [dispatch, user1]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
-      }, [location.pathname]);
+    }, [location.pathname]);
 
-    // useEffect(() => {
+    useEffect(() => {
 
-    //     if (!user1) {
-    //         if (location.pathname === "/booking" || location.pathname === "/room") {
-    //             toast.info("Hãy đăng nhập để đặt phòng");
-    //             sessionStorage.setItem("previousPath", previousPath)
-    //             navigate("/login");
+        if (!user1) {
+            if (location.pathname === "/user" || location.pathname === "/booking/detail" || location.pathname === "/admin" || location.pathname === "/payment" || location.pathname.startsWith("/room_booking")) {
+                toast.info("Hãy đăng nhập để đặt phòng");
+                // sessionStorage.setItem("previousPath", previousPath)
+                navigate("/login");
 
-    //         }
-    //         if (location.pathname === "/logout" || location.pathname === "/user") {
-    //             navigate("/login");
+            }
+            if (location.pathname === "/logout" || location.pathname === "/user") {
+                navigate("/login");
 
-    //         }
-    //     }
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [sessionStorage, location.pathname, navigate, previousPath],user1);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sessionStorage, location.pathname, navigate, previousPath], user1);
 
     return (
         <>

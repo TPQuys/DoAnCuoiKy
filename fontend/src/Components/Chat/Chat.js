@@ -5,10 +5,10 @@ import io from 'socket.io-client';
 import { addMessage, getAllMessage } from '../../redux/actions/chatRequest';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CloseIcon from '@mui/icons-material/Close';
-
-const socket = io('http://localhost:8000');
-
+import url from "../../utils/url"
+const socket = io(url);
 const Chat = ({ user }) => {
+    console.log(url)
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
     const [isOpen, setIsOpen] = useState(false); // State để điều khiển việc hiển thị chat

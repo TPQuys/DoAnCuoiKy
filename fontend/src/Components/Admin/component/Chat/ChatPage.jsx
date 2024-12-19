@@ -3,9 +3,9 @@ import { useSelector } from 'react-redux';
 import { Box, Button, TextField, Typography, List, ListItem, Divider, Avatar, Card } from '@mui/material';
 import io from 'socket.io-client';
 import { addMessage, getAllMessage, getAllRoomChat } from '../../../../redux/actions/chatRequest';
-
+import url from '../../../../utils/url'
 // Tạo kết nối socket với server
-const socket = io('http://localhost:8000');
+const socket = io(url);
 
 const ChatApp = () => {
     const user = useSelector((state) => state.auth.login.currentUser)?.user;

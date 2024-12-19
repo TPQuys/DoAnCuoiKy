@@ -32,7 +32,7 @@ const EventDetails = () => {
     const [selected, setSelected] = useState(null);
     const [openModal, setOpenModal] = useState(false);
     const [isDisabled, setIsDisabled] = useState(false);
-    const [note, setNote] = useState(formData.Note)
+    const [note, setNote] = useState(formData?.Note||'')
     const [Decore, setDecore] = useState({
         LobbyDecore: true,
         StageDecore: true,

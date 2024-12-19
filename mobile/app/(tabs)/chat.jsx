@@ -4,9 +4,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import io from 'socket.io-client';
 import { addMessage, getAllMessage } from '@/redux/actions/chatRequest';
 import { useSelector } from 'react-redux';
-
+import url from '@/utils/url'
 // const socket = io('http://192.168.2.144:8000');
-const socket = io('https://doancuoiky-1.onrender.com');
+const socket = io(url);
 
 const Chat = () => {
     const curentUser = useSelector((state) => state.auth.login.currentUser);
