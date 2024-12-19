@@ -1,12 +1,12 @@
 import { Tabs, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllRooms } from '@/redux/actions/roomRequest';
 import { getBookingByUser } from '@/redux/actions/bookingRequest';
 import { getAllDrink, getAllFood, getAllMenus } from '@/redux/actions/menuRequest';
 import { getDecorePrice } from '@/redux/actions/decoreRequest';
+import { Text, TouchableOpacity } from 'react-native';
 
 export default function TabLayout() {
   const dispatch = useDispatch();
@@ -20,7 +20,6 @@ export default function TabLayout() {
     getAllDrink(dispatch);
     getBookingByUser(dispatch, user);
     getDecorePrice(dispatch);
-    
   }, [dispatch, user]);
 
   return (
@@ -43,16 +42,38 @@ export default function TabLayout() {
       <Tabs.Screen
         name="room"
         options={{
-          title: 'Đặt phòng',
+          title: 'Phòng',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'book' : 'book-outline'} color={color} />
+            <TabBarIcon name={focused ? 'business' : 'business-outline'} color={color} />
           ),
         }}
       />
-          <Tabs.Screen
+      <Tabs.Screen
+        name="booking"
+        options={{
+          title: 'Đặt ngay',
+          tabBarButton: ({ focused, ...props }) => (
+            <TouchableOpacity
+              {...props}
+              style={{
+                backgroundColor: '#81695e', 
+                width: 60,
+                borderRadius:30,
+                bottom:14,
+                height: 60,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <TabBarIcon name={focused ? 'book' : 'book-outline'} size={25} color={'white'} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="chat"
         options={{
-          title: 'Chat',
+          title: 'Liên hệ',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'chatbubble' : 'chatbubble-outline'} color={color} />
           ),
@@ -65,7 +86,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
           ),
-          
+
         }}
         listeners={({ navigation, route }) => ({
           tabPress: (e) => {

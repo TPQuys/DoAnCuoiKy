@@ -1,10 +1,14 @@
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import HomePage from "../Home/HomePage";
+import ChatPage from "../Admin/component/Chat/ChatPage";
 import Login from "../Login/Login";
 import Register from "../Register/Register";
 import Room from "../Rooms/Room";
+import RoomDetailPage from "../Rooms/RoomDetailPage";
 import BookingPage from "../BookingPage/BookingPage";
+import RoomBooking from "../BookingPage/RoomBooking";
+import BookingDetail from "../BookingPage/BookingDetail";
 import EventPage from "../EventPage/EventPage";
 import PaymentPage from "../Payment/PaymentPage";
 import UserPage from "../User/UserPage";
@@ -15,7 +19,7 @@ import AdminPage from "../Admin/AdminPage"
 import Verified from "../Verified/Verified"
 import Menu from "../Menu/Menu"
 import { toast } from "react-toastify";
-import { getAllRooms } from "../../redux/actions/roomRequest";
+import { getAllRooms, getRequireDay } from "../../redux/actions/roomRequest";
 import { getAllDrink, getAllFood, getAllMenus } from "../../redux/actions/menuRequest";
 import { useDispatch } from "react-redux";
 import ResetPassword from "../ResetPassword/ResetPassword"
@@ -36,23 +40,24 @@ const AppRoutes = () => {
         getAllFood(dispatch)
         getAllDrink(dispatch)
         getDecorePrice(dispatch)
-        if(user1){
-            if (user1?.user?.role==="ADMIN") {
+        getRequireDay(dispatch)
+        if (user1) {
+            if (user1?.user?.role === "ADMIN") {
                 getAllUsers(dispatch)
             }
         }
-    }, [dispatch,user1]);
+    }, [dispatch, user1]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
-      }, [location.pathname]);
+    }, [location.pathname]);
 
     useEffect(() => {
 
         if (!user1) {
-            if (location.pathname === "/booking" || location.pathname === "/room") {
+            if (location.pathname === "/user" || location.pathname === "/booking/detail" || location.pathname === "/admin" || location.pathname === "/payment" || location.pathname.startsWith("/room_booking")) {
                 toast.info("Hãy đăng nhập để đặt phòng");
-                sessionStorage.setItem("previousPath", previousPath)
+                // sessionStorage.setItem("previousPath", previousPath)
                 navigate("/login");
 
             }
@@ -62,7 +67,7 @@ const AppRoutes = () => {
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sessionStorage, location.pathname, navigate, previousPath],user1);
+    }, [sessionStorage, location.pathname, navigate, previousPath], user1);
 
     return (
         <>
@@ -72,11 +77,13 @@ const AppRoutes = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/room" element={<Room />} />
-                    <Route path="/booking/:roomId" element={<BookingPage />} />
+                    <Route path="/room/:id" element={<RoomDetailPage />} />
+                    <Route path="/booking/detail" element={<BookingDetail />} />
+                    <Route path="/booking" element={<BookingPage />} />
+                    <Route path="/room_booking/:roomId" element={<RoomBooking />} />
                     <Route path="/payment" element={<PaymentPage />} />
                     <Route path="/user" element={<UserPage />} />
                     <Route path="/user/info" element={<UserInfoPage />} />
-                    {/* <Route path="/event" element={<EventPage />} /> */}
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/decore" element={<DecorePage />} />
                     <Route path="/reset_password" element={<ResetPassword />} />

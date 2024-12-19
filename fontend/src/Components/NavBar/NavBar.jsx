@@ -14,8 +14,10 @@ import {
 import { CiLogin } from "react-icons/ci";
 import { IoCloseCircle } from "react-icons/io5";
 import { GiFlowers } from "react-icons/gi";
-import TawkMessengerReact from '@tawk.to/tawk-messenger-react';
+import { MdRestaurantMenu } from 'react-icons/md';
+// import TawkMessengerReact from '@tawk.to/tawk-messenger-react';
 import { Avatar } from "@mui/material";
+import Chat from "../Chat/Chat";
 const NavBar = () => {
   const user = useSelector((state) => state.auth.login.currentUser)?.user;
   const [accessToken] = useState(user?.accessToken);
@@ -45,29 +47,29 @@ const NavBar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-  useEffect(() => {
-    if (user?.email) {
-      if (window.Tawk_API) {
-        try {
-          window.Tawk_API.endChat(); // Đóng chat hiện tại
-        } catch {
-          console.error("Error")
-        }
-        window.Tawk_API.visitor = {
-          name: user.email || "Khách",
-        };
-      }
-    } else {
-      // Xóa đoạn chat hiện tại khi user là null
-      if (window.Tawk_API) {
-        window.Tawk_API.hideWidget(); // Đóng chat hiện tại
-        console.log("Tawk chat session ended");
-      }
-    }
-  }, [user]);
-  const onLoad = () => {
-    console.log('onLoad works!');
-  };
+  // useEffect(() => {
+  //   if (user?.email) {
+  //     if (window.Tawk_API) {
+  //       try {
+  //         window.Tawk_API.endChat(); // Đóng chat hiện tại
+  //       } catch {
+  //         console.error("Error")
+  //       }
+  //       window.Tawk_API.visitor = {
+  //         name: user.email || "Khách",
+  //       };
+  //     }
+  //   } else {
+  //     // Xóa đoạn chat hiện tại khi user là null
+  //     if (window.Tawk_API) {
+  //       window.Tawk_API.hideWidget(); // Đóng chat hiện tại
+  //       console.log("Tawk chat session ended");
+  //     }
+  //   }
+  // }, [user]);
+  // const onLoad = () => {
+  //   console.log('onLoad works!');
+  // };
 
   return (
     <nav className={`navbar-container ${isScrolled ? 'navbar-scrolled' : ''}`}>
@@ -75,36 +77,37 @@ const NavBar = () => {
       <div className="navbar-dropdown">
         <Link className="navbar-home"> <FaCalendarAlt /> Thêm </Link>
         <div className="dropdown-menu">
-          <Link to="/menu">Menu</Link>
-           {/* <Link to="/discount" className="navbar-home"><FaTag /> Ưu đãi </Link> */}
-      {/* <Link to="/news" className="navbar-home"><FaNewspaper /> Tin tức </Link> */}
-      <Link to="/decore" className="navbar-home"><GiFlowers /> Trang trí </Link>
+          <Link to="/menu" className="navbar-home"><MdRestaurantMenu />Menu</Link>
+          <Link to="/room" className="navbar-home"><FaTag /> Phòng </Link>
+          {/* <Link to="/news" className="navbar-home"><FaNewspaper /> Tin tức </Link> */}
+          <Link to="/decore" className="navbar-home"><GiFlowers /> Trang trí </Link>
         </div>
       </div>
-      <Link to="/room" className="navbar-home"><FaTag /> Đặt nhà hàng </Link>
+      <Link to="/booking" className="navbar-home"><FaTag /> Đặt chỗ ngay </Link>
 
       {user ? (
-        user?.role!=="USER" ? (
+        user?.role !== "USER" ? (
           <>
             <div className="navbar-dropdown">
               <Link to="/admin" className="navbar-home">
-              <Avatar sx={{ width: "25px", height: "25px", margin: 1, display:'inline-flex'}} src={user?.avatar} />
-               {user?.role} <span> {user?.username} </span> </Link>
-           
+                <Avatar sx={{ width: "25px", height: "25px", margin: 1, display: 'inline-flex' }} src={user?.avatar} />
+                {user?.role} <span> {user?.username} </span> </Link>
+
             </div>
             <Link className="navbar-logout" onClick={handleLogOut}> <IoCloseCircle /> Đăng xuất</Link>
           </>
         ) : (
           <>
-            {user?.email && <TawkMessengerReact
+            <Chat user={user} />
+            {/* {user?.email && <TawkMessengerReact
               propertyId="674b27722480f5b4f5a62a5d"
               widgetId="1idup45v4"
               onLoad={onLoad} />
-            }
+            } */}
             <div className="navbar-dropdown">
               <Link to="/user/info" className="navbar-home">
-              <Avatar sx={{ width: "25px", height: "25px", margin: 1, display:'inline-flex'}} src={user?.avatar} />
-              Cá nhân <span> {user.username} </span> </Link>
+                <Avatar sx={{ width: "25px", height: "25px", margin: 1, display: 'inline-flex' }} src={user?.avatar} />
+                Cá nhân <span> {user.username} </span> </Link>
               <div className="dropdown-menu">
                 <Link to="/user/info">Thông tin cá nhân</Link>
                 <Link to="/user">Lịch sử</Link>

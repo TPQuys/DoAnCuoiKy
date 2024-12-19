@@ -2,6 +2,8 @@ const { Op, Sequelize } = require('sequelize');
 const Event = require('../models/Event');
 const Booking = require('../models/Booking');
 const Payment = require('../models/Payment');
+const RoomEvent = require('../models/RoomEvent');
+const User = require('../models/User');
 
 const eventRepository = {
     findAll: async () => {
@@ -31,7 +33,7 @@ const eventRepository = {
                 }
             ]
         };
-    
+
         return await Event.findOne({
             include: [
                 {
@@ -68,8 +70,109 @@ const eventRepository = {
             }
         });
     },
-    
-    findByRoom: async (RoomEventID, EventDate) => {
+
+    findByTime: async ( EventDate, Time, From, To) => {
+        const timeCondition = {
+            [Op.or]: [
+                { Time: 'ALLDAY' },
+                {
+                    Time: Time === 'ALLDAY'
+                        ? { [Op.in]: ['MORNING', 'AFTERNOON', 'CUSTOM'] }
+                        : Time
+                },
+                {
+                    Time: 'CUSTOM',
+                    [Op.and]: [
+                        From ? { From: { [Op.lt]: To } } : {},
+                        To ? { To: { [Op.gt]: From } } : {}
+                    ]
+                }
+            ]
+        };
+
+        return await Event.findAll({
+            include: [
+                {
+                    model: Booking,
+                    attributes: ["BookingTime"],
+                    include: [
+                        {
+                            model: Payment,
+                            attributes: ["PaymentID"]
+                        }
+                    ]
+                },
+                {
+                    model: RoomEvent,
+                    attributes: ["RoomEventID"],
+                }
+            ],
+            attributes: ['Time', "From", "To", "EventDate"],
+            where: {
+                [Op.and]: [
+                    Sequelize.where(
+                        Sequelize.fn('DATE', Sequelize.col('EventDate')),
+                        '=',
+                        Sequelize.fn('DATE', EventDate)
+                    ),
+                    timeCondition,
+                    {
+                        [Op.or]: [
+                            Sequelize.where(
+                                Sequelize.literal(`"Booking"."BookingTime" + INTERVAL '1 day'`),
+                                '>',
+                                Sequelize.literal('NOW()')
+                            ),
+                            { '$Booking.Payment.PaymentID$': { [Op.ne]: null } }
+                        ]
+                    }
+                ]
+            }
+        });
+    },
+
+    findByRoom: async (EventDate) => {
+        return await Event.findAll({
+            include: [
+                {
+                    model: Booking,
+                    attributes: ["BookingTime"],
+                    include: [
+                        {
+                            model: Payment,
+                            attributes: ["PaymentID"]
+                        }
+                    ],
+
+                }, {
+                    model: RoomEvent,
+                    attributes: ["RoomEventID"],
+                }
+            ],
+            attributes: ['Time', "From", "To", "EventDate"],
+            where: {
+                [Op.and]: [
+                    Sequelize.where(
+                        Sequelize.fn('DATE', Sequelize.col('EventDate')),
+                        '=',
+                        Sequelize.fn('DATE', EventDate)
+                    ),
+                    {
+                        [Op.or]: [
+                            Sequelize.where(
+                                Sequelize.literal(`"Booking"."BookingTime" + INTERVAL '1 day'`),
+                                '>',
+                                Sequelize.literal('NOW()')
+                            ),
+                            { '$Booking.Payment.PaymentID$': { [Op.ne]: null } }
+                        ]
+                    }
+                ]
+            }
+        });
+    },
+
+    findByRoomAndDate: async (RoomEventID, EventDate) => {
         return await Event.findAll({
             include: [
                 {
@@ -106,14 +209,19 @@ const eventRepository = {
             }
         });
     },
-    
-    checkPendingBookings: async () => {
+
+    checkPendingBookings: async (userId) => {
         return await Booking.findAll({
             include: [
                 {
                     model: Payment,
                     attributes: ["PaymentID"]
-                }
+                },
+                {
+                    model: User,
+                    attributes: ["id"],
+                    where: { id: userId } // Điều kiện kiểm tra user.id = userId
+                },
             ],
             where: {
                 [Op.and]: [
@@ -127,6 +235,7 @@ const eventRepository = {
             }
         });
     },
+    
 
     create: async (eventData) => {
         return await Event.create(eventData);
@@ -134,6 +243,7 @@ const eventRepository = {
 
     update: async (eventId, updatedData) => {
         const event = await eventRepository.findById(eventId);
+        console.log(updatedData)
         if (!event) throw new Error("Sự kiện không tồn tại.");
         return await event.update(updatedData);
     },

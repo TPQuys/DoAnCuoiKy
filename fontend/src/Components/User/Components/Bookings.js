@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { useDispatch, useSelector } from "react-redux";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton, Grid } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { getBookingByUser, deleteBookingUser } from "../../../redux/actions/bookingRequest";
 import { addRate } from "../../../redux/actions/rateRequest";
@@ -9,10 +9,14 @@ import PaymentModal from "./PaymentModal";
 import AddRatingModal from "./AddRatingModal";
 import RateDetailModal from "./RateDetailModal";
 import { formatDate, formatDateTime, getDecore, getDecoreType, getEventType, getRangeTime, getTime } from './FormatFunction';
+import EditEventModal from "./EditEventModal";
+import { Delete, Edit } from "@mui/icons-material";
 
 const Bookings = ({ bookings }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const menus = useSelector((state) => state.menus?.menus);
+    const user = useSelector((state) => state.auth.login.currentUser);
     const [modalOpen, setModalOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isPaymentOpen, setIsPaymentOpen] = useState(false);
@@ -22,6 +26,8 @@ const Bookings = ({ bookings }) => {
     const [rateDetail, setRateDetail] = useState(null); // Dữ liệu chi tiết đánh giá
     const [isRateModalOpen, setIsRateModalOpen] = useState(false); // Trạng thái mở modal chi tiết đánh giá
     const [remainingTimes, setRemainingTimes] = useState({}); // Lưu thời gian còn lại cho mỗi booking
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [isEditOpen, setIsEditOpen] = useState(false);
 
     const handleClick = (booking) => {
         sessionStorage.setItem("booking", JSON.stringify(booking));
@@ -40,14 +46,15 @@ const Bookings = ({ bookings }) => {
         }
     };
 
-    const handleOpen = (bookingID) => {
-        setSelectBooking(bookingID);
+    const handleOpen = (booking) => {
+        setSelectBooking(booking);
         setModalOpen(true);
     };
     const handleClose = () => setModalOpen(false);
 
-    const handleSubmit = (data) => {
-        const res = addRate(dispatch, data);
+    const handleSubmit = async (data) => {
+        const res = await addRate(dispatch, data);
+        await getBookingByUser(dispatch)
         console.log("Submitted Data:", res.data);
     };
 
@@ -61,6 +68,17 @@ const Bookings = ({ bookings }) => {
         setIsRateModalOpen(false);
     };
 
+    const openEditModal = (event, booking) => {
+        setSelectBooking(booking)
+        setSelectedEvent(event);
+        setIsEditOpen(true);
+    };
+
+    const closeEditModal = () => {
+        setIsEditOpen(false);
+    };
+
+
     useEffect(() => {
         const interval = setInterval(() => {
             const newRemainingTimes = {};
@@ -69,17 +87,17 @@ const Bookings = ({ bookings }) => {
                 const endTime = new Date(booking.BookingTime).getTime() + 24 * 60 * 60 * 1000;
                 const currentTime = new Date().getTime();
                 const timeLeft = Math.max(0, Math.floor((endTime - currentTime) / 1000));
-                
+
                 newRemainingTimes[booking.BookingID] = timeLeft > 0
                     ? `${Math.floor(timeLeft / 3600)}:${String(Math.floor((timeLeft % 3600) / 60)).padStart(2, '0')}:${String(timeLeft % 60).padStart(2, '0')}`
                     : 'Lịch đặt đã hết hạn';
             });
             setRemainingTimes(newRemainingTimes);
         }, 1000);
-    
+
         return () => clearInterval(interval);
     }, [bookings]);
-    
+
 
     return (
         <TableContainer component={Paper} title="Lịch sử đặt sự kiện">
@@ -110,7 +128,7 @@ const Bookings = ({ bookings }) => {
                                 <TableCell>{booking.Event?.TotalTable}</TableCell>
                                 <TableCell>{formatDate(new Date(booking.Event?.EventDate))}</TableCell>
                                 <TableCell>{
-                                    booking.Event.Time !== "CUSTOM" ?
+                                    booking.Event?.Time !== "CUSTOM" ?
                                         getTime(booking.Event?.Time)
                                         : getRangeTime(booking.Event?.From, booking.Event?.To)
                                 }</TableCell>
@@ -120,27 +138,55 @@ const Bookings = ({ bookings }) => {
                                 <TableCell>{booking.Event?.Menu?.MenuID && <Button sx={{ padding: 0, margin: 0 }} variant="text" onClick={() => openMenu(booking.Event?.Menu)}>Chi tiết Menu</Button>}</TableCell>
                                 <TableCell>
                                     {booking.Payment ?
-                                        <Button color="success" variant="text" sx={{ padding: 0, margin: 0 }} onClick={() => openPayment(booking?.Payment)}>Chi tiết thanh toán</Button>
+                                        <Button
+                                            color="success"
+                                            variant="text"
+                                            sx={{ padding: 0, margin: 0 }}
+                                            onClick={() => openPayment(booking?.Payment)}
+                                        >
+                                            Chi tiết thanh toán
+                                        </Button>
                                         : remainingTimes[booking.BookingID]?.includes("hết")
                                             ? <Button color="error">{remainingTimes[booking.BookingID]}</Button>
                                             : <Button onClick={() => handleClick(booking)}>Thanh toán ngay ({remainingTimes[booking.BookingID]})</Button>}
                                 </TableCell>
                                 <TableCell>
                                     {!booking.Payment ?
-                                        <Button variant="text" color="error" onClick={() => handleDelete(booking?.BookingID)}>
-                                            Xóa
-                                        </Button> :
+                                        <Grid textAlign={"center"}>
+                                            <IconButton
+                                                disabled={booking.Payment}
+                                                onClick={() => handleDelete(booking.BookingID)}
+                                            >
+                                                <Delete color="error" />
+                                            </IconButton>
+                                            <IconButton
+                                                disabled={booking.Payment}
+                                                onClick={() => openEditModal(booking.Event, booking)}
+                                            >
+                                                <Edit color="primary" />
+                                            </IconButton>
+                                        </Grid> :
                                         booking.Rate ?
-                                            <Button variant="text" color="primary" onClick={() => openRateDetail(booking?.Rate)}>Xem đánh giá</Button>:
-                                            new Date (booking.Event.EventDate) > new Date() ?"":
-                                            <Button variant="text" color="info" onClick={() => handleOpen(booking?.BookingID)}>Đánh giá</Button>
+                                            <Button variant="text" color="primary" onClick={() => openRateDetail(booking?.Rate)}>Xem đánh giá</Button> :
+                                            new Date(booking.Event.EventDate) > new Date() ? "" :
+                                                <Button variant="text" color="info" onClick={() => handleOpen(booking)}>Đánh giá</Button>
                                     }
+
                                 </TableCell>
                             </TableRow>
                         ))}
                 </TableBody>
             </Table>
-            <AddRatingModal booking={selectedBooking} open={modalOpen} onClose={handleClose} onSubmit={handleSubmit} />
+            {selectedEvent && (
+                <EditEventModal
+                    open={isEditOpen}
+                    onClose={closeEditModal}
+                    menus={menus}
+                    eventData={selectedEvent}
+                    booking={selectedBooking}
+                />
+            )}
+            <AddRatingModal booking={selectedBooking} open={modalOpen} onClose={handleClose} onSubmit={handleSubmit} user={user} />
             <MenuModal menu={menu} onClose={closeMenu} open={isMenuOpen} />
             <PaymentModal paymentData={payment} onClose={closePayment} open={isPaymentOpen} />
             <RateDetailModal rate={rateDetail} open={isRateModalOpen} onClose={closeRateDetail} />

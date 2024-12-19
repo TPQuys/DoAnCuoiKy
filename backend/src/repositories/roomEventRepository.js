@@ -1,8 +1,15 @@
+const { Op, Sequelize } = require('sequelize');
 const RoomEvent = require('../models/RoomEvent');
+const Event = require('../models/Event');
+const Rate = require('../models/Rate');
 
 const roomEventRepository = {
     findAll: async () => {
-        return await RoomEvent.findAll();
+        return await RoomEvent.findAll({
+            include: [{
+                model: Rate, // Include các đánh giá (Rate) cho mỗi phòng (RoomEvent)
+            }]
+        });
     },
 
     findById: async (id) => {
@@ -26,10 +33,50 @@ const roomEventRepository = {
             where: { RoomEventID: id } // Đảm bảo bạn cung cấp điều kiện where
         });
         if (updatedCount === 0) {
-        throw new Error("RoomEvent not found or already closed");
-    }
-    
-    return updatedCount; // Trả về số bản ghi đã được cập nhật
+            throw new Error("RoomEvent not found or already closed");
+        }
+
+        return updatedCount; // Trả về số bản ghi đã được cập nhật
+    },
+    findAvailableRoomsByTime: async (EventDate, Time, From, To) => {
+        const timeCondition = {
+            [Op.or]: [
+                { Time: 'ALLDAY' },
+                {
+                    Time: Time === 'ALLDAY'
+                        ? { [Op.in]: ['MORNING', 'AFTERNOON', 'CUSTOM'] }
+                        : Time
+                },
+                {
+                    Time: 'CUSTOM',
+                    [Op.and]: [
+                        From ? { From: { [Op.lt]: To } } : {},
+                        To ? { To: { [Op.gt]: From } } : {}
+                    ]
+                }
+            ]
+        };
+
+        return await RoomEvent.findAll({
+            where: {
+                Status: 'OPEN', // Kiểm tra các phòng có trạng thái là "OPEN"
+            },
+            include: [
+                {
+                    model: Event,
+                    where: {
+                        [Op.and]: [
+                            Sequelize.where(
+                                Sequelize.fn('DATE', Sequelize.col('EventDate')),
+                                '=',
+                                Sequelize.fn('DATE', EventDate)
+                            ),
+                            timeCondition
+                        ]
+                    },
+                }
+            ]
+        });
     }
 };
 

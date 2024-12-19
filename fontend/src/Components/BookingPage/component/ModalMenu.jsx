@@ -19,7 +19,7 @@ const modalStyle = {
 
 const selectedStyle = {
     padding: 2,
-    width:'30%',
+    width: '30%',
     background: "#fafaeb",
     borderRadius: 4,
 }
@@ -65,24 +65,24 @@ const CreateMenuModal = ({ open, handleClose, setSelected }) => {
     useEffect(() => {
         const totalFood = selectedFood.reduce((total, foodId) => {
             const food = foods.find(item => item.FoodID === foodId);
-            return total + (food?.UnitPrice || 0); 
+            return total + (food?.UnitPrice || 0);
         }, 0);
-    
+
         const totalDrink = selectedDrinks.reduce((total, drinkId) => {
             const drink = drinks.find(item => item.DrinkID === drinkId);
             return total + (drink?.UnitPrice || 0);
         }, 0);
-    
+
         setTotolPrice(totalFood + totalDrink);
     }, [selectedDrinks, selectedFood, foods, drinks]);
-    
+
 
     const handleSubmit = async () => {
         const menuData = {
             Food: selectedFood,
             Drinks: selectedDrinks,
         };
-        if(selectedFood.length>=4 && selectedDrinks.length>=2){
+        if (selectedFood.length >= 1 || selectedDrinks.length >= 1) {
             try {
                 const newMenu = await addMenu(dispatch, menuData);
                 console.log(newMenu)
@@ -91,14 +91,10 @@ const CreateMenuModal = ({ open, handleClose, setSelected }) => {
             } catch (error) {
                 console.error('Error creating menu:', error);
             }
-        }else{
-            if(selectedFood.length<4){
-                toast.info("Số lượng món ăn tối thiểu là 4")
-            }else if(selectedDrinks.length<2){
-                toast.info("Số lượng đồ uống tối thiểu là 2")
-            }
+        } else {
+            toast.error("Hãy chọn ít nhất 1 loại ")
         }
-       
+
     };
 
     return (

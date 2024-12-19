@@ -14,11 +14,12 @@
 
 .home-header {
     height: 25vw;
+    max-height: 60px;
     min-height: 230px;
     background-image: url('https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/homeheader.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21laGVhZGVyLmpwZyIsImlhdCI6MTcyNzYxODE4OSwiZXhwIjoxNzU5MTU0MTg5fQ.QU5J1wJV043dbnA6WzcnrIvAVUFGtf3Xc7QCsdIPvR8&t=2024-09-29T13%3A56%3A29.431Z');
     width: 100%;
     background-size: cover;
-    background-position: 0 64%; 
+    background-position: 0 50%; 
     display: flex;
     align-items: center;
     justify-content: center;

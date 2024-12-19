@@ -1,5 +1,6 @@
 import axios from "../../utils/axiosConfig";
 import { createAxios } from "../../utils/createInstance";
+import { getRequireDayFailed, getRequireDayStart, getRequireDaySuccess, updateRequireDayFailed, updateRequireDayStart, updateRequireDaySuccess } from "../reducers/requireDay";
 import {
     getRoomsStart, getRoomsSuccess, getRoomsFailed,
     addRoomStart, addRoomSuccess, addRoomFailed,
@@ -14,10 +15,23 @@ export const getAllRooms = async (dispatch) => {
     try {
         const res = await axios.get("/v1/room");
         dispatch(getRoomsSuccess(res.data));
+        console.log(res.data)
     } catch (error) {
         console.error("Get rooms failed:", error);
         toast.error("Không thể lấy danh sách phòng!");
         dispatch(getRoomsFailed());
+    }
+};
+
+// Lấy tất cả phòng
+export const getAvailableRooms = async (values) => {
+    let axiosJWT = createAxios();
+    try {
+        const res = await axiosJWT.post("/v1/room/available",{values});
+        return res.data
+    } catch (error) {
+        console.error("Get rooms failed:", error);
+        toast.error("Không thể lấy danh sách phòng!");
     }
 };
 
@@ -95,5 +109,35 @@ export const deleteRoom = async (dispatch, roomId) => {
         console.error("Delete room failed:", error);
         toast.error("Không thể xóa phòng đã được đặt!");
         dispatch(deleteRoomFailed());
+    }
+};
+
+export const getRequireDay = async (dispatch) => {
+    const user = JSON.parse(sessionStorage.getItem("user"))?.user;
+    dispatch(getRequireDayStart());
+    let axiosJWT = createAxios(user);
+    try {
+        const res = await axiosJWT.get(`/v1/require_day`);
+        dispatch(getRequireDaySuccess(res.data));
+    } catch (error) {
+        console.error("Get require day failed:", error);
+        dispatch(getRequireDayFailed());
+    }
+};
+
+
+// Xóa phòng
+export const updateRequireDay = async (dispatch,numberDay,caution,alldayRate) => {
+    const user = JSON.parse(sessionStorage.getItem("user"))?.user;
+    console.log({numberDay})
+    dispatch(updateRequireDayStart());
+    let axiosJWT = createAxios(user);
+    try {
+        const res = await axiosJWT.put(`/v1/require_day`,{numberDay,caution,alldayRate});
+        toast.success("Cập nhập thành công")
+        dispatch(updateRequireDaySuccess(res.data));
+    } catch (error) {
+        console.error("Update require day failed:", error);
+        dispatch(updateRequireDayFailed());
     }
 };

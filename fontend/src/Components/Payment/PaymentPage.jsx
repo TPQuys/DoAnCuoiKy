@@ -43,7 +43,7 @@ const PaymentPage = () => {
 
     useEffect(() => {
         // Tính toán thời điểm kết thúc (bookingTime + 1 ngày)
-        const endTime = new Date(booking.BookingTime).getTime() + 24 * 60 * 60 * 1000;
+        const endTime = new Date(booking?.BookingTime).getTime() + 24 * 60 * 60 * 1000;
 
         // Cập nhật thời gian còn lại mỗi giây
         const interval = setInterval(() => {
@@ -58,7 +58,7 @@ const PaymentPage = () => {
 
         // Dọn dẹp interval khi component bị huỷ
         return () => clearInterval(interval);
-    }, [booking.BookingTime]);
+    }, [booking?.BookingTime]);
 
 
     const minutes = Math.floor(remainingTime / 60);
@@ -92,7 +92,7 @@ const PaymentPage = () => {
             <div className="payment-body">
                 <div className='flex'>
                     <div className='payment-room'>
-                        <h3>Nhà hàng: {event.RoomEvent?.RoomName}</h3>
+                        <h3>Nơi tổ chức: {event.RoomEvent?.RoomName}</h3>
                         <h4>Giá: {(event.RoomEvent?.Price)?.toLocaleString()} VND</h4>
                         <img src={event.RoomEvent?.RoomImage} className='payment-img' alt="Room-img"></img>
                     </div>
@@ -147,10 +147,28 @@ const PaymentPage = () => {
                             </div>
                         </div>
                     }
-                    <div className='payment-menu'>
-                        <div className="payment-price">
+                    <div className='payment-menu' >
+                        <div className="payment-price" >
+                            <h3>Thành tiền</h3>
+                            <div className='menu-item'>
+                                <span>Phòng</span>
+                                <span>{rommPriceByEvent(event, event.RoomEvent?.Price)?.toLocaleString()} VND</span>
+                            </div>
+                            <div className='menu-item'>
+                                <span>Menu</span>
+                                <span>{(getMenuPrice(event?.Menu) * event?.TotalTable)?.toLocaleString()} VND</span>
+                            </div>
+                            <div className='menu-item'>
+                                <span>Trang trí</span>
+                                <span>{getDecorePrice(event, event?.Decore).toLocaleString()} VND</span>
+                            </div>
+                            <div className='menu-item'>
+                                <span>VAT</span>
+                                <span>{((getMenuPrice(event.Menu) * event.TotalTable + getDecorePrice(event, event.Decore) + rommPriceByEvent(event, event.RoomEvent?.Price)) * 0.1)?.toLocaleString()} VND</span>
+                            </div>
+                            <div style={{ height: 40 }}></div>
                             <h3>TỔNG GIÁ</h3>
-                            <h1>{(getMenuPrice(event.Menu) * event.TotalTable + getDecorePrice(event, event.Decore) + rommPriceByEvent(event, event.RoomEvent?.Price))?.toLocaleString()} VND</h1>
+                            <h1>{((getMenuPrice(event.Menu) * event.TotalTable + getDecorePrice(event, event.Decore) + rommPriceByEvent(event, event.RoomEvent?.Price)) * 1.1)?.toLocaleString()} VND</h1>
                         </div>
                     </div>
                 </div>

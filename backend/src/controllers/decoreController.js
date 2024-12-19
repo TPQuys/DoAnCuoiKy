@@ -54,7 +54,6 @@ const getDecorePrice = async (req, res) => {
         if (!decore) {
             return res.status(404).json({ message: "Decore price not found" });
         }
-        console.log(decore)
         res.status(200).json(decore);
     } catch (error) {
         console.error("Error fetching decore:", error);
@@ -65,8 +64,7 @@ const getDecorePrice = async (req, res) => {
 // Hàm cập nhật Decore
 const updateDecore = async (req, res) => {
     const { decoreId } = req.params;
-    const { LobbyDecore, StageDecore, TableDecore } = req.body;
-
+    const { LobbyDecore, StageDecore, TableDecore, DecorePrice, DecorePriceID } = req.body;
     try {
         const decore = await Decore.findByPk(decoreId);
         if (!decore) {
@@ -77,6 +75,8 @@ const updateDecore = async (req, res) => {
             LobbyDecore,
             StageDecore,
             TableDecore,
+            DecorePrice,
+            DecorePriceID
         });
 
         res.status(200).json(decore);

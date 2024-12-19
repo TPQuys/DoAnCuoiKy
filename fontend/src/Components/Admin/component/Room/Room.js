@@ -1,17 +1,25 @@
 import React from "react";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
-import {  useDispatch } from "react-redux";
-import {  addRoom, deleteRoom, updateRoomHaveImage, updateRoomNoImage } from "../../../../redux/actions/roomRequest"; // Đảm bảo đường dẫn đúng
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton, Card, Grid, FormControl, TextField, Typography, InputAdornment } from '@mui/material';
+import { useDispatch, useSelector } from "react-redux";
+import { addRoom, deleteRoom, updateRequireDay, updateRoomHaveImage, updateRoomNoImage } from "../../../../redux/actions/roomRequest"; // Đảm bảo đường dẫn đúng
 import { useState } from "react";
 import RoomFormModal from './RoomModal'; // Đảm bảo đường dẫn đúng
 import { toast } from "react-toastify";
+import EditIcon from '@mui/icons-material/Edit';
+import SearchIcon from '@mui/icons-material/Search';
 
-const Room = ({rooms}) => {
+const Room = ({ rooms }) => {
     const dispatch = useDispatch();
+    const requireDay = useSelector((state) => state.requireDay.numberDay)
     const [openDialog, setOpenDialog] = useState(false);
     const [formData, setFormData] = useState({});
     const [editMode, setEditMode] = useState(false);
     const [selectedImage, setSelectedImage] = useState();
+    const [numberDay, setNumberDay] = useState(requireDay.NumberDay)
+    const [caution, setCaution] = useState(requireDay.Caution)
+    const [alldayRate, setAlldayRate] = useState(requireDay.AlldayRate)
+    const [filterText, setFilterText] = useState('');
+    const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
 
     const handleOpenDialog = (room = null) => {
         if (room) {
@@ -27,7 +35,8 @@ const Room = ({rooms}) => {
                 MaxTable: '',
                 Price: '',
                 Description: '',
-                RoomImage: ''
+                RoomImage: '',
+                RequireDay: '',
             });
             setEditMode(false);
         }
@@ -37,6 +46,22 @@ const Room = ({rooms}) => {
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
+
+    const filteredAndSortedRooms = rooms
+        ?.filter((room) =>
+            room.RoomName.toLowerCase().includes(filterText.toLowerCase()) ||
+            room.Description.toLowerCase().includes(filterText.toLowerCase())
+        )
+        ?.sort((a, b) => {
+            if (sortConfig.key) {
+                const direction = sortConfig.direction === 'asc' ? 1 : -1;
+                if (a[sortConfig.key] < b[sortConfig.key]) return -1 * direction;
+                if (a[sortConfig.key] > b[sortConfig.key]) return 1 * direction;
+                return 0;
+            }
+            return 0;
+        });
+
 
     const handleSubmit = async (data) => {
         try {
@@ -85,44 +110,131 @@ const Room = ({rooms}) => {
     };
 
     return (
-        <div>
-            <TableContainer component={Paper} title="Danh sách phòng">
-                <Table stickyHeader aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell></TableCell>
-                            <TableCell>Tên phòng</TableCell>
-                            <TableCell>Chiều dài</TableCell>
-                            <TableCell>Chiều rộng</TableCell>
-                            <TableCell>Sức chứa</TableCell>
-                            <TableCell>Số bàn tối đa</TableCell>
-                            <TableCell>Giá</TableCell>
-                            <TableCell>Mô tả</TableCell>
-                            <TableCell>Trạng thái</TableCell>
-                            <TableCell>Hành động</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rooms?.map((room) => (
-                            <TableRow key={room?.RoomEventID}>
-                                <TableCell><img src={room.RoomImage} height={100} width={140} alt={room.RoomName} /></TableCell>
-                                <TableCell>{room.RoomName}</TableCell>
-                                <TableCell>{room.HeightRoom}</TableCell>
-                                <TableCell>{room.WidthRoom}</TableCell>
-                                <TableCell>{room.Capacity}</TableCell>
-                                <TableCell>{room.MaxTable}</TableCell>
-                                <TableCell>{room.Price}</TableCell>
-                                <TableCell sx={{ height: '140px', maxHeight: '140px', overflowY: 'auto', display: 'block', alignContent: "center" }}>{room.Description}</TableCell>
-                                <TableCell>{room.Status}</TableCell>
-                                <TableCell>
-                                    <Button onClick={() => handleOpenDialog(room)}>Sửa</Button>
-                                </TableCell>
+        <Grid container sx={{ height: '100%' }}>
+            <Grid item xs={10} sx={{ display: 'flex', flexDirection: 'column' }}>
+                <TableContainer component={Paper} title="Danh sách phòng" sx={{ maxHeight: '700px', overflowY: 'auto', flex: 1 }}>
+                    <Table stickyHeader aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell sx={{ fontWeight: 600 }}></TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Tên phòng</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Chiều dài</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Chiều rộng</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Sức chứa</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Số bàn tối đa</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Số ngày yêu cầu đặt trước</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Giá</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Mô tả</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Trạng thái</TableCell>
+                                <TableCell sx={{ fontWeight: 600 }}>Hành động</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <Button sx={{ marginTop: "20px" }} variant="contained" color="primary" onClick={() => handleOpenDialog()}>Thêm phòng</Button>
+                        </TableHead>
+                        <TableBody>
+                            {filteredAndSortedRooms?.map((room) => (
+                                <TableRow key={room?.RoomEventID}>
+                                    <TableCell><img src={room.RoomImage} height={100} width={140} alt={room.RoomName} /></TableCell>
+                                    <TableCell>{room.RoomName}</TableCell>
+                                    <TableCell>{room.HeightRoom}</TableCell>
+                                    <TableCell>{room.WidthRoom}</TableCell>
+                                    <TableCell>{room.Capacity}</TableCell>
+                                    <TableCell>{room.MaxTable}</TableCell>
+                                    <TableCell>{room.RequireDay}</TableCell>
+                                    <TableCell>{room.Price}</TableCell>
+                                    <TableCell sx={{ height: '140px', maxHeight: '140px', overflowY: 'auto', display: 'block', alignContent: "center" }}>{room.Description}</TableCell>
+                                    <TableCell>{room.Status}</TableCell>
+                                    <TableCell>
+                                        <IconButton onClick={() => handleOpenDialog(room)} color="primary">
+                                            <EditIcon />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <Button sx={{ marginTop: "20px" }} variant="contained" color="primary" onClick={() => handleOpenDialog()}>Thêm phòng</Button>
+            </Grid>
+            <Grid item xs={2} sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Card sx={{ flex: 1, p: 2 }}>
+                    <Typography variant="h4" gutterBottom>
+                        Chức năng
+                    </Typography>
+                    <TextField
+                        sx={{ mb: 2 }}
+                        fullWidth
+                        label="Tìm kiếm"
+                        variant="outlined"
+                        value={filterText}
+                        onChange={(e) => setFilterText(e.target.value)}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                    <TextField
+                        sx={{ mb: 2 }}
+                        select
+                        label="Sắp xếp theo"
+                        fullWidth
+                        SelectProps={{
+                            native: true,
+                        }}
+                        onChange={(e) => {
+                            const [key, direction] = e.target.value.split(':');
+                            setSortConfig({ key, direction });
+                        }}
+                    >
+                        <option value=""></option>
+                        <option value="RoomName:asc">Tên phòng (A-Z)</option>
+                        <option value="RoomName:desc">Tên phòng (Z-A)</option>
+                        <option value="Price:asc">Giá (Thấp đến Cao)</option>
+                        <option value="Price:desc">Giá (Cao đến Thấp)</option>
+                        <option value="Capacity:asc">Sức chứa (Thấp đến Cao)</option>
+                        <option value="Capacity:desc">Sức chứa (Cao đến Thấp)</option>
+                    </TextField>
+                    <Typography mt={3} variant="h4" gutterBottom>
+                        Thiết lập chung
+                    </Typography>
+                    <Grid container marginBottom={2} spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Số ngày yêu cầu đặt trước"
+                                variant="outlined"
+                                fullWidth
+                                value={numberDay}
+                                onChange={(e) => { setNumberDay(e.target.value) }}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Hế số đặt cả ngày"
+                                variant="outlined"
+                                fullWidth
+                                value={alldayRate}
+                                onChange={(e) => { setAlldayRate(e.target.value) }}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Luư ý khi đặt"
+                                variant="outlined"
+                                fullWidth
+                                value={caution}
+                                rows={6}
+                                multiline
+                                onChange={(e) => { setCaution(e.target.value) }}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Button onClick={(() => updateRequireDay(dispatch, numberDay,caution,alldayRate))}>Lưu</Button>
+                        </Grid>
+                    </Grid>
+
+                </Card>
+            </Grid>
             <RoomFormModal
                 open={openDialog}
                 onClose={handleCloseDialog}
@@ -132,7 +244,9 @@ const Room = ({rooms}) => {
                 setSelectedImage={setSelectedImage}
                 handleDeleteRoom={handleDeleteRoom}
             />
-        </div>
+        </Grid>
+
+
     );
 };
 

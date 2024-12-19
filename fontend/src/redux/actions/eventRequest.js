@@ -14,7 +14,7 @@ export const addEvent = async (dispatch, eventData) => {
     dispatch(addEventStart());
     let axiosJWT = createAxios(user);
     try {
-        const res = await axiosJWT.post("/v1/event", eventData);
+        const res = await axiosJWT.post("/v1/event", {...eventData,userId:user.user.id});
         dispatch(addEventSuccess(res.data));
         console.log("Thêm sự kiện thành công" + JSON.stringify(res.data))
         toast.success("Thêm sự kiện thành công. Hãy thanh toán trước khi hết hạn!");
@@ -26,11 +26,11 @@ export const addEvent = async (dispatch, eventData) => {
     }
 };
 
-export const getRoomBooked = async ( RoomEventID, EventDate) => {
+export const getRoomBooked = async ( values) => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     let axiosJWT = createAxios(user);
     try {
-        const res = await axiosJWT.post("/v1/event/room_booked", {RoomEventID, EventDate});
+        const res = await axiosJWT.post("/v1/event/room_booked", values);
         return res.data
     } catch (error) {
         console.error("lấy phòng đã đặt trước thất bại thất bại:", error.response.data.message);
@@ -47,6 +47,7 @@ export const updateEvent = async (dispatch, eventId, eventData) => {
         const res = await axiosJWT.put(`/v1/event/${eventId}`, eventData);
         dispatch(updateEventSuccess(res.data));
         toast.success("Cập nhật sự kiện thành công!");
+        return res.data
     } catch (error) {
         console.error("Cập nhật sự kiện thất bại:", error);
         toast.error("Không thể cập nhật sự kiện!");

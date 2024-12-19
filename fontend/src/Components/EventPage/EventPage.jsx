@@ -48,11 +48,11 @@ const HomePage = () => {
             <img src="https://espfoizbmzncvmwdmtvy.supabase.co/storage/v1/object/sign/Event/home_decor.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJFdmVudC9ob21lX2RlY29yLmpwZyIsImlhdCI6MTcyNzg5MTYwNiwiZXhwIjoxNzU5NDI3NjA2fQ.vq7vUyhpKjumPL2FH86q-mZiRoBVXKa_Q6B2hEHLpWM&t=2024-10-02T17%3A53%3A26.577Z" className="content-img" alt="img1" />
           </div>
         </div>
-        <div>
+        {/* <div>
           <h1>Ưu đãi đặc biệt</h1>
           <hr size="10" style={{width: '200px', margin: 'auto', marginBottom: '1rem'}}/>
           <img style={{width: 'calc(100% - 2rem)'}} className="mx-3" src="https://riversidepalace.vn/multidata/banner-web-1200x500-01.jpg" alt="Event Banner" />
-        </div>
+        </div> */}
         <div className="mt-5">
           <h1>Tin tức đặc biệt</h1>
           <hr size="10" style={{width: '200px', margin: 'auto', marginBottom: '4rem'}}/>

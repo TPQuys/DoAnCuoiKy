@@ -5,11 +5,10 @@ const eventController = {
     // Tạo sự kiện mới
     createEvent: async (req, res) => {
         try {
-            console.log(req.body)
             const newEvent = await eventService.createEvent(req.body);
             res.status(201).json(newEvent);
         } catch (error) {
-            console.log(error)
+            console.error(error)
             res.status(500).json({ message: error.message });
         }
     },
@@ -39,8 +38,8 @@ const eventController = {
     getRoomBooked: async (req, res) => {
         try {
             const {RoomEventID, EventDate} = req.body
+            console.log(req.body)
             const response = await eventService.getRoomBooked(RoomEventID, EventDate);
-            console.log(response)
             res.status(200).json(response);
         } catch (error) {
             console.log(error)

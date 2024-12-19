@@ -1,19 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { LineChart } from '@mui/x-charts/LineChart';
-import { Card, Grid } from '@mui/material';
+import { Card, Grid, TextField, MenuItem } from '@mui/material';
 import { axisClasses } from '@mui/x-charts';
 
 const PaymentChart = ({ bookings }) => {
   const [data, setData] = useState([]); // Lưu dữ liệu cho biểu đồ
   const [months, setMonths] = useState([]); // Lưu danh sách tháng
+  const [year, setYear] = useState(new Date().getFullYear()); // Năm được chọn
+
+  // Tính danh sách các năm từ dữ liệu bookings
+  const years = useMemo(() => {
+    const yearsSet = new Set(
+      bookings.map((item) => new Date(item.BookingTime).getFullYear())
+    );
+    const minYear = Math.min(...yearsSet);
+    const maxYear = Math.max(...yearsSet);
+
+    // Thêm -1 và +1 năm
+    for (let y = minYear - 1; y <= maxYear + 1; y++) {
+      yearsSet.add(y);
+    }
+
+    return Array.from(yearsSet).sort((a, b) => a - b);
+  }, [bookings]);
 
   // Hàm xử lý dữ liệu doanh thu
-  const getPayment = () => {
-    const sortedBookings = [...bookings].sort((a, b) => {
-      const dateA = new Date(a.BookingTime);
-      const dateB = new Date(b.BookingTime);
-      return dateA - dateB; // Sắp xếp tăng dần
-    });
+  const getPayment = (selectedYear) => {
+    const sortedBookings = bookings.filter(
+      (item) => new Date(item.BookingTime).getFullYear() === selectedYear
+    );
 
     let paymentData = [];
     sortedBookings.forEach((item) => {
@@ -38,23 +53,45 @@ const PaymentChart = ({ bookings }) => {
       return acc;
     }, []);
 
-    return result;
+    // Sắp xếp theo tháng và năm
+    return result.sort((a, b) => {
+      const [monthA, yearA] = a.month.split('-').map(Number);
+      const [monthB, yearB] = b.month.split('-').map(Number);
+      return yearA === yearB ? monthA - monthB : yearA - yearB;
+    });
   };
 
-  // Xử lý dữ liệu khi `bookings` thay đổi
+  // Xử lý dữ liệu khi `bookings` hoặc `year` thay đổi
   useEffect(() => {
-    const result = getPayment();
+    const result = getPayment(year);
 
-    // Lấy danh sách tháng từ dữ liệu đã xử lý
+    // Lấy danh sách tháng đã sắp xếp
     const uniqueMonths = result.map((item) => item.month);
-    setData(result);
-    setMonths(uniqueMonths);
-  }, [bookings]);
+    setData(result); // Cập nhật dữ liệu biểu đồ
+    setMonths(uniqueMonths); // Cập nhật danh sách tháng
+  }, [bookings, year]);
+
+  const handleYearChange = (event) => {
+    setYear(event.target.value);
+  };
 
   return (
     <Card style={{ flex: 1, height: '500px', marginBottom: '30px' }}>
-      <Grid sx={{ height: '90px', padding: '10px' }}>
+      <Grid container alignItems="center" justifyContent="space-between" sx={{ padding: '10px 20px' }}>
         <h2 style={{ textAlign: 'center' }}>Doanh thu theo tháng</h2>
+        <TextField
+          select
+          label="Chọn Năm"
+          value={year}
+          onChange={handleYearChange}
+          sx={{ width: '150px' }}
+        >
+          {years.map((y) => (
+            <MenuItem key={y} value={y}>
+              {y}
+            </MenuItem>
+          ))}
+        </TextField>
       </Grid>
       <LineChart
         series={[

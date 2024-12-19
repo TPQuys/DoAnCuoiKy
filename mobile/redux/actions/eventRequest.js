@@ -8,26 +8,24 @@ import { createAxios } from '../../utils/createInstance'; // Import hàm createA
 import { ToastAndroid } from 'react-native';
 
 
-export const addEvent = async (dispatch, eventData,user) => {
+export const addEvent = async (dispatch, eventData, user) => {
     dispatch(addEventStart());
     let axiosJWT = createAxios(user);
     try {
-        const res = await axiosJWT.post("/v1/event", eventData);
+        const res = await axiosJWT.post("/v1/event", { ...eventData, userId: user.user.id });
         dispatch(addEventSuccess(res.data));
         return res.data
     } catch (error) {
-        console.log("Thêm sự kiện thất bại:", error.response.data.message);
+        console.error("error")
         ToastAndroid.show(error.response.data.message, ToastAndroid.SHORT)
-
-        // toast.error(error.response.data.message);
         dispatch(addEventFailed());
     }
 };
 
-export const getRoomBooked = async ( RoomEventID, EventDate, user) => {
+export const getRoomBooked = async (RoomEventID, EventDate, user) => {
     let axiosJWT = createAxios(user);
     try {
-        const res = await axiosJWT.post("/v1/event/room_booked", {RoomEventID, EventDate});
+        const res = await axiosJWT.post("/v1/event/room_booked", { RoomEventID, EventDate });
         return res.data
     } catch (error) {
         console.error("lấy phòng đã đặt trước thất bại thất bại:", error.response.data.message);

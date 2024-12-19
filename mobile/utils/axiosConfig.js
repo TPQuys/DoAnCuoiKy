@@ -1,8 +1,6 @@
 import axios from "axios";
-
-// axios.defaults.baseURL="http://localhost:8000/"
-// axios.defaults.baseURL="http://192.168.2.144:8000/"
- axios.defaults.baseURL="https://doancuoiky-1.onrender.com/"
+import url from './url'
+axios.defaults.baseURL=url
 axios.defaults.headers.common = {
     "Content-Type": "application/json", 
     "Accept": "application/json",    

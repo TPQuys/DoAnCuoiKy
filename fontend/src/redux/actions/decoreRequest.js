@@ -38,21 +38,17 @@ export const getDecorePrice = async (dispatch) => {
 };
 
 // // Cập nhật Decore
-// export const updateDecore = async (dispatch, decoreId, decoreData) => {
-//     const user = JSON.parse(sessionStorage.getItem("user"));
-//     dispatch(updateDecoreStart());
-//     let axiosJWT = createAxios(user);
+export const updateDecore = async (dispatch, decoreId, decoreData) => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    let axiosJWT = createAxios(user);
 
-//     try {
-//         const res = await axiosJWT.put(`/api/decores/${decoreId}`, decoreData);
-//         dispatch(updateDecoreSuccess(res.data));
-//         toast.success("Cập nhật trang trí thành công!");
-//     } catch (error) {
-//         console.error("Cập nhật trang trí thất bại:", error);
-//         toast.error("Cập nhật trang trí thất bại!");
-//         dispatch(updateDecoreFailed());
-//     }
-// };
+    try {
+        const res = await axiosJWT.put(`/v1/decore/${decoreId}`, decoreData);
+    } catch (error) {
+        console.error("Cập nhật trang trí thất bại:", error);
+        toast.error("Cập nhật trang trí thất bại!");
+    }
+};
 
 // // Xóa Decore
 // export const deleteDecore = async (dispatch, decoreId) => {

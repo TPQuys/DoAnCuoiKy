@@ -142,36 +142,36 @@ const PaymentPage = () => {
     const resetLinkPayment = async () => {
         if (newBooking) {
             const zaloApi = await PostZaloApi(dispatch, newBooking, user);
-            console.log(zaloApi.data)
             if (zaloApi?.data?.order_url) {
-                console.log(zaloApi?.data?.order_url)
                 setNewBooking({ ...newBooking, PaymentLink: zaloApi.data.order_url })
                 setIsDisable(false)
             }
         }
     }
 
-    useEffect(() => {
-        // Tính toán thời điểm kết thúc (bookingTime + 15 phút)
-        const endTime = new Date(newBooking.BookingTime).getTime() + 15 * 60 * 1000;
-
-        // Cập nhật thời gian còn lại mỗi giây
-        const interval = setInterval(() => {
-            const currentTime = new Date().getTime();
-            const timeLeft = Math.max(0, Math.floor((endTime - currentTime) / 1000));
-            setRemainingTime(timeLeft);
-
-            if (timeLeft <= 0) {
-                clearInterval(interval);
-            }
-        }, 1000);
-
-        // Dọn dẹp interval khi component bị huỷ
-        return () => clearInterval(interval);
-    }, [newBooking.BookingTime]);
-
-    const minutes = Math.floor(remainingTime / 60);
-    const seconds = remainingTime % 60;
+     useEffect(() => {
+            // Tính toán thời điểm kết thúc (bookingTime + 1 ngày)
+            const endTime = new Date(newBooking.BookingTime).getTime() + 24 * 60 * 60 * 1000;
+    
+            // Cập nhật thời gian còn lại mỗi giây
+            const interval = setInterval(() => {
+                const currentTime = new Date().getTime();
+                const timeLeft = Math.max(0, Math.floor((endTime - currentTime) / 1000));
+                setRemainingTime(timeLeft);
+    
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                }
+            }, 1000);
+    
+            // Dọn dẹp interval khi component bị huỷ
+            return () => clearInterval(interval);
+        }, [newBooking.BookingTime]);
+    
+    
+        const minutes = Math.floor(remainingTime / 60);
+        const seconds = remainingTime % 60;
+    
 
 
     useEffect(() => {
@@ -277,7 +277,7 @@ const PaymentPage = () => {
                                 onPress={handlePayment}
                                 disabled={isDisable}
                             >
-                                <Text style={styles.paymentButtonText}>Thanh toán({minutes}:{seconds < 10 ? '0' : ''}{seconds})</Text>
+                                <Text style={styles.paymentButtonText}>Thanh toán{minutes <= 30 && `(${minutes}:${seconds < 10 ? '0' : ''}${seconds})`}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.resetButton}

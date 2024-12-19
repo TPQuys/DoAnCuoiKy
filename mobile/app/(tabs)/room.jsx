@@ -34,9 +34,13 @@ const RoomPage = () => {
                                         <Text style={styles.roomContentText}>{item.Description}</Text>
                                         <TouchableOpacity
                                             style={styles.button}
-                                            onPress={() => router.push(`/(booking)/bookingPage?roomId=${item.RoomEventID}`)}
-                                        >
-                                            <Text style={styles.buttonText}>Đặt ngay</Text>
+                                            onPress={() => 
+                                                router.push({
+                                                    pathname: '/(booking)/roomDetail',
+                                                    params: {  room: JSON.stringify(item) }
+                                                })}
+                                            >
+                                            <Text style={styles.buttonText}>Chi tiết</Text>
                                         </TouchableOpacity>
                                     </View>
                             </View>

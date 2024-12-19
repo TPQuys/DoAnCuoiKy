@@ -32,6 +32,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
     useEffect(() => {
         const fetchRoomBooked = async () => {
             if (selectedDate) {
+                console.log(new Date(selectedDate))
                 try {
                     const res = await getRoomBooked(RoomEventID, selectedDate, user);
                     console.log(res)
@@ -272,7 +273,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                         >
                             <Picker.Item label="Chọn thời gian" value="" />
                             <Picker.Item
-                                label="Buổi sáng"
+                                label="Buổi sáng (8:00-14:00)"
                                 value="MORNING"
                                 style={{
                                     color: !(bookedTimes?.includes('MORNING') || bookedTimes?.includes('ALLDAY')) ? 'black' : 'gray',
@@ -280,7 +281,7 @@ const EventForm = forwardRef(({ handleSubmit, maxTable, setFrom, setTo, RoomEven
                                 enabled={!(bookedTimes?.includes('MORNING') || bookedTimes?.includes('ALLDAY'))}
                             />
                             <Picker.Item
-                                label="Buổi chiều"
+                                label="Buổi chiều(16:00-23:00)"
                                 value="AFTERNOON"
                                 style={{
                                     color: !(bookedTimes?.includes('AFTERNOON') || bookedTimes?.includes('ALLDAY')) ? 'black' : 'gray',
