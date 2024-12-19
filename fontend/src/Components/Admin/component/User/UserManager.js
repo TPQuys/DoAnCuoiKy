@@ -40,7 +40,7 @@ const UsersManagement = () => {
         }
         setSortConfig({ key, direction });
     };
-    
+
 
     const filteredUsers = users.filter(user =>
         user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -59,9 +59,9 @@ const UsersManagement = () => {
         }
         return filteredUsers;
     }, [filteredUsers, sortConfig]);
-    
+
     return (
-        <Card sx={{p:3,gap:3}}>
+        <Card sx={{ p: 3, gap: 3 }}>
             <TextField
                 label="Tìm kiếm người dùng"
                 variant="outlined"
@@ -79,41 +79,41 @@ const UsersManagement = () => {
             />
             <TableContainer component={Paper} sx={{ maxHeight: '700px', overflowY: 'auto' }}>
                 <Table >
-                <TableHead>
-    <TableRow>
-        <TableCell sx={{ fontWeight: 'bold' }}>
-            <TableSortLabel
-                active={sortConfig.key === 'email'}
-                direction={sortConfig.direction}
-                onClick={() => requestSort('email')}
-            >
-                Email
-            </TableSortLabel>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 'bold' }}>Họ và tên</TableCell>
-        <TableCell sx={{ fontWeight: 'bold' }}>Số điện thoại</TableCell>
-        <TableCell sx={{ fontWeight: 'bold' }}>Ngày sinh</TableCell>
-        <TableCell sx={{ fontWeight: 'bold' }}>
-            <TableSortLabel
-                active={sortConfig.key === 'role'}
-                direction={sortConfig.direction}
-                onClick={() => requestSort('role')}
-            >
-                Role
-            </TableSortLabel>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 'bold' }}>
-            <TableSortLabel
-                active={sortConfig.key === 'createdAt'}
-                direction={sortConfig.direction}
-                onClick={() => requestSort('createdAt')}
-            >
-                Ngày tạo
-            </TableSortLabel>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 'bold' }}>Hành động</TableCell>
-    </TableRow>
-</TableHead>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                <TableSortLabel
+                                    active={sortConfig.key === 'email'}
+                                    direction={sortConfig.direction}
+                                    onClick={() => requestSort('email')}
+                                >
+                                    Email
+                                </TableSortLabel>
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Họ và tên</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Số điện thoại</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Ngày sinh</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                <TableSortLabel
+                                    active={sortConfig.key === 'role'}
+                                    direction={sortConfig.direction}
+                                    onClick={() => requestSort('role')}
+                                >
+                                    Role
+                                </TableSortLabel>
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>
+                                <TableSortLabel
+                                    active={sortConfig.key === 'createdAt'}
+                                    direction={sortConfig.direction}
+                                    onClick={() => requestSort('createdAt')}
+                                >
+                                    Ngày tạo
+                                </TableSortLabel>
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Hành động</TableCell>
+                        </TableRow>
+                    </TableHead>
 
 
                     <TableBody>

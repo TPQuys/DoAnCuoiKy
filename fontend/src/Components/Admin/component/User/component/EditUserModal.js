@@ -9,7 +9,7 @@ import dayjs from 'dayjs';
 
 const EditUserModal = ({ open, onClose, onSubmit, initialValues }) => {
     const [isDisable, setIsDisable] = useState(false);
-    
+
     // Xác thực thông tin người dùng
     const validationSchema = Yup.object().shape({
         email: Yup.string().email("Email không hợp lệ").required("Email là bắt buộc"),
@@ -24,7 +24,10 @@ const EditUserModal = ({ open, onClose, onSubmit, initialValues }) => {
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogContent>
                 <Formik
-                    initialValues={initialValues}
+                    initialValues={{
+                        ...initialValues,
+                        dayofbirth: initialValues.dayofbirth ? dayjs(initialValues.dayofbirth) : null,
+                    }}
                     validationSchema={validationSchema}
                     onSubmit={async (values) => {
                         setIsDisable(true);
@@ -32,7 +35,7 @@ const EditUserModal = ({ open, onClose, onSubmit, initialValues }) => {
                         setIsDisable(false);
                     }}
                 >
-                    {({ handleChange, values, errors, touched,setFieldValue }) => (
+                    {({ handleChange, values, errors, touched, setFieldValue }) => (
                         <Form>
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
@@ -75,74 +78,74 @@ const EditUserModal = ({ open, onClose, onSubmit, initialValues }) => {
                                         helperText={touched.phone && errors.phone}
                                     />
                                 </Grid>
-                            
+
                                 <Grid item xs={12} sm={6}>
-                                <TextField
-                                    sx={{
-                                        '& .MuiInputBase-input.Mui-disabled': {
-                                            WebkitTextFillColor: 'black',
-                                        },
-                                    }}
-                                    name="gender"
-                                    select
-                                    label="Giới tính"
-                                    fullWidth
-                                    value={values.gender}
-                                    onChange={handleChange}
-                                    error={touched.gender && Boolean(errors.gender)}
-                                    helperText={touched.gender && errors.gender}
-                                >
-                                    <MenuItem value=""></MenuItem>
-                                    <MenuItem value="male">Nam</MenuItem>
-                                    <MenuItem value="female">Nữ</MenuItem>
-                                    <MenuItem value="orther">Khác</MenuItem>
-                                </TextField>
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <Field name="dayofbirth">
-                                        {({ field }) => (
-                                            <DatePicker
-                                                sx={{
-                                                    width: "100%",
-                                                    '& .MuiInputBase-input': {
-                                                        color: 'black',
-                                                    },
-                                                    '& .MuiInputBase-input.Mui-disabled': {
-                                                        WebkitTextFillColor: 'black',
-                                                    },
-                                                }}
-                                                label="Ngày sinh"
-                                                value={field?.value}
-                                                onChange={(newValue) => setFieldValue(field.name, newValue)}
-                                                slotProps={{
-                                                    textField: {
-                                                        error: touched.dayofbirth && Boolean(errors.dayofbirth),
-                                                        helperText: touched.dayofbirth && errors.dayofbirth,
-                                                    },
-                                                }}
-                                                format='DD/MM/YYYY'
-                                            />
-                                        )}
-                                    </Field>
-                                </LocalizationProvider>
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    name="address"
-                                    label="Địa chỉ"
-                                    fullWidth
-                                    sx={{
-                                        '& .MuiInputBase-input.Mui-disabled': {
-                                            WebkitTextFillColor: 'black',
-                                        },
-                                    }}
-                                    value={values.address}
-                                    onChange={handleChange}
-                                    error={touched.address && Boolean(errors.address)}
-                                    helperText={touched.address && errors.address}
-                                />
-                            </Grid>
+                                    <TextField
+                                        sx={{
+                                            '& .MuiInputBase-input.Mui-disabled': {
+                                                WebkitTextFillColor: 'black',
+                                            },
+                                        }}
+                                        name="gender"
+                                        select
+                                        label="Giới tính"
+                                        fullWidth
+                                        value={values.gender}
+                                        onChange={handleChange}
+                                        error={touched.gender && Boolean(errors.gender)}
+                                        helperText={touched.gender && errors.gender}
+                                    >
+                                        <MenuItem value=""></MenuItem>
+                                        <MenuItem value="male">Nam</MenuItem>
+                                        <MenuItem value="female">Nữ</MenuItem>
+                                        <MenuItem value="orther">Khác</MenuItem>
+                                    </TextField>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <Field name="dayofbirth">
+                                            {({ field }) => (
+                                                <DatePicker
+                                                    sx={{
+                                                        width: "100%",
+                                                        '& .MuiInputBase-input': {
+                                                            color: 'black',
+                                                        },
+                                                        '& .MuiInputBase-input.Mui-disabled': {
+                                                            WebkitTextFillColor: 'black',
+                                                        },
+                                                    }}
+                                                    label="Ngày sinh"
+                                                    value={field?.value}
+                                                    onChange={(newValue) => setFieldValue(field.name, newValue)}
+                                                    slotProps={{
+                                                        textField: {
+                                                            error: touched.dayofbirth && Boolean(errors.dayofbirth),
+                                                            helperText: touched.dayofbirth && errors.dayofbirth,
+                                                        },
+                                                    }}
+                                                    format='DD/MM/YYYY'
+                                                />
+                                            )}
+                                        </Field>
+                                    </LocalizationProvider>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        name="address"
+                                        label="Địa chỉ"
+                                        fullWidth
+                                        sx={{
+                                            '& .MuiInputBase-input.Mui-disabled': {
+                                                WebkitTextFillColor: 'black',
+                                            },
+                                        }}
+                                        value={values.address}
+                                        onChange={handleChange}
+                                        error={touched.address && Boolean(errors.address)}
+                                        helperText={touched.address && errors.address}
+                                    />
+                                </Grid>
                             </Grid>
                             <DialogActions>
                                 <Button onClick={onClose} color="primary">Hủy</Button>

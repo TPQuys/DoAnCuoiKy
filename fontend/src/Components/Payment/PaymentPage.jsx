@@ -151,24 +151,24 @@ const PaymentPage = () => {
                         <div className="payment-price" >
                             <h3>Thành tiền</h3>
                             <div className='menu-item'>
-                                        <span>Phòng</span>
-                                        <span>{event?.RoomEvent?.Price.toLocaleString()} VND</span>
-                                    </div>
-                                    <div className='menu-item'>
-                                        <span>Menu</span>
-                                        <span>{(getMenuPrice(event?.Menu)*event?.TotalTable).toLocaleString()} VND</span>
-                                    </div>
-                                    <div className='menu-item'>
-                                        <span>Trang trí</span>
-                                        <span>{getDecorePrice(event, event?.Decore).toLocaleString() } VND</span>
-                                    </div>
-                                    <div className='menu-item'>
-                                        <span>VAT</span>
-                                        <span>{((getMenuPrice(event.Menu) * event.TotalTable + getDecorePrice(event, event.Decore) + rommPriceByEvent(event, event.RoomEvent?.Price))*0.1)?.toLocaleString()} VND</span>
-                                    </div>
-                                    <div style={{height:40}}></div>
+                                <span>Phòng</span>
+                                <span>{rommPriceByEvent(event, event.RoomEvent?.Price).toLocaleString()} VND</span>
+                            </div>
+                            <div className='menu-item'>
+                                <span>Menu</span>
+                                <span>{(getMenuPrice(event?.Menu) * event?.TotalTable).toLocaleString()} VND</span>
+                            </div>
+                            <div className='menu-item'>
+                                <span>Trang trí</span>
+                                <span>{getDecorePrice(event, event?.Decore).toLocaleString()} VND</span>
+                            </div>
+                            <div className='menu-item'>
+                                <span>VAT</span>
+                                <span>{((getMenuPrice(event.Menu) * event.TotalTable + getDecorePrice(event, event.Decore) + rommPriceByEvent(event, event.RoomEvent?.Price)) * 0.1)?.toLocaleString()} VND</span>
+                            </div>
+                            <div style={{ height: 40 }}></div>
                             <h3>TỔNG GIÁ</h3>
-                            <h1>{((getMenuPrice(event.Menu) * event.TotalTable + getDecorePrice(event, event.Decore) + rommPriceByEvent(event, event.RoomEvent?.Price))*1.1)?.toLocaleString()} VND</h1>
+                            <h1>{((getMenuPrice(event.Menu) * event.TotalTable + getDecorePrice(event, event.Decore) + rommPriceByEvent(event, event.RoomEvent?.Price)) * 1.1)?.toLocaleString()} VND</h1>
                         </div>
                     </div>
                 </div>

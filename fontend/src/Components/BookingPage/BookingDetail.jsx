@@ -34,9 +34,9 @@ const EventDetails = () => {
     const [isDisabled, setIsDisabled] = useState(false);
     const [note, setNote] = useState(formData?.Note||'')
     const [Decore, setDecore] = useState({
-        LobbyDecore: true,
-        StageDecore: true,
-        TableDecore: true,
+        LobbyDecore: false,
+        StageDecore: false,
+        TableDecore: false,
     });
 
     const { EventType, From, To, EventDate, Time, TotalTable, SelectedTimes } = formData || {};
