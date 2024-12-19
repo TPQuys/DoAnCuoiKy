@@ -8,7 +8,7 @@ const {
 } = require('../controllers/chatController');
 
 
-router.get('/room',middlewareController.verifyTokenAdmin,getAllRooms);
+router.get('/room',middlewareController.verifyTokenManager,getAllRooms);
 // Route thêm mới Decore
 router.get('/:id',middlewareController.verifyToken, getAllMessage);
 

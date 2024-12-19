@@ -65,7 +65,7 @@ const handleSocketConnection = (socket, io) => {
 
     // Xác định user có phải là admin hay không
     socket.on('setRole', (role) => {
-        if (role === 'ADMIN') {
+        if (role === 'ADMIN'||"MANAGER") {
             adminSocket = socket;  // Gán kết nối socket của admin
             console.log('Admin connected: ' + socket.id);
         }

@@ -104,7 +104,7 @@ const ChatApp = () => {
                 </Typography>
                 <Divider sx={{ marginBottom: '10px' }} />
 
-                {role === 'ADMIN' ? (
+                {(role === 'ADMIN' || role === 'MANAGER') ? (
                     <Card sx={{ height: '600px', overflowY: 'scroll' }}>
                         <List sx={{ padding: '0' }}>
                             {rooms
