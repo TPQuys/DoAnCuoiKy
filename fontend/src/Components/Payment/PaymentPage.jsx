@@ -43,7 +43,7 @@ const PaymentPage = () => {
 
     useEffect(() => {
         // Tính toán thời điểm kết thúc (bookingTime + 1 ngày)
-        const endTime = new Date(booking.BookingTime).getTime() + 24 * 60 * 60 * 1000;
+        const endTime = new Date(booking?.BookingTime).getTime() + 24 * 60 * 60 * 1000;
 
         // Cập nhật thời gian còn lại mỗi giây
         const interval = setInterval(() => {
@@ -58,7 +58,7 @@ const PaymentPage = () => {
 
         // Dọn dẹp interval khi component bị huỷ
         return () => clearInterval(interval);
-    }, [booking.BookingTime]);
+    }, [booking?.BookingTime]);
 
 
     const minutes = Math.floor(remainingTime / 60);
@@ -152,11 +152,11 @@ const PaymentPage = () => {
                             <h3>Thành tiền</h3>
                             <div className='menu-item'>
                                 <span>Phòng</span>
-                                <span>{rommPriceByEvent(event, event.RoomEvent?.Price).toLocaleString()} VND</span>
+                                <span>{rommPriceByEvent(event, event.RoomEvent?.Price)?.toLocaleString()} VND</span>
                             </div>
                             <div className='menu-item'>
                                 <span>Menu</span>
-                                <span>{(getMenuPrice(event?.Menu) * event?.TotalTable).toLocaleString()} VND</span>
+                                <span>{(getMenuPrice(event?.Menu) * event?.TotalTable)?.toLocaleString()} VND</span>
                             </div>
                             <div className='menu-item'>
                                 <span>Trang trí</span>
